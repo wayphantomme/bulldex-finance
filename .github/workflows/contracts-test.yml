@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: recursive  # pulls forge-std + openzeppelin
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -23,16 +23,20 @@ jobs:
           version: nightly
 
       - name: Build contracts
-        run: cd contracts && forge build --sizes
+        run: forge build --sizes
+        working-directory: contracts
 
       - name: Run tests
-        run: cd contracts && forge test -vvv
+        run: forge test -vvv
+        working-directory: contracts
 
       - name: Gas report
-        run: cd contracts && forge test --gas-report
+        run: forge test --gas-report
+        working-directory: contracts
 
       - name: Coverage
-        run: cd contracts && forge coverage --report summary
+        run: forge coverage --report summary
+        working-directory: contracts
 
   lint:
     name: Solidity Lint
@@ -50,5 +54,6 @@ jobs:
           version: nightly
 
       - name: Format check
-        run: cd contracts && forge fmt --check
+        run: forge fmt --check
+        working-directory: contracts
         continue-on-error: true
