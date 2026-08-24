@@ -2,9 +2,7 @@ import { useReadContract } from 'wagmi';
 import { CONTRACTS } from '@/constants/contracts';
 
 interface UseTokenBalanceResult {
-  /** Raw balance in wei */
   raw: bigint | undefined;
-  /** Whether the address has a zero address (placeholder) set */
   isContractConfigured: boolean;
   isLoading: boolean;
   isFetching: boolean;
@@ -13,16 +11,6 @@ interface UseTokenBalanceResult {
   refetch: () => void;
 }
 
-/**
- * Fetch the BDX token balance for a given address.
- *
- * @param address  Wallet address to query. Pass undefined to skip the call.
- * @returns raw bigint balance + loading/error states
- *
- * @example
- * const { raw, isLoading } = useTokenBalance(address);
- * const display = formatToken(raw); // from utils/format.ts
- */
 export function useTokenBalance(address: `0x${string}` | undefined): UseTokenBalanceResult {
   const isContractConfigured =
     CONTRACTS.token.address !== '0x0000000000000000000000000000000000000000';
@@ -33,7 +21,8 @@ export function useTokenBalance(address: `0x${string}` | undefined): UseTokenBal
     args: address ? [address] : undefined,
     query: {
       enabled: !!address && isContractConfigured,
-      staleTime: 1000 * 15, // 15s
+      staleTime: 1000 * 10,        // 10s
+      refetchInterval: 1000 * 15,  // auto-refresh every 15s
     },
   });
 

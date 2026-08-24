@@ -33,7 +33,7 @@ export function Header() {
             />
           </div>
           <span className="text-sm font-semibold tracking-tight text-ink">
-            Bulldex<span className="text-gradient-green">.</span>
+            Bulldex <span className="text-gradient-green">Finance</span>
           </span>
         </Link>
 

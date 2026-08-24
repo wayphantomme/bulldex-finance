@@ -13,7 +13,7 @@ export default function HomePage() {
             <Image src="/bulldex-logo.png" alt="Bulldex" fill className="object-cover" sizes="28px" priority />
           </div>
           <span className="text-sm font-semibold tracking-tight text-ink">
-            Bulldex<span className="text-gradient-green">.</span>
+            Bulldex <span className="text-gradient-green">Finance</span>
           </span>
         </Link>
         <Link href="/dashboard">

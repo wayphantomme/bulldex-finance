@@ -9,9 +9,6 @@ interface TokenInfo {
   maxSupply: bigint | undefined;
 }
 
-/**
- * Fetch static BDX token metadata in a single multicall.
- */
 export function useTokenInfo(): TokenInfo & { isLoading: boolean } {
   const contract = CONTRACTS.token;
 
@@ -25,16 +22,17 @@ export function useTokenInfo(): TokenInfo & { isLoading: boolean } {
     ],
     query: {
       enabled: contract.address !== '0x0000000000000000000000000000000000000000',
-      staleTime: 1000 * 60 * 5, // 5 min — static data
+      staleTime: 1000 * 60,        // 1 min
+      refetchInterval: 1000 * 60,  // auto-refresh every 1 min
     },
   });
 
   return {
-    name: data?.[0].result as string | undefined,
-    symbol: data?.[1].result as string | undefined,
-    decimals: data?.[2].result as number | undefined,
+    name:        data?.[0].result as string | undefined,
+    symbol:      data?.[1].result as string | undefined,
+    decimals:    data?.[2].result as number | undefined,
     totalSupply: data?.[3].result as bigint | undefined,
-    maxSupply: data?.[4].result as bigint | undefined,
+    maxSupply:   data?.[4].result as bigint | undefined,
     isLoading,
   };
 }
