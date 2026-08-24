@@ -15,9 +15,7 @@ export const metadata: Metadata = {
   description: 'Decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, and governance.',
   keywords: ['DeFi', 'DEX', 'swap', 'liquidity', 'staking', 'yield farming', 'Bulldex'],
   icons: {
-    icon: [
-      { url: '/favicon.png', type: 'image/png' },
-    ],
+    icon: '/favicon.png',
     apple: '/favicon.png',
     shortcut: '/favicon.png',
   },
