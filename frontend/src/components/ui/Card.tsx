@@ -1,21 +1,29 @@
 import { cn } from '@/utils/cn';
 
-type CardVariant = 'default' | 'elevated' | 'bordered';
+type Variant = 'default' | 'glass' | 'elevated' | 'ghost' | 'brand';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: CardVariant;
+  variant?:  Variant;
+  noPadding?: boolean;
 }
 
-const variantStyles: Record<CardVariant, string> = {
-  default: 'bg-bg-card border border-border hover:shadow-card transition-shadow duration-200',
-  elevated: 'bg-bg-card shadow-elevated hover:shadow-card-hover transition-shadow duration-200',
-  bordered: 'bg-transparent border border-border',
+const variants: Record<Variant, string> = {
+  default:  'bg-base-card border border-base-border',
+  glass:    'glass',
+  elevated: 'bg-base-card border border-base-border shadow-elevated',
+  ghost:    'bg-transparent border border-base-border',
+  brand:    'bg-base-card border border-brand-border shadow-glow-sm',
 };
 
-export function Card({ variant = 'default', className, children, ...props }: CardProps) {
+export function Card({ variant = 'default', noPadding, className, children, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-card p-6', variantStyles[variant], className)}
+      className={cn(
+        'rounded-xl transition-all duration-200',
+        variants[variant],
+        !noPadding && 'p-5',
+        className,
+      )}
       {...props}
     >
       {children}
@@ -23,44 +31,18 @@ export function Card({ variant = 'default', className, children, ...props }: Car
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function CardHeader({ className, children, ...props }: CardHeaderProps) {
-  return (
-    <div className={cn('mb-4 flex items-center justify-between', className)} {...props}>
-      {children}
-    </div>
-  );
+export function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('mb-4 flex items-center justify-between', className)} {...props}>{children}</div>;
 }
 
-interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
-
-export function CardTitle({ className, children, ...props }: CardTitleProps) {
-  return (
-    <h2 className={cn('text-h4 text-white', className)} {...props}>
-      {children}
-    </h2>
-  );
+export function CardTitle({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  return <h2 className={cn('text-sm font-semibold text-ink', className)} {...props}>{children}</h2>;
 }
 
-interface CardBodyProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function CardBody({ className, children, ...props }: CardBodyProps) {
-  return (
-    <div className={cn('space-y-4', className)} {...props}>
-      {children}
-    </div>
-  );
+export function CardBody({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('space-y-3', className)} {...props}>{children}</div>;
 }
 
-interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function CardFooter({ className, children, ...props }: CardFooterProps) {
-  return (
-    <div className={cn('mt-6 flex items-center justify-between', className)} {...props}>
-      {children}
-    </div>
-  );
+export function CardFooter({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn('mt-5 flex items-center justify-between gap-3', className)} {...props}>{children}</div>;
 }

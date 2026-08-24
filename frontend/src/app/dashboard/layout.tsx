@@ -1,19 +1,18 @@
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-bg-page">
+    <div className="min-h-screen bg-base-bg">
       <Header />
+      <Sidebar />
 
-      <div className="mx-auto flex w-full max-w-layout flex-1 gap-8 px-6 py-6">
-        <Sidebar />
-        <main className="min-w-0 flex-1">{children}</main>
-      </div>
+      {/* Main content — offset for fixed header (h-14) and sidebar (w-16) */}
+      <main className="ml-16 pt-14">
+        <div className="mx-auto max-w-layout px-6 py-6">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

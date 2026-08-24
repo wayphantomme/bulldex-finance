@@ -1,18 +1,23 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import { Web3Provider } from '@/providers/Web3Provider';
 import { Toaster } from 'sonner';
 import './globals.css';
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export const metadata: Metadata = {
   title: 'Bulldex Finance — Trade Like a Bull. Earn Like a Beast.',
-  description:
-    'Decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, and governance.',
+  description: 'Decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, and governance.',
   keywords: ['DeFi', 'DEX', 'swap', 'liquidity', 'staking', 'yield farming', 'Bulldex'],
   openGraph: {
     title: 'Bulldex Finance',
     description: 'Trade Like a Bull. Earn Like a Beast.',
     type: 'website',
-    url: 'https://bulldex-finance.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
@@ -22,14 +27,10 @@ export const metadata: Metadata = {
   },
 };
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans">
         <Web3Provider>
           {children}
           <Toaster
@@ -37,9 +38,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             theme="dark"
             toastOptions={{
               style: {
-                background: '#1E293B',
-                border: '1px solid #334155',
-                color: '#FFFFFF',
+                background: '#1C1A28',
+                border: '1px solid #2A2640',
+                color: '#E8E6F0',
+                borderRadius: '12px',
+                fontSize: '13px',
               },
             }}
           />

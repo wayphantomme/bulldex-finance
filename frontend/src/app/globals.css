@@ -2,13 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base resets ──────────────────────────────────────────────────────────── */
+/* ── Base ─────────────────────────────────────────────────────────────────── */
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+  *, *::before, *::after { box-sizing: border-box; }
 
   html {
     -webkit-font-smoothing: antialiased;
@@ -18,51 +14,106 @@
   }
 
   body {
-    @apply bg-bg-page text-text-primary;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    @apply bg-base-bg text-ink font-sans;
+    background-image: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(74,222,128,0.07) 0%, transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 
-  /* Focus rings — use brand purple */
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-purple ring-offset-2 ring-offset-bg-page;
+    @apply outline-none ring-2 ring-green/50 ring-offset-1 ring-offset-base-bg;
   }
 
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply rounded-pill bg-base-border; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-base-border-light; }
+
+  /* ── Selection ─────────────────────────────────────────────────────────── */
+  ::selection { background: rgba(74,222,128,0.2); color: #E8F0E8; }
+}
+
+/* ── Components ───────────────────────────────────────────────────────────── */
+@layer components {
+
+  /* Glass card */
+  .glass {
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.05);
   }
-  ::-webkit-scrollbar-track {
-    @apply bg-bg-page;
+
+  /* Shimmer skeleton — green-tinted */
+  .shimmer {
+    background: linear-gradient(90deg, #161C16 0%, #1D261D 40%, #161C16 80%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
   }
-  ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-border;
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
   }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-text-muted;
+
+  /* Tooltip — appears on sidebar icon hover */
+  .tooltip {
+    @apply pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2
+           whitespace-nowrap rounded-lg border border-base-border bg-base-elevated
+           px-3 py-1.5 text-xs font-medium text-ink shadow-elevated
+           opacity-0 transition-opacity duration-150 z-50;
+  }
+  .tooltip-trigger:hover .tooltip { @apply opacity-100; }
+
+  /* Divider */
+  .divider { @apply h-px w-full bg-base-border; }
+
+  /* ── RainbowKit overrides — green theme ─────────────────────────────── */
+  [data-rk] {
+    --rk-colors-accentColor: #4ADE80;
+    --rk-colors-accentColorForeground: #0C0F0C;
+    --rk-colors-modalBackground: #161C16;
+    --rk-colors-modalBorder: #243024;
+    --rk-colors-modalText: #E8F0E8;
+    --rk-colors-modalTextSecondary: #8FA88F;
+    --rk-colors-connectButtonBackground: #161C16;
+    --rk-colors-connectButtonBorder: #243024;
+    --rk-colors-connectButtonText: #E8F0E8;
+    --rk-colors-connectButtonInnerBackground: #1D261D;
+    --rk-radii-connectButton: 10px;
+    --rk-radii-modal: 16px;
+    --rk-fonts-body: 'Inter', sans-serif;
   }
 }
 
-/* ── Component utilities ──────────────────────────────────────────────────── */
-@layer components {
-  /* Shimmer animation for skeleton loaders */
-  .animate-shimmer {
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
+/* ── Utilities ────────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Text gradients */
+  .text-gradient-green {
+    background: linear-gradient(135deg, #4ADE80, #22C55E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-forest {
+    background: linear-gradient(135deg, #4ADE80, #86EFAC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-cream {
+    background: linear-gradient(135deg, #E8DFC0, #F5F0E0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* RainbowKit overrides — match dark Bulldex theme */
-  [data-rk] {
-    --rk-colors-accentColor: #7C3AED;
-    --rk-colors-accentColorForeground: #FFFFFF;
-    --rk-colors-modalBackground: #1E293B;
-    --rk-colors-modalBorder: #334155;
-    --rk-colors-modalText: #FFFFFF;
-    --rk-colors-modalTextSecondary: #CBD5E1;
+  /* Glow border */
+  .border-glow {
+    border-color: rgba(74,222,128,0.35);
+    box-shadow: 0 0 0 1px rgba(74,222,128,0.1);
   }
 }

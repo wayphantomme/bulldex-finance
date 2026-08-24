@@ -1,46 +1,41 @@
 import { cn } from '@/utils/cn';
 
-type BadgeVariant = 'purple' | 'amber' | 'success' | 'error' | 'warning' | 'muted';
+type Variant = 'green' | 'cream' | 'sage' | 'red' | 'yellow' | 'ghost';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: BadgeVariant;
-  dot?: boolean;
+  variant?: Variant;
+  dot?:     boolean;
 }
 
-const variantStyles: Record<BadgeVariant, string> = {
-  purple: 'bg-brand-purple/20 text-brand-purple-light border border-brand-purple/30',
-  amber: 'bg-brand-amber/20 text-brand-amber border border-brand-amber/30',
-  success: 'bg-success/20 text-success border border-success/30',
-  error: 'bg-error/20 text-error border border-error/30',
-  warning: 'bg-warning/20 text-warning border border-warning/30',
-  muted: 'bg-bg-card text-text-muted border border-border',
+const variants: Record<Variant, string> = {
+  green:  'bg-green/10 text-green border border-green/20',
+  cream:  'bg-cream/10 text-cream border border-cream/20',
+  sage:   'bg-brand-sage/20 text-brand-cream border border-brand-sage/30',
+  red:    'bg-red/10 text-red border border-red/20',
+  yellow: 'bg-yellow/10 text-yellow border border-yellow/20',
+  ghost:  'bg-base-elevated text-ink-secondary border border-base-border',
 };
 
-const dotStyles: Record<BadgeVariant, string> = {
-  purple: 'bg-brand-purple',
-  amber: 'bg-brand-amber',
-  success: 'bg-success',
-  error: 'bg-error',
-  warning: 'bg-warning',
-  muted: 'bg-text-muted',
+const dots: Record<Variant, string> = {
+  green:  'bg-green',
+  cream:  'bg-cream',
+  sage:   'bg-brand-sage',
+  red:    'bg-red',
+  yellow: 'bg-yellow',
+  ghost:  'bg-ink-faint',
 };
 
-export function Badge({ variant = 'purple', dot = false, className, children, ...props }: BadgeProps) {
+export function Badge({ variant = 'green', dot, className, children, ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-pill px-3 py-1 text-xs font-medium',
-        variantStyles[variant],
+        'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium',
+        variants[variant],
         className,
       )}
       {...props}
     >
-      {dot && (
-        <span
-          className={cn('h-1.5 w-1.5 shrink-0 rounded-full', dotStyles[variant])}
-          aria-hidden="true"
-        />
-      )}
+      {dot && <span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', dots[variant])} aria-hidden />}
       {children}
     </span>
   );
