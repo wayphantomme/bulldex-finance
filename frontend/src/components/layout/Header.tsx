@@ -98,6 +98,7 @@ export function Header() {
                         className="flex items-center gap-2 rounded-lg border border-base-border bg-base-card px-2.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-base-border-light hover:bg-base-elevated"
                       >
                         {account.ensAvatar ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={account.ensAvatar}
                             alt={account.displayName}

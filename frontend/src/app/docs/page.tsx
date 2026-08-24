@@ -329,7 +329,7 @@ lpMinted = min(
             <ul className="space-y-1 text-sm text-ink-secondary">
               <li>• Tokens are sorted (lower address = token0) for canonical ordering</li>
               <li>• Reverts with <code className="text-green">PoolExists</code> if pair already deployed</li>
-              <li>• LP token name auto-generated: <code className="text-green">"Bulldex BDX/MUSDC LP"</code></li>
+              <li>• LP token name auto-generated: <code className="text-green">&quot;Bulldex BDX/MUSDC LP&quot;</code></li>
             </ul>
           </Section>
 
