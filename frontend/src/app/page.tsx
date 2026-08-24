@@ -297,9 +297,9 @@ export default function HomePage() {
 const TOKEN_STATS = [
   { label: 'Max Total Supply',   value: '1,000,000,000', sub: 'BDX' },
   { label: 'Circulating Supply', value: '100,000,000',   sub: '10% of max' },
-  { label: 'Seed Price Target',  value: '$0.002',        sub: 'per BDX' },
-  { label: 'Fully Diluted Val.', value: '$2,000,000',    sub: 'at seed price' },
-  { label: 'Circ. Market Cap',   value: '$200,000',      sub: 'at seed price' },
+  { label: 'Seed Price',         value: '$0.05',         sub: 'per BDX' },
+  { label: 'Fully Diluted Val.', value: '$50,000,000',   sub: 'at seed price' },
+  { label: 'Seed Round Target',  value: '$1,000,000',    sub: '20M BDX / 2% supply' },
   { label: 'Token Standard',     value: 'ERC-20',        sub: 'EIP-2612 permit' },
 ];
 
@@ -307,8 +307,8 @@ const TOKEN_DIST = [
   { label: 'Community',   pct: '40%', amount: '400M BDX' },
   { label: 'Treasury',    pct: '25%', amount: '250M BDX' },
   { label: 'Team',        pct: '15%', amount: '150M BDX' },
-  { label: 'Ecosystem',   pct: '12%', amount: '120M BDX' },
-  { label: 'Seed Round',  pct: '8%',  amount: '80M BDX'  },
+  { label: 'Ecosystem',   pct: '16%', amount: '160M BDX' },
+  { label: 'Seed Round',  pct: '4%',  amount: '40M BDX'  },
 ];
 
 const PROTOCOL_STATS = [
@@ -322,8 +322,8 @@ const PROTOCOL_STATS = [
 
 const VESTING = [
   { label: 'Team (15%)',      pct: '150M', schedule: '12-month cliff, 36-month linear' },
-  { label: 'Seed (8%)',       pct: '80M',  schedule: '6-month cliff, 18-month linear' },
-  { label: 'Ecosystem (12%)', pct: '120M', schedule: '3-month cliff, 24-month linear' },
+  { label: 'Seed (4%)',       pct: '40M',  schedule: '6-month cliff, 18-month linear' },
+  { label: 'Ecosystem (16%)', pct: '160M', schedule: '3-month cliff, 24-month linear' },
   { label: 'Treasury (25%)',  pct: '250M', schedule: 'DAO-governed release' },
   { label: 'Community (40%)', pct: '400M', schedule: 'Farming + staking rewards' },
 ];

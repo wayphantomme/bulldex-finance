@@ -5,12 +5,12 @@
 [![Smart Contract Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml)
 [![Frontend Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml)
 
-A full-stack DeFi protocol being built in public - combining token swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
+A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
 
-- **Frontend:** https://bulldex-finance.vercel.app
+- **App:** https://bulldex-finance.vercel.app
 - **Docs:** https://bulldex-finance.vercel.app/docs
-- **Contract (Sepolia):** [0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9](https://sepolia.etherscan.io/address/0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9)
-- **Twitter:** [@wayphantomme](https://twitter.com/wayphantomme)
+- **X:** [@wayphantomme](https://x.com/wayphantomme)
+- **GitHub:** [wayphantomme/bulldex-finance](https://github.com/wayphantomme/bulldex-finance)
 
 ---
 
@@ -18,15 +18,63 @@ A full-stack DeFi protocol being built in public - combining token swaps, liquid
 
 | Week | Deliverable | Status |
 |------|-------------|--------|
-| 1 | BDX ERC20 Token + Frontend scaffold | ✅ Live |
-| 2 | Pool.sol AMM + Swap UI | ✅ Live |
-| 3–4 | Liquidity provision + LP tokens | 🔄 In progress |
-| 5–6 | Lending & Borrowing | ⬜ |
-| 7–8 | Staking & Farming | ⬜ |
-| 9–10 | Vesting | ⬜ |
-| 11–12 | Flash Loans + Governance DAO | ⬜ |
-| 13–14 | Gas Optimization | ⬜ |
-| 15–16 | Security Audit Prep + Production | ⬜ |
+| 1-2 | BDX Token + AMM Swap + Pool | ✅ Live |
+| 3-4 | Liquidity UI + LP analytics | 🔄 Active |
+| 5-6 | Lending & Borrowing | ⬜ |
+| 7-8 | Staking & Farming | ⬜ |
+| 9-10 | Vesting | ⬜ |
+| 11-12 | Flash Loans + Governance DAO | ⬜ |
+| 13-14 | Gas Optimization | ⬜ |
+| 15-16 | Security Audit Prep + Mainnet | ⬜ |
+
+---
+
+## Token Economics (BDX)
+
+| Parameter | Value |
+|-----------|-------|
+| Max Supply | 1,000,000,000 BDX |
+| Circulating Supply | 100,000,000 BDX (10%) |
+| Seed Price | $0.05 per BDX |
+| Seed Allocation | 20,000,000 BDX (2% supply) |
+| Seed Raise Target | $1,000,000 |
+| Fully Diluted Valuation | $50,000,000 |
+| Token Standard | ERC-20 + EIP-2612 Permit |
+
+### Distribution
+
+| Allocation | % | Amount | Vesting |
+|------------|---|--------|---------|
+| Community | 40% | 400M BDX | Farming + staking rewards |
+| Treasury | 25% | 250M BDX | DAO-governed release |
+| Team | 15% | 150M BDX | 12-month cliff, 36-month linear |
+| Ecosystem | 16% | 160M BDX | 3-month cliff, 24-month linear |
+| Seed Round | 4% | 40M BDX | 6-month cliff, 18-month linear |
+
+---
+
+## Deployed Contracts (Sepolia)
+
+| Contract | Address |
+|----------|---------|
+| BDX Token | [`0x193d18048b343983971bfc50893a720e97322ae5`](https://sepolia.etherscan.io/address/0x193d18048b343983971bfc50893a720e97322ae5) |
+| MockToken (MUSDC) | [`0x91a39c49defe004dd8627223b752212ba944ceb1`](https://sepolia.etherscan.io/address/0x91a39c49defe004dd8627223b752212ba944ceb1) |
+| PoolFactory | [`0x90e1189242272ad1700a5ad0e1c5001676a23984`](https://sepolia.etherscan.io/address/0x90e1189242272ad1700a5ad0e1c5001676a23984) |
+| BDX/MUSDC Pool | [`0xfac1b95480e87ccef0e995612ceca23f3ddb0197`](https://sepolia.etherscan.io/address/0xfac1b95480e87ccef0e995612ceca23f3ddb0197) |
+
+Initial pool seeded: **10M BDX + 20M MUSDC** (price: 1 BDX = 2 MUSDC)
+
+---
+
+## Tests
+
+```
+73 tests passing (0 failing)
+
+Token.t.sol (33 tests) - deployment, mint, burn, transfer, approve, fuzz
+Pool.t.sol  (40 tests) - factory, addLiquidity, removeLiquidity, swap,
+                         getAmountOut/In, pricing, k-invariant, fuzz
+```
 
 ---
 
@@ -34,12 +82,11 @@ A full-stack DeFi protocol being built in public - combining token swaps, liquid
 
 | Layer | Technology |
 |-------|-----------|
-| Smart Contracts | Solidity 0.8.24, Foundry, OpenZeppelin 5.1 |
+| Smart Contracts | Solidity 0.8.24, Foundry, OpenZeppelin v5.1 |
 | Frontend | Next.js 14, TypeScript, Tailwind CSS |
 | Web3 | wagmi v2, viem v2, RainbowKit v2 |
-| State | Zustand, TanStack Query |
 | Network | Sepolia Testnet (Alchemy RPC) |
-| Deployment | Vercel (frontend), Sepolia (contracts) |
+| Hosting | Vercel |
 | CI/CD | GitHub Actions |
 
 ---
@@ -48,226 +95,70 @@ A full-stack DeFi protocol being built in public - combining token swaps, liquid
 
 ```
 bulldex-finance/
-├── contracts/                    # Foundry - Solidity
+├── contracts/
 │   ├── src/
-│   │   └── Token.sol            # BDX ERC20 (mint, burn, permit, supply cap)
-│   ├── test/
-│   │   └── core/Token.t.sol     # 33 unit tests + fuzz tests
-│   ├── script/
-│   │   └── Deploy.s.sol         # Deployment script
-│   ├── foundry.toml             # Solc 0.8.24, optimizer 200 runs
-│   └── Makefile                 # build / test / deploy shortcuts
+│   │   ├── Token.sol          # BDX ERC-20 (mint, burn, permit, cap)
+│   │   ├── Pool.sol           # AMM x*y=k (swap, LP, 0.3% fee)
+│   │   ├── PoolFactory.sol    # Deploy + track pools
+│   │   └── MockToken.sol      # Open-mint ERC-20 for testnet
+│   ├── test/core/
+│   │   ├── Token.t.sol        # 33 tests
+│   │   └── Pool.t.sol         # 40 tests
+│   └── script/Deploy.s.sol    # Full deployment script
 │
-├── frontend/                     # Next.js 14
-│   └── src/
-│       ├── app/                  # App router
-│       │   ├── page.tsx          # Landing page
-│       │   ├── layout.tsx        # Root layout + Web3Provider
-│       │   └── dashboard/        # Overview, Swap, Liquidity, Lending,
-│       │                         # Staking, Farming, Governance
-│       ├── components/
-│       │   ├── ui/               # Button, Card, Input, Badge, Skeleton
-│       │   ├── layout/           # Header, Sidebar (icon-only)
-│       │   ├── features/         # BalanceDisplay
-│       │   └── icons/            # BullIcon
-│       ├── hooks/                # useTokenBalance, useTokenInfo
-│       ├── constants/            # TOKEN_ABI, contract addresses
-│       ├── config/               # wagmi (Alchemy transport)
-│       ├── providers/            # Web3Provider (wagmi + RainbowKit)
-│       └── utils/                # cn(), formatToken(), shortenAddress()
+├── frontend/src/
+│   ├── app/
+│   │   ├── page.tsx           # Landing page (bento grid, VC-focused)
+│   │   ├── dashboard/         # Swap (live), Liquidity, Lending, Staking, Farming
+│   │   └── docs/              # Technical docs + dev log
+│   ├── hooks/
+│   │   ├── usePool.ts         # Reserves, prices, quotes (multicall)
+│   │   └── useSwap.ts         # Approve + swap state machine
+│   └── constants/
+│       ├── abis.ts            # TOKEN_ABI, POOL_ABI, FACTORY_ABI
+│       └── contracts.ts       # Addresses, TOKENS registry
 │
-├── skills/
-│   └── WEB3_DEV_ROADMAP.md      # 16-phase Web3 dev learning roadmap
-│
-└── .github/
-    └── workflows/
-        ├── contracts-test.yml    # forge test + coverage on push
-        ├── frontend-test.yml     # type-check + lint + build
-        └── deploy.yml            # auto-deploy to Vercel
+└── skills/
+    ├── WEB3_DEV_ROADMAP.md    # 16-phase Web3 dev learning roadmap
+    └── DEFI_TOKENOMICS.md     # DeFi economics + revenue model guide
 ```
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-
-- Node.js v20+
-- [Foundry](https://book.getfoundry.sh/getting-started/installation)
-- Git
-
-### Smart Contracts
-
 ```bash
-cd contracts
+# Contracts
+cd contracts && forge install && make test
 
-# Install dependencies (first time)
-forge install
+# Frontend
+cd frontend && npm install && cp .env.local.example .env.local && npm run dev
 
-# Build
-forge build
-
-# Run all tests (33 tests)
-make test
-
-# Gas report
-make test-gas
-
-# Coverage
-make coverage
-```
-
-### Frontend
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Copy env template
-cp .env.local.example .env.local
-# Fill in: NEXT_PUBLIC_SEPOLIA_RPC, NEXT_PUBLIC_TOKEN_ADDRESS, NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-
-# Run dev server
-npm run dev
-# → http://localhost:3000
-
-# Type check
-npm run type-check
-
-# Lint
-npm run lint
-```
-
-### Deploy Contracts
-
-```bash
-cd contracts
-
-# Copy env template and fill in keys
-cp .env.example .env
-
-# Deploy to Sepolia
-make deploy-sepolia
-# → Outputs: contract address to paste into frontend/.env.local
-```
-
----
-
-## Smart Contracts
-
-### BDX Token - `contracts/src/Token.sol`
-
-| Feature | Details |
-|---------|---------|
-| Standard | ERC20 + ERC20Burnable + ERC20Permit (EIP-2612) |
-| Access | Ownable (owner-only mint) |
-| Supply | 1,000,000,000 BDX max supply |
-| Initial mint | 100,000,000 BDX to deployer |
-| Errors | Custom errors: `ExceedsMaxSupply`, `MintToZeroAddress`, `MintAmountZero` |
-| Network | Sepolia Testnet |
-| Address | `0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9` |
-| Verified | ✅ [View on Etherscan](https://sepolia.etherscan.io/address/0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9#code) |
-
-### Test Coverage
-
-```
-33 tests passing (0 failing)
-  ✓ Deployment (name, symbol, decimals, supply, owner)
-  ✓ balanceOf
-  ✓ transfer + events
-  ✓ transferFrom + allowance
-  ✓ mint (owner only, zero address, zero amount, supply cap)
-  ✓ burn + burnFrom
-  ✓ approve
-  ✓ Constructor edge cases
-  ✓ Fuzz: transfer, mint, burn
+# Deploy
+cd contracts && make deploy-sepolia
 ```
 
 ---
 
 ## Environment Variables
 
-### `contracts/.env`
-
 ```bash
+# contracts/.env
 SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
 PRIVATE_KEY=0xYOUR_PRIVATE_KEY
 ETHERSCAN_KEY=YOUR_ETHERSCAN_KEY
-```
 
-### `frontend/.env.local`
-
-```bash
+# frontend/.env.local
 NEXT_PUBLIC_SEPOLIA_RPC=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
-NEXT_PUBLIC_TOKEN_ADDRESS=0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=YOUR_WC_PROJECT_ID
+NEXT_PUBLIC_TOKEN_ADDRESS=0x193d18048b343983971bfc50893a720e97322ae5
+NEXT_PUBLIC_MUSDC_ADDRESS=0x91a39c49defe004dd8627223b752212ba944ceb1
+NEXT_PUBLIC_FACTORY_ADDRESS=0x90e1189242272ad1700a5ad0e1c5001676a23984
+NEXT_PUBLIC_POOL_BDX_MUSDC=0xfac1b95480e87ccef0e995612ceca23f3ddb0197
 ```
-
-> ⚠️ Never commit `.env` files. Both are in `.gitignore`.
-
----
-
-## CI/CD
-
-Every push to `main` triggers:
-
-| Workflow | Trigger | What it does |
-|----------|---------|-------------|
-| `contracts-test.yml` | push | `forge build` + `forge test` + gas report + coverage |
-| `frontend-test.yml` | push | type-check + lint + `next build` |
-| `deploy.yml` | push to main | Auto-deploy to Vercel (requires secrets) |
-
-### Setup Vercel auto-deploy
-
-Add these secrets to GitHub repo → Settings → Secrets:
-
-```
-VERCEL_TOKEN       → vercel.com/account/tokens
-VERCEL_ORG_ID      → vercel project settings
-VERCEL_PROJECT_ID  → vercel project settings
-```
-
----
-
-## Design
-
-Inspired by [Jupiter](https://jup.ag) - minimal dark interface with the Bulldex bull mascot color palette.
-
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Brand Green | `#4ADE80` | Primary accent, buttons, active states |
-| Forest | `#2D4A2D` | From logo - dark surfaces |
-| Cream | `#E8DFC0` | From logo horns - secondary accents |
-| Page BG | `#0C0F0C` | Near-black with green tint |
-| Card | `#161C16` | Dark green-tinted cards |
-
----
-
-## Resources
-
-| Document | Purpose |
-|----------|---------|
-| `skills/WEB3_DEV_ROADMAP.md` | 16-phase Web3 dev learning roadmap (ERC20 → Gas optimization → Security → Cross-chain) |
-| `DEPLOYMENT.md` | Step-by-step deployment guide |
-| `PRD.md` | Product requirements |
-| `TRD.md` | Technical requirements |
-| `BRAND.md` | Design system |
-
----
-
-## Get Test ETH
-
-- https://sepoliafaucet.com
-- https://faucets.chain.link/sepolia
 
 ---
 
 ## License
 
-MIT
-
----
-
-**Built by [@wayphantomme](https://twitter.com/wayphantomme) - building in public**
+MIT — **Built by [@wayphantomme](https://x.com/wayphantomme)**
