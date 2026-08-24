@@ -68,7 +68,7 @@
   /* Divider */
   .divider { @apply h-px w-full bg-base-border; }
 
-  /* ── RainbowKit overrides — green theme ─────────────────────────────── */
+  /* ── RainbowKit overrides — green theme, no purple ─────────────────────── */
   [data-rk] {
     --rk-colors-accentColor: #4ADE80;
     --rk-colors-accentColorForeground: #0C0F0C;

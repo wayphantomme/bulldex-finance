@@ -45,7 +45,16 @@ export default function DashboardPage() {
             <p className="text-sm font-semibold text-ink">Connect your wallet</p>
             <p className="mt-1 text-xs text-ink-secondary">Connect to view your BDX balance and positions</p>
           </div>
-          <ConnectButton />
+          <ConnectButton.Custom>
+            {({ openConnectModal }) => (
+              <button
+                onClick={openConnectModal}
+                className="h-10 rounded-xl bg-green px-6 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
+              >
+                Connect Wallet
+              </button>
+            )}
+          </ConnectButton.Custom>
         </Card>
       )}
 

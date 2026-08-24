@@ -16,11 +16,12 @@ const queryClient = new QueryClient({
 });
 
 /**
- * RainbowKit dark theme customized to Bulldex brand colors.
+ * RainbowKit dark theme — matches Jupiter-style dark green aesthetic.
+ * Lime green accent, no purple.
  */
 const bulldexTheme = darkTheme({
-  accentColor: '#7C3AED',
-  accentColorForeground: 'white',
+  accentColor: '#4ADE80',        // lime green — matches brand
+  accentColorForeground: '#0C0F0C', // dark text on green button
   borderRadius: 'medium',
   fontStack: 'system',
   overlayBlur: 'small',
