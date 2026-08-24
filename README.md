@@ -8,6 +8,7 @@
 A full-stack DeFi protocol being built in public — combining token swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
 
 - **Frontend:** https://bulldex-finance.vercel.app
+- **Docs:** https://bulldex-finance.vercel.app/docs
 - **Contract (Sepolia):** [0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9](https://sepolia.etherscan.io/address/0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9)
 - **Twitter:** [@wayphantomme](https://twitter.com/wayphantomme)
 
@@ -18,12 +19,14 @@ A full-stack DeFi protocol being built in public — combining token swaps, liqu
 | Week | Deliverable | Status |
 |------|-------------|--------|
 | 1 | BDX ERC20 Token + Frontend scaffold | ✅ Live |
-| 2 | Pool.sol AMM + Swap UI | 🔄 In progress |
-| 3 | Liquidity provision + LP tokens | ⬜ |
-| 4 | Transaction history + portfolio | ⬜ |
-| 5–8 | Lending, Staking, Farming, NFT | ⬜ |
-| 9–12 | Flash loans, Governance, Gas optimization | ⬜ |
-| 13–16 | Analytics, Audit prep, Production polish | ⬜ |
+| 2 | Pool.sol AMM + Swap UI | ✅ Live |
+| 3–4 | Liquidity provision + LP tokens | 🔄 In progress |
+| 5–6 | Lending & Borrowing | ⬜ |
+| 7–8 | Staking & Farming | ⬜ |
+| 9–10 | Vesting | ⬜ |
+| 11–12 | Flash Loans + Governance DAO | ⬜ |
+| 13–14 | Gas Optimization | ⬜ |
+| 15–16 | Security Audit Prep + Production | ⬜ |
 
 ---
 

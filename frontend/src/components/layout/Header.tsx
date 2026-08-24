@@ -11,6 +11,7 @@ const NAV = [
   { label: 'Liquidity', href: '/dashboard/liquidity' },
   { label: 'Stake',     href: '/dashboard/staking' },
   { label: 'Farm',      href: '/dashboard/farming' },
+  { label: 'Docs',      href: '/docs' },
 ];
 
 export function Header() {
