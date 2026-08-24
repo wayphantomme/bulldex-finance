@@ -34,7 +34,7 @@ export function Web3Provider({ children }: Web3ProviderProps) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={bulldexTheme} modalSize="compact">
+        <RainbowKitProvider theme={bulldexTheme} modalSize="compact" locale="en-US">
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>
