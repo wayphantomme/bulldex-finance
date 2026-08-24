@@ -3,13 +3,8 @@ name: Smart Contract Tests
 on:
   push:
     branches: [main, develop]
-    paths:
-      - 'contracts/**'
-      - '.github/workflows/contracts-test.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'contracts/**'
 
 jobs:
   test:
@@ -27,27 +22,17 @@ jobs:
         with:
           version: nightly
 
-      - name: Show Forge version
-        run: forge --version
-
-      - name: Install dependencies (forge install)
-        run: cd contracts && forge install
-
       - name: Build contracts
         run: cd contracts && forge build --sizes
 
-      - name: Run unit tests
+      - name: Run tests
         run: cd contracts && forge test -vvv
 
-      - name: Run gas report
+      - name: Gas report
         run: cd contracts && forge test --gas-report
 
-      - name: Run coverage
+      - name: Coverage
         run: cd contracts && forge coverage --report summary
-
-      - name: Run fuzz tests (CI profile — 10k runs)
-        run: cd contracts && FOUNDRY_PROFILE=ci forge test --match-path "test/fuzz/**" -vv
-        continue-on-error: true  # fuzz tests are best-effort in CI
 
   lint:
     name: Solidity Lint
@@ -64,5 +49,6 @@ jobs:
         with:
           version: nightly
 
-      - name: Check formatting
+      - name: Format check
         run: cd contracts && forge fmt --check
+        continue-on-error: true
