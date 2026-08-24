@@ -20,7 +20,6 @@ contract TokenTest is Test {
     // ─── Setup ────────────────────────────────────────────────────────────────
 
     function setUp() public {
-        vm.prank(owner);
         token = new Token(owner, INITIAL_SUPPLY);
     }
 
