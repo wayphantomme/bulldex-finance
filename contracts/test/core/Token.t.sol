@@ -84,9 +84,12 @@ contract TokenTest is Test {
         uint256 amount = 100 ether;
         vm.prank(owner);
         vm.expectEmit(true, true, false, true);
-        emit ERC20.Transfer(owner, alice, amount);
+        emit Transfer(owner, alice, amount);
         token.transfer(alice, amount);
     }
+
+    // ERC20 Transfer event signature (for expectEmit)
+    event Transfer(address indexed from, address indexed to, uint256 value);
 
     function test_Transfer_RevertsInsufficientBalance() public {
         uint256 tooMuch = INITIAL_SUPPLY + 1;
@@ -262,7 +265,10 @@ contract TokenTest is Test {
     }
 
     function test_Constructor_RevertsZeroOwner() public {
-        vm.expectRevert(Token.MintToZeroAddress.selector);
+        // OZ Ownable reverts with OwnableInvalidOwner before our MintToZeroAddress check
+        vm.expectRevert(
+            abi.encodeWithSignature("OwnableInvalidOwner(address)", address(0))
+        );
         new Token(address(0), INITIAL_SUPPLY);
     }
 }

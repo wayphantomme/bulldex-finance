@@ -21,7 +21,7 @@ contract DeployScript is Script {
         address deployer = vm.addr(deployerPrivateKey);
 
         console.log("===========================================");
-        console.log("Bulldex Finance — Deployment");
+        console.log("Bulldex Finance - Deployment");
         console.log("===========================================");
         console.log("Network  :", block.chainid == 11155111 ? "Sepolia" : "Unknown");
         console.log("Deployer :", deployer);
