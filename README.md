@@ -2,61 +2,42 @@
 
 **Trade Like a Bull. Earn Like a Beast.**
 
-Bulldex Finance is a decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, NFT collateral, and governance—all in one powerful DeFi platform.
+[![Smart Contract Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml)
+[![Frontend Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml)
 
-[![Smart Contract Tests](https://github.com/YOUR_USERNAME/bulldex-finance/actions/workflows/contracts-test.yml/badge.svg)](https://github.com/YOUR_USERNAME/bulldex-finance/actions/workflows/contracts-test.yml)
-[![Frontend Tests](https://github.com/YOUR_USERNAME/bulldex-finance/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/YOUR_USERNAME/bulldex-finance/actions/workflows/frontend-test.yml)
+A full-stack DeFi protocol being built in public — combining token swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
 
----
-
-## Status: Week 1 Complete ✅
-
-**Live:** https://bulldex-finance.vercel.app  
-**Contracts:** Sepolia Testnet  
-**Explorer:** https://sepolia.etherscan.io
-
-### Week 1 Deliverables
-
-| Item | Status |
-|------|--------|
-| BDX Token (ERC20) | ✅ Deployed to Sepolia |
-| Token verified on Etherscan | ✅ |
-| 30+ unit tests | ✅ Passing |
-| Next.js 14 frontend | ✅ Live on Vercel |
-| Wallet connect (RainbowKit) | ✅ |
-| BDX balance display | ✅ |
-| GitHub Actions CI/CD | ✅ Auto-deploys on push |
+- **Frontend:** https://bulldex-finance.vercel.app
+- **Contract (Sepolia):** [0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9](https://sepolia.etherscan.io/address/0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9)
+- **Twitter:** [@wayphantomme](https://twitter.com/wayphantomme)
 
 ---
 
-## Quick Start
+## Status
 
-### Prerequisites
-- Node.js v20+
-- [Foundry](https://book.getfoundry.sh/getting-started/installation)
-- Git
-- MetaMask wallet
+| Week | Deliverable | Status |
+|------|-------------|--------|
+| 1 | BDX ERC20 Token + Frontend scaffold | ✅ Live |
+| 2 | Pool.sol AMM + Swap UI | 🔄 In progress |
+| 3 | Liquidity provision + LP tokens | ⬜ |
+| 4 | Transaction history + portfolio | ⬜ |
+| 5–8 | Lending, Staking, Farming, NFT | ⬜ |
+| 9–12 | Flash loans, Governance, Gas optimization | ⬜ |
+| 13–16 | Analytics, Audit prep, Production polish | ⬜ |
 
-### Setup
+---
 
-```bash
-# Clone
-git clone https://github.com/YOUR_USERNAME/bulldex-finance.git
-cd bulldex-finance
+## Tech Stack
 
-# Smart contracts
-cd contracts
-cp .env.example .env       # Fill in your keys
-forge install              # Install OZ + forge-std
-forge build                # Compile
-forge test                 # Run 30+ tests
-
-# Frontend
-cd ../frontend
-npm install
-cp .env.local.example .env.local   # Fill in contract address
-npm run dev                        # http://localhost:3000
-```
+| Layer | Technology |
+|-------|-----------|
+| Smart Contracts | Solidity 0.8.24, Foundry, OpenZeppelin 5.1 |
+| Frontend | Next.js 14, TypeScript, Tailwind CSS |
+| Web3 | wagmi v2, viem v2, RainbowKit v2 |
+| State | Zustand, TanStack Query |
+| Network | Sepolia Testnet (Alchemy RPC) |
+| Deployment | Vercel (frontend), Sepolia (contracts) |
+| CI/CD | GitHub Actions |
 
 ---
 
@@ -66,230 +47,224 @@ npm run dev                        # http://localhost:3000
 bulldex-finance/
 ├── contracts/                    # Foundry — Solidity
 │   ├── src/
-│   │   └── Token.sol            # ✅ BDX ERC20 token
+│   │   └── Token.sol            # BDX ERC20 (mint, burn, permit, supply cap)
 │   ├── test/
-│   │   └── core/Token.t.sol     # ✅ 30+ unit tests
+│   │   └── core/Token.t.sol     # 33 unit tests + fuzz tests
 │   ├── script/
-│   │   └── Deploy.s.sol         # ✅ Deployment script
-│   ├── foundry.toml
-│   ├── Makefile
-│   └── .env.example
+│   │   └── Deploy.s.sol         # Deployment script
+│   ├── foundry.toml             # Solc 0.8.24, optimizer 200 runs
+│   └── Makefile                 # build / test / deploy shortcuts
 │
-├── frontend/                     # Next.js 14 + React
+├── frontend/                     # Next.js 14
 │   └── src/
-│       ├── app/                  # App router pages
-│       │   ├── layout.tsx        # Root layout + providers
-│       │   ├── page.tsx          # Landing hero
-│       │   └── dashboard/        # Dashboard + feature pages
+│       ├── app/                  # App router
+│       │   ├── page.tsx          # Landing page
+│       │   ├── layout.tsx        # Root layout + Web3Provider
+│       │   └── dashboard/        # Overview, Swap, Liquidity, Lending,
+│       │                         # Staking, Farming, Governance
 │       ├── components/
 │       │   ├── ui/               # Button, Card, Input, Badge, Skeleton
-│       │   ├── layout/           # Header, Sidebar
+│       │   ├── layout/           # Header, Sidebar (icon-only)
 │       │   ├── features/         # BalanceDisplay
 │       │   └── icons/            # BullIcon
 │       ├── hooks/                # useTokenBalance, useTokenInfo
-│       ├── constants/            # ABI, contract addresses
+│       ├── constants/            # TOKEN_ABI, contract addresses
+│       ├── config/               # wagmi (Alchemy transport)
 │       ├── providers/            # Web3Provider (wagmi + RainbowKit)
-│       ├── config/               # wagmi config (Sepolia)
 │       └── utils/                # cn(), formatToken(), shortenAddress()
 │
-├── .github/
-│   └── workflows/
-│       ├── contracts-test.yml    # forge test on push
-│       ├── frontend-test.yml     # type-check + lint + build
-│       └── deploy.yml            # auto-deploy to Vercel on main push
+├── skills/
+│   └── WEB3_DEV_ROADMAP.md      # 16-phase Web3 dev learning roadmap
 │
-├── PRD.md                        # Product Requirements
-├── TRD.md                        # Technical Requirements
-├── DEPLOYMENT.md                 # Step-by-step deployment guide
-└── BRAND.md                      # Design system & brand guidelines
+└── .github/
+    └── workflows/
+        ├── contracts-test.yml    # forge test + coverage on push
+        ├── frontend-test.yml     # type-check + lint + build
+        └── deploy.yml            # auto-deploy to Vercel
 ```
 
 ---
 
-## 16-Week Roadmap
+## Quick Start
 
-### Phase 1 — Core DeFi (Weeks 1–4)
-- ✅ **Week 1:** BDX Token + frontend scaffold + Vercel deploy
-- 🔄 **Week 2:** Pool.sol (AMM x\*y=k) + Swap UI
-- 🔄 **Week 3:** Liquidity provision + LP tokens
-- 🔄 **Week 4:** Transaction history + portfolio dashboard
+### Prerequisites
 
-### Phase 2 — Lending & Yield (Weeks 5–8)
-- 🔲 Lending.sol (collateralized borrowing, health factor)
-- 🔲 Staking.sol (BDX staking rewards)
-- 🔲 MasterChef.sol (yield farming)
-- 🔲 NFT.sol (ERC721 collateral)
+- Node.js v20+
+- [Foundry](https://book.getfoundry.sh/getting-started/installation)
+- Git
 
-### Phase 3 — Advanced (Weeks 9–12)
-- 🔲 FlashLoan.sol
-- 🔲 Governance.sol (BDX DAO)
-- 🔲 Gas analytics dashboard
-- 🔲 Security audit prep
+### Smart Contracts
 
-### Phase 4 — Production (Weeks 13–16)
-- 🔲 Transaction history + CSV export
-- 🔲 Portfolio analytics (P&L)
-- 🔲 Sentry error monitoring
-- 🔲 Final audit + mainnet readiness
+```bash
+cd contracts
+
+# Install dependencies (first time)
+forge install
+
+# Build
+forge build
+
+# Run all tests (33 tests)
+make test
+
+# Gas report
+make test-gas
+
+# Coverage
+make coverage
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Copy env template
+cp .env.local.example .env.local
+# Fill in: NEXT_PUBLIC_SEPOLIA_RPC, NEXT_PUBLIC_TOKEN_ADDRESS, NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+
+# Run dev server
+npm run dev
+# → http://localhost:3000
+
+# Type check
+npm run type-check
+
+# Lint
+npm run lint
+```
+
+### Deploy Contracts
+
+```bash
+cd contracts
+
+# Copy env template and fill in keys
+cp .env.example .env
+
+# Deploy to Sepolia
+make deploy-sepolia
+# → Outputs: contract address to paste into frontend/.env.local
+```
 
 ---
 
 ## Smart Contracts
 
-### Deploy to Sepolia
+### BDX Token — `contracts/src/Token.sol`
 
-```bash
-cd contracts
-cp .env.example .env
-# Fill in SEPOLIA_RPC_URL, PRIVATE_KEY, ETHERSCAN_KEY
+| Feature | Details |
+|---------|---------|
+| Standard | ERC20 + ERC20Burnable + ERC20Permit (EIP-2612) |
+| Access | Ownable (owner-only mint) |
+| Supply | 1,000,000,000 BDX max supply |
+| Initial mint | 100,000,000 BDX to deployer |
+| Errors | Custom errors: `ExceedsMaxSupply`, `MintToZeroAddress`, `MintAmountZero` |
+| Network | Sepolia Testnet |
+| Address | `0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9` |
+| Verified | ✅ [View on Etherscan](https://sepolia.etherscan.io/address/0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9#code) |
 
-make deploy-sepolia
-# Output: BDX Token deployed at 0x...
+### Test Coverage
 
-# Then update frontend/.env.local:
-# NEXT_PUBLIC_TOKEN_ADDRESS=0x...
 ```
-
-### Run Tests
-
-```bash
-cd contracts
-
-make test          # forge test -vvv
-make test-gas      # gas report
-make coverage      # coverage summary
-make test-fuzz     # 10k fuzz runs (CI profile)
+33 tests passing (0 failing)
+  ✓ Deployment (name, symbol, decimals, supply, owner)
+  ✓ balanceOf
+  ✓ transfer + events
+  ✓ transferFrom + allowance
+  ✓ mint (owner only, zero address, zero amount, supply cap)
+  ✓ burn + burnFrom
+  ✓ approve
+  ✓ Constructor edge cases
+  ✓ Fuzz: transfer, mint, burn
 ```
-
-### Contract Addresses (Sepolia)
-
-| Contract | Address |
-|----------|---------|
-| BDX Token | `0x` — deploy and update here |
 
 ---
 
-## Frontend
+## Environment Variables
 
-### Development
+### `contracts/.env`
 
 ```bash
-cd frontend
-npm install
-cp .env.local.example .env.local   # Add your keys
-npm run dev                         # http://localhost:3000
+SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+PRIVATE_KEY=0xYOUR_PRIVATE_KEY
+ETHERSCAN_KEY=YOUR_ETHERSCAN_KEY
 ```
 
-### Commands
+### `frontend/.env.local`
 
 ```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run type-check   # TypeScript check
-npm run lint         # ESLint
-npm run format       # Prettier format
-```
-
-### Environment Variables
-
-```bash
-# frontend/.env.local
 NEXT_PUBLIC_SEPOLIA_RPC=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
-NEXT_PUBLIC_TOKEN_ADDRESS=0x...   # From deploy output
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=...   # cloud.walletconnect.com
+NEXT_PUBLIC_TOKEN_ADDRESS=0x392d29D689a5ecfe08bD12482570Ac82Ad3567C9
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=YOUR_WC_PROJECT_ID
 ```
 
----
-
-## Design System
-
-### Brand Colors
-```
-Primary Purple:  #7C3AED   (buttons, links, active states)
-Accent Amber:    #F59E0B   (bull strength, highlights)
-Dark Background: #0F172A   (page background)
-Card Surface:    #1E293B   (cards, elevated surfaces)
-Success Green:   #10B981
-Error Red:       #EF4444
-```
-
-Full guidelines: see `BRAND.md`
-
-### Tech Stack
-
-| Layer | Tech |
-|-------|------|
-| Smart Contracts | Solidity 0.8.24, Foundry, OpenZeppelin 5 |
-| Frontend | Next.js 14, TypeScript, Tailwind CSS |
-| Web3 | wagmi v2, viem v2, RainbowKit v2 |
-| State | Zustand, TanStack Query |
-| Deployment | Vercel (frontend), Sepolia (contracts) |
-| CI/CD | GitHub Actions |
+> ⚠️ Never commit `.env` files. Both are in `.gitignore`.
 
 ---
 
 ## CI/CD
 
-Every push triggers:
+Every push to `main` triggers:
 
-| Trigger | Action |
-|---------|--------|
-| Push to `contracts/**` | `forge test` + lint check |
-| Push to `frontend/**` | type-check + lint + build |
-| Push to `main` (frontend) | Auto-deploy to Vercel |
+| Workflow | Trigger | What it does |
+|----------|---------|-------------|
+| `contracts-test.yml` | push | `forge build` + `forge test` + gas report + coverage |
+| `frontend-test.yml` | push | type-check + lint + `next build` |
+| `deploy.yml` | push to main | Auto-deploy to Vercel (requires secrets) |
 
-**Setup required secrets in GitHub → Settings → Secrets:**
-- `VERCEL_TOKEN` — from Vercel dashboard
-- `VERCEL_ORG_ID` — from Vercel Settings
-- `VERCEL_PROJECT_ID` — from project Settings
+### Setup Vercel auto-deploy
+
+Add these secrets to GitHub repo → Settings → Secrets:
+
+```
+VERCEL_TOKEN       → vercel.com/account/tokens
+VERCEL_ORG_ID      → vercel project settings
+VERCEL_PROJECT_ID  → vercel project settings
+```
+
+---
+
+## Design
+
+Inspired by [Jupiter](https://jup.ag) — minimal dark interface with the Bulldex bull mascot color palette.
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| Brand Green | `#4ADE80` | Primary accent, buttons, active states |
+| Forest | `#2D4A2D` | From logo — dark surfaces |
+| Cream | `#E8DFC0` | From logo horns — secondary accents |
+| Page BG | `#0C0F0C` | Near-black with green tint |
+| Card | `#161C16` | Dark green-tinted cards |
+
+---
+
+## Resources
+
+| Document | Purpose |
+|----------|---------|
+| `skills/WEB3_DEV_ROADMAP.md` | 16-phase Web3 dev learning roadmap (ERC20 → Gas optimization → Security → Cross-chain) |
+| `DEPLOYMENT.md` | Step-by-step deployment guide |
+| `PRD.md` | Product requirements |
+| `TRD.md` | Technical requirements |
+| `BRAND.md` | Design system |
 
 ---
 
 ## Get Test ETH
 
-- https://sepoliafaucet.com/
-- https://faucet.paradigm.xyz/
-
----
-
-## Documentation
-
-| File | Purpose |
-|------|---------|
-| `PRD.md` | Product vision, features, user stories |
-| `TRD.md` | Technical stack, architecture, data flows |
-| `DEPLOYMENT.md` | Step-by-step setup guide |
-| `BRAND.md` | Color palette, typography, component specs |
-
----
-
-## Security
-
-- ✅ No private keys committed (`.env` in `.gitignore`)
-- ✅ OpenZeppelin contracts for battle-tested standards
-- ✅ Custom errors (gas-efficient)
-- ✅ Supply cap enforced on every mint
-- 🔲 External audit — before mainnet
-
----
-
-## Contributing
-
-1. Fork + create feature branch
-2. `make test` — all tests must pass
-3. `npm run type-check && npm run lint` — no errors
-4. Push + open PR — CI auto-runs
+- https://sepoliafaucet.com
+- https://faucets.chain.link/sepolia
 
 ---
 
 ## License
 
-MIT — fork and build freely.
+MIT
 
 ---
 
-**Built by:** Phantom ([@wayphantomme](https://twitter.com/wayphantomme))  
-**Last Updated:** 2026-08-24  
-**Status:** 🚀 Week 1 Complete
-
-**Trade Like a Bull. Earn Like a Beast. 💪📈**
+**Built by [@wayphantomme](https://twitter.com/wayphantomme) — building in public**
