@@ -52,7 +52,7 @@ export default function HomePage() {
         </h1>
 
         <p className="mb-10 max-w-md text-sm leading-relaxed text-ink-secondary">
-          Decentralized swaps, liquidity, lending, staking, and yield farming — 
+          Decentralized swaps, liquidity, lending, staking, and yield farming - 
           all in one powerful DeFi protocol built on Ethereum.
         </p>
 

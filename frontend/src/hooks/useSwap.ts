@@ -34,7 +34,7 @@ export function useSwap(
 
   const poolConfigured = isConfigured(CONTRACTS.pool.address);
 
-  // ── Read current allowance — separate hooks per token ─────────────────────
+  // ── Read current allowance - separate hooks per token ─────────────────────
   const isBDX = tokenIn === CONTRACTS.token.address;
 
   const { data: allowanceBDX, refetch: refetchBDX } = useReadContract({

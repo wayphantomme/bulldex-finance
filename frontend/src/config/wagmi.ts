@@ -9,7 +9,7 @@ if (!projectId && typeof window !== 'undefined') {
   console.warn('[Bulldex] NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID is not set.');
 }
 if (!alchemyRpc && typeof window !== 'undefined') {
-  console.warn('[Bulldex] NEXT_PUBLIC_SEPOLIA_RPC is not set — falling back to public RPC.');
+  console.warn('[Bulldex] NEXT_PUBLIC_SEPOLIA_RPC is not set - falling back to public RPC.');
 }
 
 export const wagmiConfig = getDefaultConfig({

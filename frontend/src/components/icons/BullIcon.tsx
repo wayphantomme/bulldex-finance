@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn';
 interface BullIconProps extends React.SVGAttributes<SVGElement> {}
 
 /**
- * Bulldex bull head icon — outline style, scalable.
+ * Bulldex bull head icon - outline style, scalable.
  * Usage: <BullIcon className="h-8 w-8 text-brand-purple" />
  */
 export function BullIcon({ className, ...props }: BullIconProps) {

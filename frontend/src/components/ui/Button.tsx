@@ -14,7 +14,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  // Primary — bright green, dark text like Jupiter
+  // Primary - bright green, dark text like Jupiter
   primary: [
     'bg-gradient-brand text-base-bg font-semibold',
     'hover:opacity-90 active:opacity-80',
@@ -22,21 +22,21 @@ const variants: Record<Variant, string> = {
     'disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none',
   ].join(' '),
 
-  // Secondary — cream/sage tone from logo
+  // Secondary - cream/sage tone from logo
   secondary: [
     'bg-cream text-base-bg font-semibold',
     'hover:opacity-90',
     'disabled:opacity-40 disabled:cursor-not-allowed',
   ].join(' '),
 
-  // Ghost — subtle dark card
+  // Ghost - subtle dark card
   ghost: [
     'bg-base-card text-ink-secondary border border-base-border',
     'hover:bg-base-elevated hover:text-ink hover:border-base-border-light',
     'disabled:opacity-40 disabled:cursor-not-allowed',
   ].join(' '),
 
-  // Outline — green-tinted border
+  // Outline - green-tinted border
   outline: [
     'bg-transparent text-green border border-brand-border',
     'hover:bg-brand-faint hover:border-brand-border-lg',

@@ -1,5 +1,5 @@
 /**
- * Bulldex Finance — Contract ABIs
+ * Bulldex Finance - Contract ABIs
  * Auto-update by running: forge build && cp contracts/out/Token.sol/Token.json frontend/src/constants/
  */
 

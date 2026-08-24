@@ -9,18 +9,18 @@ import { wagmiConfig } from '@/config/wagmi';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 30, // 30s — blockchain data refreshes often
+      staleTime: 1000 * 30, // 30s - blockchain data refreshes often
       retry: 2,
     },
   },
 });
 
 /**
- * RainbowKit dark theme — matches Jupiter-style dark green aesthetic.
+ * RainbowKit dark theme - matches Jupiter-style dark green aesthetic.
  * Lime green accent, no purple.
  */
 const bulldexTheme = darkTheme({
-  accentColor: '#4ADE80',        // lime green — matches brand
+  accentColor: '#4ADE80',        // lime green - matches brand
   accentColorForeground: '#0C0F0C', // dark text on green button
   borderRadius: 'medium',
   fontStack: 'system',

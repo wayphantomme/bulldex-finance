@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Bulldex Finance — Trade Like a Bull. Earn Like a Beast.',
+  title: 'Bulldex Finance | Trade Like a Bull. Earn Like a Beast.',
   description: 'Decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, and governance.',
   keywords: ['DeFi', 'DEX', 'swap', 'liquidity', 'staking', 'yield farming', 'Bulldex'],
   icons: {

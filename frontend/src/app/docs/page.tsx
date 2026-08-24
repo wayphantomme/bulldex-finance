@@ -35,8 +35,8 @@ const NAV = [
   {
     label: 'Dev Log',
     items: [
-      { id: 'week2', label: 'Week 2 — AMM Swap' },
-      { id: 'week1', label: 'Week 1 — Foundation' },
+      { id: 'week2', label: 'Week 2 - AMM Swap' },
+      { id: 'week1', label: 'Week 1 - Foundation' },
     ],
   },
   {
@@ -132,7 +132,7 @@ export default function DocsPage() {
           <Section id="introduction">
             <h1 className="text-3xl font-bold text-ink">Bulldex Finance</h1>
             <p className="mt-3 text-base text-ink-secondary leading-relaxed">
-              Full-stack DeFi protocol built in public — combining token swaps, liquidity provision,
+              Full-stack DeFi protocol built in public - combining token swaps, liquidity provision,
               lending, staking, yield farming, and governance on Ethereum.
             </p>
             <p className="mt-2 text-sm text-ink-secondary leading-relaxed">
@@ -154,7 +154,7 @@ export default function DocsPage() {
                 ['Tests', '73 passing (33 Token + 40 Pool)'],
                 ['Contracts', 'Token, MockToken, Pool, PoolFactory'],
                 ['Frontend', 'Next.js 14, wagmi v2, RainbowKit v2'],
-                ['Status', 'Week 2 complete — AMM Swap live'],
+                ['Status', 'Week 2 complete - AMM Swap live'],
               ]}
             />
           </Section>
@@ -167,7 +167,7 @@ export default function DocsPage() {
             <H3>Prerequisites</H3>
             <ul className="space-y-1 text-sm text-ink-secondary">
               <li>• Node.js v20+</li>
-              <li>• <a href="https://book.getfoundry.sh/getting-started/installation" className="text-green hover:opacity-70">Foundry</a> — Solidity compiler + testing</li>
+              <li>• <a href="https://book.getfoundry.sh/getting-started/installation" className="text-green hover:opacity-70">Foundry</a> - Solidity compiler + testing</li>
               <li>• Git</li>
             </ul>
 
@@ -216,16 +216,16 @@ npm run dev   # http://localhost:3000`}</Code>
                 ['Frontend', 'wagmi', 'v2.12.7', 'React hooks for Ethereum'],
                 ['Frontend', 'viem', 'v2.21.1', 'TypeScript Ethereum utils'],
                 ['Frontend', 'RainbowKit', 'v2.1.7', 'Wallet connect UI'],
-                ['Infra', 'Alchemy', '—', 'Sepolia RPC endpoint'],
-                ['Infra', 'Vercel', '—', 'Frontend hosting, auto-deploy'],
-                ['Infra', 'GitHub Actions', '—', 'CI/CD — test + deploy on push'],
+                ['Infra', 'Alchemy', '-', 'Sepolia RPC endpoint'],
+                ['Infra', 'Vercel', '-', 'Frontend hosting, auto-deploy'],
+                ['Infra', 'GitHub Actions', '-', 'CI/CD - test + deploy on push'],
               ]}
             />
           </Section>
 
           {/* ── Token ─────────────────────────────────────────────────────── */}
           <Section id="token">
-            <H2>Token.sol — BDX</H2>
+            <H2>Token.sol - BDX</H2>
             <p className="text-sm text-ink-secondary">ERC20 governance and utility token for Bulldex Finance.</p>
 
             <H3>Inheritance</H3>
@@ -261,7 +261,7 @@ error MintAmountZero();`}</Code>
 
           {/* ── Pool ──────────────────────────────────────────────────────── */}
           <Section id="pool">
-            <H2>Pool.sol — AMM</H2>
+            <H2>Pool.sol - AMM</H2>
             <p className="text-sm text-ink-secondary">
               Constant product AMM (<code className="text-green">x * y = k</code>). The Pool contract itself is the LP token (ERC20).
               Modeled after Uniswap v2 with 0.3% swap fee.
@@ -297,7 +297,7 @@ lpMinted = min(
               { sig: 'addLiquidity(amount0Desired, amount1Desired, min0, min1, to)', mod: 'nonpayable', desc: 'Deposit tokens, receive LP tokens' },
               { sig: 'removeLiquidity(liquidity, min0, min1, to)', mod: 'nonpayable', desc: 'Burn LP tokens, receive proportional reserves' },
               { sig: 'getAmountOut(amountIn, reserveIn, reserveOut)', mod: 'pure', desc: 'x*y=k output formula with 0.3% fee' },
-              { sig: 'getAmountIn(amountOut, reserveIn, reserveOut)', mod: 'pure', desc: 'Reverse quote — input needed for exact output' },
+              { sig: 'getAmountIn(amountOut, reserveIn, reserveOut)', mod: 'pure', desc: 'Reverse quote - input needed for exact output' },
               { sig: 'getPrice0() / getPrice1()', mod: 'view', desc: 'Spot price scaled by 1e18' },
               { sig: 'getPriceImpact(tokenIn, amountIn)', mod: 'view', desc: 'Price impact in basis points (1 bp = 0.01%)' },
               { sig: 'getReserves()', mod: 'view', desc: 'Returns (reserve0, reserve1)' },
@@ -305,11 +305,11 @@ lpMinted = min(
 
             <H3>Security</H3>
             <ul className="space-y-1 text-sm text-ink-secondary">
-              <li>• <strong className="text-ink">ReentrancyGuard</strong> — all state-changing functions</li>
-              <li>• <strong className="text-ink">SafeERC20</strong> — safe token transfers</li>
-              <li>• <strong className="text-ink">Checks-Effects-Interactions</strong> — state updated before transfers</li>
-              <li>• <strong className="text-ink">SlippageExceeded</strong> error — MEV protection via minAmountOut</li>
-              <li>• Reserves tracked in storage, not <code className="text-green">balanceOf</code> — prevents flash loan manipulation</li>
+              <li>• <strong className="text-ink">ReentrancyGuard</strong> - all state-changing functions</li>
+              <li>• <strong className="text-ink">SafeERC20</strong> - safe token transfers</li>
+              <li>• <strong className="text-ink">Checks-Effects-Interactions</strong> - state updated before transfers</li>
+              <li>• <strong className="text-ink">SlippageExceeded</strong> error - MEV protection via minAmountOut</li>
+              <li>• Reserves tracked in storage, not <code className="text-green">balanceOf</code> - prevents flash loan manipulation</li>
             </ul>
           </Section>
 
@@ -357,8 +357,8 @@ lpMinted = min(
 │   ├── page.tsx          # Landing hero
 │   ├── layout.tsx        # Root layout + Web3Provider
 │   ├── dashboard/
-│   │   ├── page.tsx      # Overview — balance, stats, quick actions
-│   │   ├── swap/         # ✅ Live — full AMM swap UI
+│   │   ├── page.tsx      # Overview - balance, stats, quick actions
+│   │   ├── swap/         # ✅ Live - full AMM swap UI
 │   │   ├── liquidity/    # 🔄 Week 3
 │   │   ├── lending/      # ⬜ Phase 2
 │   │   ├── staking/      # ⬜ Phase 2
@@ -372,7 +372,7 @@ lpMinted = min(
 ├── hooks/
 │   ├── useTokenBalance   # BDX/MUSDC balance with auto-refresh
 │   ├── useTokenInfo      # Token metadata (multicall)
-│   ├── usePool           # Reserves, prices — 15s refresh
+│   ├── usePool           # Reserves, prices - 15s refresh
 │   └── useSwap           # Approve + swap state machine
 └── constants/
     ├── abis.ts           # TOKEN_ABI, POOL_ABI, FACTORY_ABI
@@ -397,8 +397,8 @@ lpMinted = min(
             <H3>useSwapQuote(tokenIn, amountIn, reserve0, reserve1, token0)</H3>
             <p className="text-sm text-ink-secondary">Calls getAmountOut + getPriceImpact in a single multicall.</p>
             <Code>{`const {
-  amountOut,     // bigint — expected output
-  priceImpact,   // bigint — basis points (100 = 1%)
+  amountOut,     // bigint - expected output
+  priceImpact,   // bigint - basis points (100 = 1%)
   isLoading,
 } = useSwapQuote(tokenIn, amountIn, reserve0, reserve1, token0);`}</Code>
 
@@ -427,7 +427,7 @@ lpMinted = min(
                 { n: '3', title: 'Show price impact', detail: 'getPriceImpact() returns bps. Color: green <1%, yellow 1-5%, red >5%' },
                 { n: '4', title: 'Apply slippage', detail: 'minAmountOut = amountOut * (10000 - slippageBps) / 10000' },
                 { n: '5', title: 'Check allowance', detail: 'useReadContract allowance → needsApproval(amountIn)' },
-                { n: '6', title: 'Approve if needed', detail: 'approve(pool, MAX_UINT256) — approves once, no repeat approvals' },
+                { n: '6', title: 'Approve if needed', detail: 'approve(pool, MAX_UINT256) - approves once, no repeat approvals' },
                 { n: '7', title: 'Execute swap', detail: 'Pool.swap(tokenIn, amountIn, minAmountOut, user)' },
                 { n: '8', title: 'Confirm on-chain', detail: 'useWaitForTransactionReceipt → show Etherscan link' },
               ].map((s) => (
@@ -446,7 +446,7 @@ lpMinted = min(
 
           {/* ── Week 2 ────────────────────────────────────────────────────── */}
           <Section id="week2">
-            <H2>Week 2 — AMM / DEX Swap</H2>
+            <H2>Week 2 - AMM / DEX Swap</H2>
             <p className="text-sm text-ink-secondary">
               Built a full Uniswap v2-style AMM from scratch. 40 tests, complete swap UI with approve→swap flow.
             </p>
@@ -454,12 +454,12 @@ lpMinted = min(
             <H3>What was built</H3>
             <ul className="space-y-1 text-sm text-ink-secondary">
               {[
-                'Pool.sol — x*y=k AMM, LP tokens, 0.3% fee, slippage protection, price impact',
-                'MockToken.sol — open-mint ERC20 for testnet (MUSDC), faucet() function',
-                'PoolFactory.sol — deploy + track pools, bidirectional lookup, auto LP token naming',
-                '40 unit + fuzz tests — 100% of core AMM paths covered',
-                'Swap UI — live quotes, price impact, slippage settings, approve→swap state machine',
-                'usePool + useSwap hooks — multicall reads, step-based write flow',
+                'Pool.sol - x*y=k AMM, LP tokens, 0.3% fee, slippage protection, price impact',
+                'MockToken.sol - open-mint ERC20 for testnet (MUSDC), faucet() function',
+                'PoolFactory.sol - deploy + track pools, bidirectional lookup, auto LP token naming',
+                '40 unit + fuzz tests - 100% of core AMM paths covered',
+                'Swap UI - live quotes, price impact, slippage settings, approve→swap state machine',
+                'usePool + useSwap hooks - multicall reads, step-based write flow',
               ].map((item, i) => (
                 <li key={i} className="flex gap-2"><span className="text-green">✓</span>{item}</li>
               ))}
@@ -485,22 +485,22 @@ lpMinted = min(
 
           {/* ── Week 1 ────────────────────────────────────────────────────── */}
           <Section id="week1">
-            <H2>Week 1 — Foundation</H2>
+            <H2>Week 1 - Foundation</H2>
             <p className="text-sm text-ink-secondary">
               BDX ERC20 deployed to Sepolia, full Next.js frontend scaffold with wallet connect,
-              live balance display, Vercel CI/CD — all in 7 days.
+              live balance display, Vercel CI/CD - all in 7 days.
             </p>
 
             <H3>What was built</H3>
             <ul className="space-y-1 text-sm text-ink-secondary">
               {[
-                'Token.sol — ERC20 + ERC20Burnable + ERC20Permit + Ownable, 1B supply cap',
-                '33 unit + fuzz tests — mint, burn, transfer, approve, edge cases',
-                'Deploy.s.sol — Foundry deployment script with gas estimates',
-                'Next.js 14 frontend — TypeScript, Tailwind CSS, app router',
-                'wagmi v2 + RainbowKit — custom Alchemy transport, en-US locale',
+                'Token.sol - ERC20 + ERC20Burnable + ERC20Permit + Ownable, 1B supply cap',
+                '33 unit + fuzz tests - mint, burn, transfer, approve, edge cases',
+                'Deploy.s.sol - Foundry deployment script with gas estimates',
+                'Next.js 14 frontend - TypeScript, Tailwind CSS, app router',
+                'wagmi v2 + RainbowKit - custom Alchemy transport, en-US locale',
                 'GitHub Actions CI/CD + Vercel auto-deploy',
-                'Jupiter-inspired dark UI — #0C0F0C bg, #4ADE80 accent, icon sidebar',
+                'Jupiter-inspired dark UI - #0C0F0C bg, #4ADE80 accent, icon sidebar',
               ].map((item, i) => (
                 <li key={i} className="flex gap-2"><span className="text-green">✓</span>{item}</li>
               ))}
@@ -663,50 +663,50 @@ function Callout({ type, children }: { type: 'warning' | 'info'; children: React
 
 const WEEK2_PROBLEMS = [
   {
-    problem: 'IERC20Metadata interface conflict in PoolFactory.sol — "Identifier already declared"',
+    problem: 'IERC20Metadata interface conflict in PoolFactory.sol - "Identifier already declared"',
     solution: 'Removed inline interface at bottom of file. Imported OZ\'s IERC20Metadata via @openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol.',
   },
   {
-    problem: 'assertLt(address, address) not found in forge-std — no overload for address type',
+    problem: 'assertLt(address, address) not found in forge-std - no overload for address type',
     solution: 'Cast both addresses to uint160: assertLt(uint160(t0), uint160(t1)). Foundry assertLt only supports uint256/int256.',
   },
   {
-    problem: 'test_PriceImpact_SmallSwapIsLow failing — expected < 10 bps but got 30 bps',
+    problem: 'test_PriceImpact_SmallSwapIsLow failing - expected < 10 bps but got 30 bps',
     solution: '0.3% fee adds baseline impact even for tiny swaps. Adjusted threshold to < 50 bps which accurately reflects real behavior.',
   },
   {
     problem: 'test_RemoveLiquidity_ReturnsTokens failing due to MINIMUM_LIQUIDITY rounding',
-    solution: 'Changed to assertApproxEqRel with 1% tolerance — MINIMUM_LIQUIDITY (1000 wei) locked on first mint affects exact proportional returns.',
+    solution: 'Changed to assertApproxEqRel with 1% tolerance - MINIMUM_LIQUIDITY (1000 wei) locked on first mint affects exact proportional returns.',
   },
   {
-    problem: 'TypeScript BigInt literal error TS2737 — "BigInt literals not available when targeting lower than ES2020"',
+    problem: 'TypeScript BigInt literal error TS2737 - "BigInt literals not available when targeting lower than ES2020"',
     solution: 'Updated tsconfig.json: target ES2017 → ES2020, lib esnext → ES2020. BigInt literals (0n) require ES2020 minimum.',
   },
   {
-    problem: 'useSwap allowance hook ABI type mismatch — dynamic ABI selection caused TS inference failure',
+    problem: 'useSwap allowance hook ABI type mismatch - dynamic ABI selection caused TS inference failure',
     solution: 'Split into two separate useReadContract hooks (one per token) with boolean flag. TS can now infer correct ABI type per hook.',
   },
 ];
 
 const WEEK1_PROBLEMS = [
   {
-    problem: 'forge install failed — "not a git repository"',
+    problem: 'forge install failed - "not a git repository"',
     solution: 'git init was never run. forge install requires git to add submodules. Fixed by running git init at repo root first.',
   },
   {
-    problem: 'OpenZeppelin v5.7.0 crash — "Unknown evm version: osaka"',
+    problem: 'OpenZeppelin v5.7.0 crash - "Unknown evm version: osaka"',
     solution: 'Foundry 0.3.0 does not support osaka EVM version. Pinned OZ to v5.1.0 which is compatible.',
   },
   {
-    problem: 'Deploy.s.sol compile error — em dash character (—) in string literal',
+    problem: 'Deploy.s.sol compile error - em dash character (-) in string literal',
     solution: 'Solidity only accepts ASCII in standard strings. Replaced em dash with hyphen (-). Use unicode"..." prefix for Unicode.',
   },
   {
-    problem: 'vm.prank cannot overwrite a prank — GitHub Actions Foundry nightly breaking change',
-    solution: 'Removed vm.prank from setUp(). Token constructor takes initialOwner as param — no prank needed. Nightly is stricter about pending pranks.',
+    problem: 'vm.prank cannot overwrite a prank - GitHub Actions Foundry nightly breaking change',
+    solution: 'Removed vm.prank from setUp(). Token constructor takes initialOwner as param - no prank needed. Nightly is stricter about pending pranks.',
   },
   {
-    problem: 'Contract verification failing — Etherscan V1 API deprecated',
+    problem: 'Contract verification failing - Etherscan V1 API deprecated',
     solution: 'Updated foundry.toml to V2 API. Still failed via CLI (Foundry 0.3.0 bug). Verified manually: forge flatten | pbcopy → paste into Etherscan web UI.',
   },
   {
@@ -714,7 +714,7 @@ const WEEK1_PROBLEMS = [
     solution: 'Next.js is in frontend/ subfolder but Vercel deployed from root. Fixed by setting Root Directory = frontend in Vercel project settings.',
   },
   {
-    problem: '"Hubungkan Dompet" — RainbowKit showing Indonesian',
+    problem: '"Hubungkan Dompet" - RainbowKit showing Indonesian',
     solution: 'RainbowKit auto-detects browser locale. Fixed by passing locale="en-US" to RainbowKitProvider.',
   },
   {
@@ -745,13 +745,13 @@ const DECISIONS = [
     rationale: 'Public Sepolia RPCs are rate-limited and unreliable for production use. Alchemy free tier provides 300M compute units/month which is more than enough for testnet. Configured via NEXT_PUBLIC_SEPOLIA_RPC env var.',
   },
   {
-    title: 'Dark mode only — no light mode',
+    title: 'Dark mode only - no light mode',
     decision: 'Dark mode only, Jupiter-inspired aesthetic.',
     rationale: 'Most DeFi protocols (Jupiter, Uniswap, Aave) are dark-mode first. Dark mode better suits the trading aesthetic. Maintaining two themes adds significant CSS complexity. Logo colors (dark forest green + cream) work better on dark backgrounds.',
   },
   {
     title: 'Max approval vs exact approval',
     decision: 'Approve MAX_UINT256 on first approval.',
-    rationale: 'Better UX — user only approves once per token. Acceptable security tradeoff for testnet. For mainnet production, would add incremental approval with permit() (EIP-2612) for gasless approvals.',
+    rationale: 'Better UX - user only approves once per token. Acceptable security tradeoff for testnet. For mainnet production, would add incremental approval with permit() (EIP-2612) for gasless approvals.',
   },
 ];

@@ -5,7 +5,7 @@
 [![Smart Contract Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/contracts-test.yml)
 [![Frontend Tests](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/wayphantomme/bulldex-finance/actions/workflows/frontend-test.yml)
 
-A full-stack DeFi protocol being built in public — combining token swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
+A full-stack DeFi protocol being built in public - combining token swaps, liquidity provision, lending, staking, yield farming, and governance on Ethereum.
 
 - **Frontend:** https://bulldex-finance.vercel.app
 - **Docs:** https://bulldex-finance.vercel.app/docs
@@ -48,7 +48,7 @@ A full-stack DeFi protocol being built in public — combining token swaps, liqu
 
 ```
 bulldex-finance/
-├── contracts/                    # Foundry — Solidity
+├── contracts/                    # Foundry - Solidity
 │   ├── src/
 │   │   └── Token.sol            # BDX ERC20 (mint, burn, permit, supply cap)
 │   ├── test/
@@ -157,7 +157,7 @@ make deploy-sepolia
 
 ## Smart Contracts
 
-### BDX Token — `contracts/src/Token.sol`
+### BDX Token - `contracts/src/Token.sol`
 
 | Feature | Details |
 |---------|---------|
@@ -233,13 +233,13 @@ VERCEL_PROJECT_ID  → vercel project settings
 
 ## Design
 
-Inspired by [Jupiter](https://jup.ag) — minimal dark interface with the Bulldex bull mascot color palette.
+Inspired by [Jupiter](https://jup.ag) - minimal dark interface with the Bulldex bull mascot color palette.
 
 | Token | Hex | Usage |
 |-------|-----|-------|
 | Brand Green | `#4ADE80` | Primary accent, buttons, active states |
-| Forest | `#2D4A2D` | From logo — dark surfaces |
-| Cream | `#E8DFC0` | From logo horns — secondary accents |
+| Forest | `#2D4A2D` | From logo - dark surfaces |
+| Cream | `#E8DFC0` | From logo horns - secondary accents |
 | Page BG | `#0C0F0C` | Near-black with green tint |
 | Card | `#161C16` | Dark green-tinted cards |
 
@@ -270,4 +270,4 @@ MIT
 
 ---
 
-**Built by [@wayphantomme](https://twitter.com/wayphantomme) — building in public**
+**Built by [@wayphantomme](https://twitter.com/wayphantomme) - building in public**

@@ -92,7 +92,7 @@ export default function DashboardPage() {
               ) : (
                 <>
                   <p className="text-2xl font-bold text-ink">
-                    {totalSupply ? formatToken(totalSupply, 18, 0) : '—'}
+                    {totalSupply ? formatToken(totalSupply, 18, 0) : '-'}
                   </p>
                   <p className="mt-0.5 text-xs text-ink-secondary">{symbol ?? 'BDX'}</p>
                 </>
@@ -102,14 +102,14 @@ export default function DashboardPage() {
             {/* TVL placeholder */}
             <Card>
               <p className="mb-2 text-xs text-ink-secondary">TVL</p>
-              <p className="text-2xl font-bold text-ink">—</p>
+              <p className="text-2xl font-bold text-ink">-</p>
               <Badge variant="ghost" className="mt-1.5 text-[10px]">Week 2</Badge>
             </Card>
 
             {/* Volume placeholder */}
             <Card>
               <p className="mb-2 text-xs text-ink-secondary">24h Volume</p>
-              <p className="text-2xl font-bold text-ink">—</p>
+              <p className="text-2xl font-bold text-ink">-</p>
               <Badge variant="ghost" className="mt-1.5 text-[10px]">Week 2</Badge>
             </Card>
           </div>

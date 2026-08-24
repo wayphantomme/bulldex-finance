@@ -59,7 +59,7 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right — custom ConnectButton, no purple */}
+        {/* Right - custom ConnectButton, no purple */}
         <div className="flex items-center gap-2">
           <ConnectButton.Custom>
             {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {

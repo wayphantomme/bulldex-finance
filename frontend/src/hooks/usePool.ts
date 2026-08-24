@@ -15,7 +15,7 @@ interface PoolData {
 
 /**
  * Read pool state: reserves, token addresses, prices, LP total supply.
- * Multicall — single RPC round trip.
+ * Multicall - single RPC round trip.
  */
 export function usePool(): PoolData {
   const configured = isConfigured(CONTRACTS.pool.address);

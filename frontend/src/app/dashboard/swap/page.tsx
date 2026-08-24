@@ -103,7 +103,7 @@ export default function SwapPage() {
         <div>
           <h1 className="text-base font-semibold text-ink">Swap</h1>
           <p className="mt-0.5 text-xs text-ink-secondary">
-            Exchange tokens at the best rate — 0.3% fee.
+            Exchange tokens at the best rate - 0.3% fee.
           </p>
         </div>
         {pool.isConfigured && pool.reserve0 && pool.reserve0 > 0n && (

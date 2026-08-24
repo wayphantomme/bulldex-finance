@@ -45,7 +45,7 @@
     border: 1px solid rgba(255,255,255,0.05);
   }
 
-  /* Shimmer skeleton — green-tinted */
+  /* Shimmer skeleton - green-tinted */
   .shimmer {
     background: linear-gradient(90deg, #161C16 0%, #1D261D 40%, #161C16 80%);
     background-size: 200% 100%;
@@ -56,7 +56,7 @@
     100% { background-position:  200% 0; }
   }
 
-  /* Tooltip — appears on sidebar icon hover */
+  /* Tooltip - appears on sidebar icon hover */
   .tooltip {
     @apply pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2
            whitespace-nowrap rounded-lg border border-base-border bg-base-elevated
@@ -68,7 +68,7 @@
   /* Divider */
   .divider { @apply h-px w-full bg-base-border; }
 
-  /* ── RainbowKit overrides — green theme, no purple ─────────────────────── */
+  /* ── RainbowKit overrides - green theme, no purple ─────────────────────── */
   [data-rk] {
     --rk-colors-accentColor: #4ADE80;
     --rk-colors-accentColorForeground: #0C0F0C;

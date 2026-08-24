@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Header />
       <Sidebar />
 
-      {/* Main content — offset for fixed header (h-14) and sidebar (w-16) */}
+      {/* Main content - offset for fixed header (h-14) and sidebar (w-16) */}
       <main className="ml-16 pt-14">
         <div className="mx-auto max-w-layout px-6 py-6">
           {children}
