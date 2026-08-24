@@ -1,0 +1,44 @@
+# ─── Environment — NEVER commit ───────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+
+# ─── Foundry ──────────────────────────────────────────────────────────────────
+contracts/out/
+contracts/cache/
+contracts/broadcast/*/11155111/run-*.json
+
+# ─── Next.js ──────────────────────────────────────────────────────────────────
+frontend/.next/
+frontend/out/
+
+# ─── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+
+# ─── Coverage ─────────────────────────────────────────────────────────────────
+lcov.info
+coverage/
+frontend/coverage/
+
+# ─── Build artifacts ──────────────────────────────────────────────────────────
+frontend/dist/
+*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ─── IDE ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*

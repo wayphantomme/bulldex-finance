@@ -1,0 +1,19 @@
+# Environment — NEVER commit
+.env
+.env.local
+
+# Foundry build artifacts
+out/
+cache/
+broadcast/*/11155111/run-*.json
+
+# Coverage
+lcov.info
+coverage/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
