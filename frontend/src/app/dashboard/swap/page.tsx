@@ -173,7 +173,7 @@ export default function SwapPage() {
             )}
 
             {/* Sell panel */}
-            <div className="mx-5 mb-1 rounded-2xl bg-base-surface p-4">
+            <div className="mx-5 mb-1 rounded-2xl bg-base-surface p-4 relative">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs text-ink-secondary">Sell</span>
                 <button onClick={handleMax}
@@ -191,17 +191,19 @@ export default function SwapPage() {
                 />
                 <TokenSelector token={tokenIn} onClick={() => setShowTokenInPicker(true)} />
               </div>
-            </div>
 
-            {/* Token picker overlay — sell */}
-            {showTokenInPicker && (
-              <TokenPicker
-                tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenOut.symbol)}
-                balances={balances}
-                onSelect={selectTokenIn}
-                onClose={() => setShowTokenInPicker(false)}
-              />
-            )}
+              {/* Token picker — sell */}
+              {showTokenInPicker && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-30 px-0">
+                  <TokenPicker
+                    tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenIn.symbol)}
+                    balances={balances}
+                    onSelect={selectTokenIn}
+                    onClose={() => setShowTokenInPicker(false)}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Flip button */}
             <div className="relative flex justify-center -my-2 z-10">
@@ -212,7 +214,7 @@ export default function SwapPage() {
             </div>
 
             {/* Buy panel */}
-            <div className="mx-5 mt-1 rounded-2xl bg-base-surface p-4">
+            <div className="mx-5 mt-1 rounded-2xl bg-base-surface p-4 relative">
               <p className="mb-2 text-xs text-ink-secondary">Buy</p>
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
@@ -227,17 +229,19 @@ export default function SwapPage() {
                 </div>
                 <TokenSelector token={tokenOut} onClick={() => setShowTokenOutPicker(true)} />
               </div>
-            </div>
 
-            {/* Token picker overlay — buy */}
-            {showTokenOutPicker && (
-              <TokenPicker
-                tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenIn.symbol)}
-                balances={balances}
-                onSelect={selectTokenOut}
-                onClose={() => setShowTokenOutPicker(false)}
-              />
-            )}
+              {/* Token picker — buy */}
+              {showTokenOutPicker && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-30 px-0">
+                  <TokenPicker
+                    tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenOut.symbol)}
+                    balances={balances}
+                    onSelect={selectTokenOut}
+                    onClose={() => setShowTokenOutPicker(false)}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Info rows */}
             {amountOut && amountOut > 0n && (
@@ -376,36 +380,32 @@ function TokenPicker({
   onClose: () => void;
 }) {
   return (
-    <div className="absolute left-0 right-0 z-20 mx-5">
-      <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-base-border">
-          <span className="text-xs font-semibold text-ink">Select token</span>
-          <button onClick={onClose} className="text-ink-faint hover:text-ink transition-colors">
-            <XCircle className="h-4 w-4" strokeWidth={1.5} />
-          </button>
-        </div>
-        <div className="py-2">
-          {tokens.map((t) => {
-            const bal = getBalanceForSymbol(t.symbol, balances);
-            return (
-              <button key={t.symbol} onClick={() => onSelect(t)}
-                className="flex w-full items-center gap-3 px-4 py-3 hover:bg-base-elevated transition-colors">
-                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                  <Image src={t.logoSrc} alt={t.symbol} fill className="object-cover" sizes="32px" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-semibold text-ink">{t.symbol}</p>
-                  <p className="text-xs text-ink-faint">{t.name}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-ink tabular-nums">
-                    {formatToken(bal, t.decimals, 4)}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+    <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-base-border">
+        <span className="text-xs font-semibold text-ink">Select token</span>
+        <button onClick={onClose} className="text-ink-faint hover:text-ink transition-colors">
+          <XCircle className="h-4 w-4" strokeWidth={1.5} />
+        </button>
+      </div>
+      <div className="py-2">
+        {tokens.map((t) => {
+          const bal = getBalanceForSymbol(t.symbol, balances);
+          return (
+            <button key={t.symbol} onClick={() => onSelect(t)}
+              className="flex w-full items-center gap-3 px-4 py-3 hover:bg-base-elevated transition-colors">
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                <Image src={t.logoSrc} alt={t.symbol} fill className="object-cover" sizes="32px" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-ink">{t.symbol}</p>
+                <p className="text-xs text-ink-faint">{t.name}</p>
+              </div>
+              <p className="text-sm font-medium text-ink tabular-nums">
+                {formatToken(bal, t.decimals, 4)}
+              </p>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
