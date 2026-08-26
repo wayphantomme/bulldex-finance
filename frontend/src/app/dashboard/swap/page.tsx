@@ -365,9 +365,13 @@ export default function SwapPage() {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function TokenPill({ token }: { token: TokenInfo }) {
+  const isBDX = token.symbol === 'BDX';
   return (
-    <div className={cn('flex items-center gap-1.5 rounded-lg border border-base-border bg-base-elevated px-2.5 py-1.5')}>
-      <div className={cn('flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold', token.logoColor)}>
+    <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-3 py-2">
+      <div className={cn(
+        'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shrink-0',
+        isBDX ? 'bg-green/20 text-green' : 'bg-blue-500/20 text-blue-400',
+      )}>
         {token.symbol.slice(0, 1)}
       </div>
       <span className="text-sm font-semibold text-ink">{token.symbol}</span>

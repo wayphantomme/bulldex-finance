@@ -505,9 +505,11 @@ function TokenInput({
           onChange={(e) => onChange(e.target.value)}
           className="flex-1 bg-transparent text-2xl font-semibold text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
-        <div className="flex items-center gap-1.5 rounded-lg border border-base-border bg-base-elevated px-2.5 py-1.5">
-          <div className={cn('flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold',
-            symbol === 'BDX' ? 'bg-green/20 text-green' : 'bg-blue-500/20 text-blue-400')}>
+        <div className="flex items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-3 py-2 shrink-0">
+          <div className={cn(
+            'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shrink-0',
+            symbol === 'BDX' ? 'bg-green/20 text-green' : 'bg-blue-500/20 text-blue-400',
+          )}>
             {symbol[0]}
           </div>
           <span className="text-sm font-semibold text-ink">{symbol}</span>
