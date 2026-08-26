@@ -52,9 +52,10 @@ const NAV = [
   {
     label: 'Dev Log',
     items: [
-      { id: 'week4', label: 'Week 3-4 | Liquidity + Design' },
-      { id: 'week2', label: 'Week 2 | AMM Swap' },
-      { id: 'week1', label: 'Week 1 | Foundation' },
+      { id: 'week4', label: 'Week 4 - Design Upgrade' },
+      { id: 'week3', label: 'Week 3 - Liquidity UI' },
+      { id: 'week2', label: 'Week 2 - AMM Swap' },
+      { id: 'week1', label: 'Week 1 - Foundation' },
     ],
   },
   {
@@ -89,6 +90,10 @@ const TOC: Record<string, { id: string; label: string }[]> = {
   week4: [
     { id: 'w4-built',     label: 'What was built' },
     { id: 'w4-problems',  label: 'Problems & Solutions' },
+  ],
+  week3: [
+    { id: 'w3-built',     label: 'What was built' },
+    { id: 'w3-problems',  label: 'Problems & Solutions' },
   ],
   week2: [
     { id: 'w2-built',     label: 'What was built' },
@@ -358,6 +363,7 @@ function ContentArea({ section }: { section: string }) {
     case 'hooks':        return <HooksDoc />;
     case 'swap-flow':    return <SwapFlowDoc />;
     case 'week4':        return <Week4Log />;
+    case 'week3':        return <Week3Log />;
     case 'week2':        return <Week2Log />;
     case 'week1':        return <Week1Log />;
     case 'decisions':    return <Decisions />;
@@ -762,23 +768,49 @@ function SwapFlowDoc() {
 function Week4Log() {
   return (
     <div>
-      <P>Built full liquidity UI, faucet page, and Jupiter-style design upgrade.</P>
+      <P>Jupiter-style design upgrade, mobile responsive fixes, price ticker, wallet icons, and WETH/ETH pool.</P>
 
       <H2 id="w4-built">What was built</H2>
       <Built items={[
-        'usePoolStats.ts — multicall 7 reads, isBDXToken0 detection, formatted reserves/prices, K/M formatting',
-        'useAddLiquidity.ts — sequential approve BDX then MUSDC then addLiquidity, MAX approval, token sort by address',
-        'useRemoveLiquidity.ts — no LP approval needed, slider-based % removal',
-        'usePoolShare — calculates share%, bdxAmount, musdcAmount from LP balance',
-        'Liquidity page — Add tab (auto-paired amounts) + Remove tab (% slider with quick buttons)',
-        'Pool stats sidebar — live reserves, prices, fee, total LP',
-        'Faucet page — ETH external link, MUSDC faucet() with 24h localStorage cooldown + countdown, Add to MetaMask',
-        'Design upgrade (Phase 1-4) — neutral base colors, dot-grid background, lime brand accent, Lucide icons sidebar',
-        'Token distribution progress bars, roadmap status dots, bento landing page',
+        'Jupiter-style design (Phase 1-4) — neutral base colors, dot-grid bg, lime brand #C6F135, separate from semantic green',
+        'Lucide React icons — replaced all custom SVGs in sidebar (LayoutDashboard, ArrowLeftRight, Droplets, etc)',
+        'Price ticker — BDX price from pool + ETH price from Chainlink (Sepolia: 0x694AA1769357215DE4FAC081bf1f309aDC325306)',
+        'Wallet icon per connector — MetaMask fox, Rainbow, Coinbase, WalletConnect in header',
+        'Docs pinned at sidebar bottom — standalone below Manage group like Jupiter Get Help',
+        'WETH.sol — WETH9-style wrapper, deploy + BDX/WETH pool seeded (1M BDX + 0.1 WETH)',
+        'ETH in swap — auto-wrap ETH to WETH before swap via useMultiSwap',
+        'Token picker dropdown — shows all tokens + balance per token',
+        'Multi-pool routing — getPoolAddress() routes BDX/MUSDC vs BDX/WETH automatically',
+        'useTokenBalances multicall — fixed swap showing 0 balance (was reading BDX twice)',
+        'Mobile fixes — token stats 2-col on mobile, M/B suffix for large numbers, CTA whitespace-nowrap',
+        'Faucet card alignment — flex-1 spacer so all 3 cards have buttons at same height',
       ]} />
 
       <H2 id="w4-problems">Problems & Solutions</H2>
       {WEEK4_PROBLEMS.map((p, i) => <Problem key={i} {...p} />)}
+    </div>
+  );
+}
+
+function Week3Log() {
+  return (
+    <div>
+      <P>Full liquidity provision UI — add/remove LP with real-time pool stats, pool share calculator, and approve flow.</P>
+
+      <H2 id="w3-built">What was built</H2>
+      <Built items={[
+        'usePoolStats.ts — multicall 7 reads, isBDXToken0 detection, formatted reserves/prices, K/M formatting',
+        'useAddLiquidity.ts — sequential approve BDX then MUSDC then addLiquidity, MAX approval, token sort by address',
+        'useRemoveLiquidity.ts — no LP approval needed (_burn(msg.sender)), slider-based % removal',
+        'usePoolShare — calculates share%, bdxAmount, musdcAmount from LP balance',
+        'Liquidity page — Add tab (auto-paired amounts from pool ratio) + Remove tab (% slider with 25/50/75/MAX)',
+        'Pool stats sidebar — live reserves, prices, fee, total LP',
+        'Your position card — LP balance, pool share %, estimated token amounts',
+        'Faucet page — ETH external link, MUSDC faucet() with 24h localStorage cooldown, Add to MetaMask',
+      ]} />
+
+      <H2 id="w3-problems">Problems & Solutions</H2>
+      {WEEK3_PROBLEMS.map((p, i) => <Problem key={i} {...p} />)}
     </div>
   );
 }
@@ -866,6 +898,21 @@ function Decisions() {
 }
 
 // ─── Data ──────────────────────────────────────────────────────────────────
+
+const WEEK3_PROBLEMS = [
+  {
+    problem: 'Pool ABI missing allowance — useRemoveLiquidity tried to read LP allowance',
+    solution: 'Pool.removeLiquidity calls _burn(msg.sender) directly, no allowance needed. Removed the read entirely.',
+  },
+  {
+    problem: 'Token sort order mismatch — addLiquidity passed BDX/MUSDC in wrong order',
+    solution: 'Pool sorts tokens canonically (lower address = token0). Added isBDXToken0 check then swap amount args accordingly.',
+  },
+  {
+    problem: 'Auto-paired input broken on first deposit — division by zero on empty pool',
+    solution: 'Added pool.hasLiquidity guard before calculating ratio. First deposit both inputs are independent.',
+  },
+];
 
 const WEEK4_PROBLEMS = [
   {

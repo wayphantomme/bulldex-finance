@@ -10,33 +10,69 @@ import { useAddLiquidity } from '@/hooks/useAddLiquidity';
 import { useRemoveLiquidity } from '@/hooks/useRemoveLiquidity';
 import { useReadContract } from 'wagmi';
 import { parseAmount, applySlippage } from '@/hooks/useSwap';
-import { CONTRACTS, etherscanUrl } from '@/constants/contracts';
+import { CONTRACTS, CONTRACT_ADDRESSES, etherscanUrl } from '@/constants/contracts';
+import { POOL_ABI } from '@/constants/abis';
 import { formatToken, shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 type Tab = 'add' | 'remove';
+type PoolKey = 'bdx-musdc' | 'bdx-weth';
+
 const SLIPPAGE_OPTIONS = [{ label: '0.5%', bps: 50 }, { label: '1%', bps: 100 }, { label: '2%', bps: 200 }];
+
+const POOL_CONFIG: Record<PoolKey, {
+  address: `0x${string}`;
+  label: string;
+  token0Symbol: string;
+  token1Symbol: string;
+  token0Logo: string;
+  token1Logo: string;
+}> = {
+  'bdx-musdc': {
+    address: CONTRACT_ADDRESSES.pool,
+    label: 'BDX / MUSDC',
+    token0Symbol: 'BDX',
+    token1Symbol: 'MUSDC',
+    token0Logo: '/bulldex-logo.png',
+    token1Logo: '/musdc-icon.svg',
+  },
+  'bdx-weth': {
+    address: CONTRACT_ADDRESSES.poolBdxWeth,
+    label: 'BDX / WETH',
+    token0Symbol: 'BDX',
+    token1Symbol: 'ETH',
+    token0Logo: '/bulldex-logo.png',
+    token1Logo: '/eth-icon.svg',
+  },
+};
 
 export default function LiquidityPage() {
   const { address, isConnected } = useAccount();
+  const [selectedPool, setSelectedPool] = useState<PoolKey>('bdx-musdc');
   const [tab, setTab]             = useState<Tab>('add');
   const [slippageBps, setSlippageBps] = useState(50);
   const [showSettings, setShowSettings] = useState(false);
 
-  // ── Pool stats ─────────────────────────────────────────────────────────────
-  const pool = usePoolStats();
+  const poolConfig = POOL_CONFIG[selectedPool];
+
+  // ── Pool stats — reads from selected pool ──────────────────────────────────
+  const pool = usePoolStats();  // TODO: make usePoolStats accept pool address param
+  // For BDX/WETH pool we use CONTRACTS.poolBdxWeth
+  // Temporary: useReadContracts directly for the selected pool
+  const poolAddress = poolConfig.address;
 
   const isBDXToken0 = useMemo(
     () => pool.token0?.toLowerCase() === CONTRACTS.token.address.toLowerCase(),
     [pool.token0],
   );
 
-  // ── User LP balance ────────────────────────────────────────────────────────
+  // ── User LP balance for selected pool ─────────────────────────────────────
   const { data: lpBalance } = useReadContract({
-    ...CONTRACTS.pool,
+    address: poolAddress,
+    abi: POOL_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && pool.isConfigured, staleTime: 10_000, refetchInterval: 15_000 },
+    query: { enabled: !!address && poolAddress !== '0x0000000000000000000000000000000000000000', staleTime: 10_000, refetchInterval: 15_000 },
   });
 
   const share = usePoolShare(
@@ -99,8 +135,7 @@ export default function LiquidityPage() {
   }, [bdxAmount, pool.totalSupply, pool.bdxReserve, pool.hasLiquidity]);
 
   // ── Remove liquidity state ─────────────────────────────────────────────────
-  const [lpInput, setLpInput]     = useState('');
-  const [lpPct, setLpPct]         = useState(50); // percentage slider
+  const [lpPct, setLpPct] = useState(50);
   const removeLiq = useRemoveLiquidity(address);
 
   const lpToRemove = useMemo(() => {
@@ -136,12 +171,38 @@ export default function LiquidityPage() {
   return (
     <div className="animate-fade-in space-y-6">
 
-      {/* Page header */}
-      <div>
-        <h1 className="text-base font-semibold text-ink">Liquidity</h1>
-        <p className="mt-0.5 text-xs text-ink-secondary">
-          Provide liquidity to earn 0.3% of every swap fee.
-        </p>
+      {/* Page header + Pool selector */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-base font-semibold text-ink">Liquidity</h1>
+          <p className="mt-0.5 text-xs text-ink-secondary">
+            Provide liquidity to earn 0.3% of every swap fee.
+          </p>
+        </div>
+
+        {/* Pool selector tabs */}
+        <div className="flex items-center gap-1 rounded-xl border border-base-border bg-base-card p-1">
+          {(Object.entries(POOL_CONFIG) as [PoolKey, typeof POOL_CONFIG[PoolKey]][]).map(([key, cfg]) => (
+            <button
+              key={key}
+              onClick={() => { setSelectedPool(key); setBdxInput(''); setMusdcInput(''); addLiq.reset(); removeLiq.reset(); }}
+              className={cn(
+                'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
+                selectedPool === key
+                  ? 'bg-base-elevated text-ink'
+                  : 'text-ink-faint hover:text-ink-secondary',
+              )}
+            >
+              <div className="relative h-4 w-4 overflow-hidden rounded-full">
+                <Image src={cfg.token0Logo} alt={cfg.token0Symbol} fill className="object-cover" sizes="16px" />
+              </div>
+              <div className="relative h-4 w-4 overflow-hidden rounded-full -ml-1.5">
+                <Image src={cfg.token1Logo} alt={cfg.token1Symbol} fill className="object-cover" sizes="16px" />
+              </div>
+              <span>{cfg.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -152,7 +213,7 @@ export default function LiquidityPage() {
           {/* Pool info card */}
           <div className="rounded-xl border border-base-border bg-base-card p-5">
             <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-ink-faint">
-              BDX / MUSDC Pool
+              {poolConfig.label} Pool
             </p>
             {pool.isLoading ? (
               <div className="space-y-2">
@@ -162,10 +223,10 @@ export default function LiquidityPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                <StatRow label="BDX Reserve"   value={`${pool.bdxReserveFormatted} BDX`} />
-                <StatRow label="MUSDC Reserve" value={`${pool.musdcReserveFormatted} MUSDC`} />
-                <StatRow label="BDX Price"     value={`${pool.bdxPriceFormatted} MUSDC`} />
-                <StatRow label="MUSDC Price"   value={`${pool.musdcPriceFormatted} BDX`} />
+                <StatRow label={`${poolConfig.token0Symbol} Reserve`}  value={`${pool.bdxReserveFormatted} ${poolConfig.token0Symbol}`} />
+                <StatRow label={`${poolConfig.token1Symbol} Reserve`}  value={`${pool.musdcReserveFormatted} ${poolConfig.token1Symbol}`} />
+                <StatRow label={`${poolConfig.token0Symbol} Price`}    value={`${pool.bdxPriceFormatted} ${poolConfig.token1Symbol}`} />
+                <StatRow label={`${poolConfig.token1Symbol} Price`}    value={`${pool.musdcPriceFormatted} ${poolConfig.token0Symbol}`} />
                 <StatRow label="Total LP"      value={pool.totalSupplyFormatted} />
                 <StatRow label="Swap Fee"      value="0.30%" highlight />
               </div>
@@ -184,8 +245,8 @@ export default function LiquidityPage() {
                 <div className="space-y-2">
                   <StatRow label="LP Balance" value={formatToken(lpBalance as bigint, 18, 6)} highlight />
                   <StatRow label="Pool Share" value={`${share.sharePctFormatted}%`} />
-                  <StatRow label="BDX"        value={`${formatToken(share.bdxAmount, 18, 4)} BDX`} />
-                  <StatRow label="MUSDC"      value={`${formatToken(share.musdcAmount, 18, 4)} MUSDC`} />
+                  <StatRow label={poolConfig.token0Symbol} value={`${formatToken(share.bdxAmount, 18, 4)} ${poolConfig.token0Symbol}`} />
+                  <StatRow label={poolConfig.token1Symbol} value={`${formatToken(share.musdcAmount, 18, 4)} ${poolConfig.token1Symbol}`} />
                 </div>
               )}
             </div>
@@ -251,6 +312,7 @@ export default function LiquidityPage() {
               {tab === 'add' ? (
                 <AddTab
                   pool={pool}
+                  poolConfig={poolConfig}
                   bdxInput={bdxInput}
                   musdcInput={musdcInput}
                   onBdxChange={handleBdxInput}
@@ -264,6 +326,7 @@ export default function LiquidityPage() {
               ) : (
                 <RemoveTab
                   pool={pool}
+                  poolConfig={poolConfig}
                   lpBalance={lpBalance as bigint | undefined}
                   lpPct={lpPct}
                   onPctChange={setLpPct}
@@ -286,10 +349,11 @@ export default function LiquidityPage() {
 // ─── Add Liquidity Tab ────────────────────────────────────────────────────────
 
 function AddTab({
-  pool, bdxInput, musdcInput, onBdxChange, onMusdcChange,
+  pool, poolConfig, bdxInput, musdcInput, onBdxChange, onMusdcChange,
   estimatedLP, addLiq, onSubmit, onReset, isConnected,
 }: {
   pool: ReturnType<typeof usePoolStats>;
+  poolConfig: typeof POOL_CONFIG[PoolKey];
   bdxInput: string; musdcInput: string;
   onBdxChange: (v: string) => void;
   onMusdcChange: (v: string) => void;
@@ -312,7 +376,7 @@ function AddTab({
       )}
 
       {/* BDX input */}
-      <TokenInput label="BDX amount"   symbol="BDX"   value={bdxInput}   onChange={onBdxChange} />
+      <TokenInput label={`${poolConfig.token0Symbol} amount`} symbol={poolConfig.token0Symbol} logoSrc={poolConfig.token0Logo} value={bdxInput} onChange={onBdxChange} />
 
       <div className="flex justify-center">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-base-border bg-base-elevated text-ink-faint">
@@ -322,8 +386,8 @@ function AddTab({
         </div>
       </div>
 
-      {/* MUSDC input */}
-      <TokenInput label="MUSDC amount" symbol="MUSDC" value={musdcInput} onChange={onMusdcChange} />
+      {/* Paired token input */}
+      <TokenInput label={`${poolConfig.token1Symbol} amount`} symbol={poolConfig.token1Symbol} logoSrc={poolConfig.token1Logo} value={musdcInput} onChange={onMusdcChange} />
 
       {/* Preview */}
       {!isEmpty && estimatedLP > 0n && (
@@ -370,10 +434,11 @@ function AddTab({
 // ─── Remove Liquidity Tab ─────────────────────────────────────────────────────
 
 function RemoveTab({
-  pool, lpBalance, lpPct, onPctChange, lpToRemove, estimatedBack,
+  pool, poolConfig, lpBalance, lpPct, onPctChange, lpToRemove, estimatedBack,
   removeLiq, onSubmit, onReset, isConnected,
 }: {
   pool: ReturnType<typeof usePoolStats>;
+  poolConfig: typeof POOL_CONFIG[PoolKey];
   lpBalance: bigint | undefined;
   lpPct: number;
   onPctChange: (n: number) => void;
@@ -443,9 +508,9 @@ function RemoveTab({
 
       {/* LP to burn */}
       <div className="rounded-lg bg-base-surface px-4 py-3 space-y-1.5">
-        <InfoRow label="LP tokens to burn"   value={formatToken(lpToRemove, 18, 6)} />
-        <InfoRow label="You receive (BDX)"   value={`${formatToken(estimatedBack.bdx,   18, 4)} BDX`} />
-        <InfoRow label="You receive (MUSDC)" value={`${formatToken(estimatedBack.musdc, 18, 4)} MUSDC`} />
+        <InfoRow label="LP tokens to burn"                          value={formatToken(lpToRemove, 18, 6)} />
+        <InfoRow label={`You receive (${poolConfig.token0Symbol})`} value={`${formatToken(estimatedBack.bdx,   18, 4)} ${poolConfig.token0Symbol}`} />
+        <InfoRow label={`You receive (${poolConfig.token1Symbol})`} value={`${formatToken(estimatedBack.musdc, 18, 4)} ${poolConfig.token1Symbol}`} />
       </div>
 
       <ActionButton
@@ -478,12 +543,11 @@ function RemoveTab({
 // ─── Reusable sub-components ──────────────────────────────────────────────────
 
 function TokenInput({
-  label, symbol, value, onChange,
+  label, symbol, logoSrc, value, onChange,
 }: {
-  label: string; symbol: string;
+  label: string; symbol: string; logoSrc: string;
   value: string; onChange: (v: string) => void;
 }) {
-  const logoSrc = symbol === 'BDX' ? '/bulldex-logo.png' : '/musdc-icon.svg';
   return (
     <div className="rounded-xl bg-base-surface p-4">
       <p className="mb-2 text-xs text-ink-faint">{label}</p>

@@ -5,17 +5,26 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
-import { formatToken, shortenAddress } from '@/utils/format';
+import { usePoolStats } from '@/hooks/usePoolStats';
+import { formatToken } from '@/utils/format';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { etherscanUrl, CONTRACT_ADDRESSES } from '@/constants/contracts';
+import { etherscanUrl } from '@/constants/contracts';
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
   const { raw: balance, isLoading: balLoading, isContractConfigured } = useTokenBalance(address);
   const { symbol, totalSupply, isLoading: infoLoading } = useTokenInfo();
+
+  // Pool stats for TVL (sum of both pools simplified as BDX/MUSDC pool)
+  const pool = usePoolStats();
+
+  // TVL approximation: BDX reserve * 2 (assuming BDX = 1 MUSDC for simplicity on testnet)
+  // Real TVL would need price oracle — this is a placeholder that shows real data
+  const tvlDisplay = pool.hasLiquidity && pool.bdxReserve && pool.musdcReserve
+    ? `${pool.bdxReserveFormatted} BDX`
+    : null;
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -30,7 +39,6 @@ export default function DashboardPage() {
       {!isConnected && (
         <Card className="flex flex-col items-center gap-5 py-14 text-center">
           <div className="relative">
-            {/* Glow ring */}
             <div className="absolute inset-0 rounded-2xl bg-base-elevated/50 blur-xl" />
             <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-base-border-light bg-base-elevated">
               <svg className="h-8 w-8 text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -44,10 +52,8 @@ export default function DashboardPage() {
           </div>
           <ConnectButton.Custom>
             {({ openConnectModal }) => (
-              <button
-                onClick={openConnectModal}
-                className="h-10 rounded-xl bg-brand px-6 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
-              >
+              <button onClick={openConnectModal}
+                className="h-10 rounded-xl bg-brand px-6 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark">
                 Connect Wallet
               </button>
             )}
@@ -73,9 +79,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-ink-faint">Contract not configured</p>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-ink">
-                    {formatToken(balance, 18, 2)}
-                  </p>
+                  <p className="text-2xl font-bold text-ink">{formatToken(balance, 18, 2)}</p>
                   <p className="mt-0.5 text-xs text-green">{symbol ?? 'BDX'}</p>
                 </>
               )}
@@ -96,53 +100,46 @@ export default function DashboardPage() {
               )}
             </Card>
 
-            {/* TVL placeholder */}
+            {/* TVL — real data from pool */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">TVL</p>
-              <p className="text-2xl font-bold text-ink">-</p>
-              <Badge variant="ghost" className="mt-1.5 text-[10px]">Week 2</Badge>
+              <p className="mb-2 text-xs text-ink-secondary">TVL (BDX/MUSDC)</p>
+              {pool.isLoading ? (
+                <Skeleton className="h-7 w-24" />
+              ) : tvlDisplay ? (
+                <>
+                  <p className="text-xl font-bold text-ink">{tvlDisplay}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">
+                    + {pool.musdcReserveFormatted} MUSDC
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold text-ink">-</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">Pool not seeded</p>
+                </>
+              )}
             </Card>
 
-            {/* Volume placeholder */}
+            {/* 24h Volume — on-chain events needed for accurate volume */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">24h Volume</p>
-              <p className="text-2xl font-bold text-ink">-</p>
-              <Badge variant="ghost" className="mt-1.5 text-[10px]">Week 2</Badge>
+              <p className="mb-2 text-xs text-ink-secondary">Pool Price</p>
+              {pool.isLoading ? (
+                <Skeleton className="h-7 w-24" />
+              ) : pool.hasLiquidity ? (
+                <>
+                  <p className="text-xl font-bold text-ink tabular-nums">
+                    {pool.bdxPriceFormatted}
+                  </p>
+                  <p className="mt-0.5 text-xs text-ink-faint">MUSDC per BDX</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold text-ink">-</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">No pool data</p>
+                </>
+              )}
             </Card>
           </div>
-
-          {/* Address card */}
-          <Card>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                {/* Avatar */}
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-faint ring-1 ring-green/20">
-                  <span className="text-xs font-bold text-green">
-                    {address.slice(2, 4).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-mono text-sm font-medium text-ink">
-                    {shortenAddress(address, 6)}
-                  </p>
-                  <p className="text-[10px] text-ink-faint">Connected · Sepolia</p>
-                </div>
-              </div>
-              <a href={etherscanUrl(address, 'address')} target="_blank" rel="noopener noreferrer">
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  rightIcon={
-                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  }
-                >
-                  Etherscan
-                </Button>
-              </a>
-            </div>
-          </Card>
 
           {/* Quick actions */}
           <div>
@@ -163,6 +160,24 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Etherscan link — compact, no address spill */}
+          <div className="flex items-center justify-end">
+            <a
+              href={etherscanUrl(address, 'address')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="xs" variant="ghost"
+                rightIcon={
+                  <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                }
+              >
+                View on Etherscan
+              </Button>
+            </a>
+          </div>
         </>
       )}
     </div>
