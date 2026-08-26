@@ -645,7 +645,7 @@ function FactoryDoc() {
       <ul className="space-y-1 text-sm text-[#9A9DA6]">
         <li>• Tokens are sorted (lower address = token0) for canonical ordering</li>
         <li>• Reverts with PoolExists if pair already deployed</li>
-        <li>• LP token name auto-generated: "Bulldex BDX/MUSDC LP"</li>
+        <li>• LP token name auto-generated: &quot;Bulldex BDX/MUSDC LP&quot;</li>
       </ul>
     </div>
   );

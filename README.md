@@ -19,7 +19,7 @@ A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, l
 | Week | Deliverable | Status |
 |------|-------------|--------|
 | 1-2 | BDX Token + AMM Swap + Pool | ✅ Live |
-| 3-4 | Liquidity UI + LP analytics | ✅ Live |
+| 3-4 | Liquidity UI + ETH/WETH pool + Faucet + Design | ✅ Live |
 | 5-6 | Lending & Borrowing | 🔄 Active |
 | 7-8 | Staking & Farming | ⬜ |
 | 9-10 | Vesting | ⬜ |
@@ -58,6 +58,15 @@ A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, l
 | Contract | Address |
 |----------|---------|
 | BDX Token | [`0x193d18048b343983971bfc50893a720e97322ae5`](https://sepolia.etherscan.io/address/0x193d18048b343983971bfc50893a720e97322ae5) |
+| MockToken (MUSDC) | [`0x91a39c49defe004dd8627223b752212ba944ceb1`](https://sepolia.etherscan.io/address/0x91a39c49defe004dd8627223b752212ba944ceb1) |
+| WETH | [`0xEbFe8d5E0b674925599af1E970975Ae4fd2A4b62`](https://sepolia.etherscan.io/address/0xEbFe8d5E0b674925599af1E970975Ae4fd2A4b62) |
+| PoolFactory | [`0x90e1189242272ad1700a5ad0e1c5001676a23984`](https://sepolia.etherscan.io/address/0x90e1189242272ad1700a5ad0e1c5001676a23984) |
+| BDX/MUSDC Pool | [`0xfac1b95480e87ccef0e995612ceca23f3ddb0197`](https://sepolia.etherscan.io/address/0xfac1b95480e87ccef0e995612ceca23f3ddb0197) |
+| BDX/WETH Pool | [`0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4`](https://sepolia.etherscan.io/address/0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4) |
+
+**Initial liquidity:**
+- BDX/MUSDC: 10M BDX + 20M MUSDC (1 BDX = 2 MUSDC)
+- BDX/WETH: 1M BDX + 0.1 WETH (1 WETH = 10,000,000 BDX)
 | MockToken (MUSDC) | [`0x91a39c49defe004dd8627223b752212ba944ceb1`](https://sepolia.etherscan.io/address/0x91a39c49defe004dd8627223b752212ba944ceb1) |
 | PoolFactory | [`0x90e1189242272ad1700a5ad0e1c5001676a23984`](https://sepolia.etherscan.io/address/0x90e1189242272ad1700a5ad0e1c5001676a23984) |
 | BDX/MUSDC Pool | [`0xfac1b95480e87ccef0e995612ceca23f3ddb0197`](https://sepolia.etherscan.io/address/0xfac1b95480e87ccef0e995612ceca23f3ddb0197) |
