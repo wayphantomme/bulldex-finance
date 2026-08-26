@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { etherscanUrl } from '@/constants/contracts';
+import { etherscanUrl, CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
@@ -166,28 +166,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Contract info */}
-          <Card variant="ghost">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-medium text-ink-secondary">BDX Token Contract</p>
-                <p className="mt-0.5 font-mono text-xs text-ink-faint">
-                  {process.env.NEXT_PUBLIC_TOKEN_ADDRESS
-                    ? shortenAddress(process.env.NEXT_PUBLIC_TOKEN_ADDRESS, 8)
-                    : 'Not configured'}
-                </p>
-              </div>
-              {process.env.NEXT_PUBLIC_TOKEN_ADDRESS && (
-                <a
-                  href={etherscanUrl(process.env.NEXT_PUBLIC_TOKEN_ADDRESS, 'address')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button size="xs" variant="outline">View Contract</Button>
-                </a>
-              )}
-            </div>
-          </Card>
         </>
       )}
     </div>

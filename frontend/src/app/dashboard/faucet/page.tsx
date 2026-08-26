@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { parseUnits } from 'viem';
+import Link from 'next/link';
 import { CONTRACTS, CONTRACT_ADDRESSES, etherscanUrl } from '@/constants/contracts';
 import { shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
@@ -333,17 +334,15 @@ function BDXCard({
       </div>
 
       <div className="mt-auto space-y-2">
-        <a
-          href="https://app.uniswap.org/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/dashboard/swap"
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated border border-base-border py-2.5 text-sm font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors"
         >
-          Get BDX via Swap
+          Swap MUSDC → BDX
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
           </svg>
-        </a>
+        </Link>
 
         <button
           onClick={handleAddToMetaMask}
