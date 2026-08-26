@@ -1,14 +1,18 @@
+'use client';
+
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { PriceTicker } from '@/components/layout/PriceTicker';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-base-bg">
       <Header />
+      <PriceTicker />
       <Sidebar />
 
-      {/* Main content - offset for fixed header (h-14) and sidebar (w-16) */}
-      <main className="ml-16 pt-14">
+      {/* Main content — offset for header (h-14) + ticker (h-8) + sidebar (w-16) */}
+      <main className="ml-16 pt-[88px]">
         <div className="mx-auto max-w-layout px-6 py-6">
           {children}
         </div>

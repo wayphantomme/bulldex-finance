@@ -91,12 +91,12 @@ export default function HomePage() {
           <div className="col-span-12 md:col-span-8 rounded-2xl border border-base-border bg-base-card p-6">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-1">BDX Token</p>
             <p className="text-base font-bold text-ink mb-5">Token Economics</p>
-            <div className="grid grid-cols-3 gap-2.5 mb-5">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 mb-5">
               {TOKEN_STATS.map((s) => (
-                <div key={s.label} className="rounded-xl bg-base-surface p-4">
-                  <p className="text-[10px] text-ink-faint mb-1">{s.label}</p>
-                  <p className="text-lg font-bold text-ink">{s.value}</p>
-                  {s.sub && <p className="text-[11px] text-ink-faint mt-0.5">{s.sub}</p>}
+                <div key={s.label} className="rounded-xl bg-base-surface p-3">
+                  <p className="text-[10px] text-ink-faint mb-1 leading-tight">{s.label}</p>
+                  <p className="text-sm sm:text-base font-bold text-ink truncate">{s.value}</p>
+                  {s.sub && <p className="text-[10px] text-ink-faint mt-0.5">{s.sub}</p>}
                 </div>
               ))}
             </div>
@@ -259,27 +259,22 @@ export default function HomePage() {
         </div>
 
         {/* ── Row 5: CTA banner ───────────────────────────────────────────── */}
-        <div className="rounded-2xl border border-base-border bg-base-card px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="rounded-2xl border border-base-border bg-base-card px-6 py-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
           <div>
             <p className="text-lg font-bold text-ink">Ready to explore?</p>
             <p className="text-sm text-ink-secondary mt-1 max-w-lg">
-              Swap live on Sepolia. Liquidity, lending, staking, and farming ship in the next phases.
-              Follow the build on GitHub and X.
+              Swap live on Sepolia. Liquidity, lending, staking, and farming ship next.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Link href="/dashboard/swap" className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <Link href="/dashboard/swap" className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg whitespace-nowrap transition-all hover:bg-brand-dark">
               Launch App
             </Link>
-            <Link href="/docs" className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
+            <Link href="/docs" className="rounded-xl border border-base-border px-4 py-2.5 text-sm font-medium text-ink-secondary whitespace-nowrap transition-colors hover:text-ink">
               Docs
             </Link>
-            <a
-              href="https://github.com/wayphantomme/bulldex-finance"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
-            >
+            <a href="https://github.com/wayphantomme/bulldex-finance" target="_blank" rel="noopener noreferrer"
+              className="rounded-xl border border-base-border px-4 py-2.5 text-sm font-medium text-ink-secondary whitespace-nowrap transition-colors hover:text-ink">
               GitHub
             </a>
           </div>
@@ -312,12 +307,12 @@ export default function HomePage() {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const TOKEN_STATS = [
-  { label: 'Max Total Supply',   value: '1,000,000,000', sub: 'BDX' },
-  { label: 'Circulating Supply', value: '100,000,000',   sub: '10% of max' },
-  { label: 'Seed Price',         value: '$0.05',         sub: 'per BDX' },
-  { label: 'Fully Diluted Val.', value: '$50,000,000',   sub: 'at seed price' },
-  { label: 'Seed Round Target',  value: '$1,000,000',    sub: '20M BDX / 2% supply' },
-  { label: 'Token Standard',     value: 'ERC-20',        sub: 'EIP-2612 permit' },
+  { label: 'Max Total Supply',   value: '1B BDX',      sub: 'max cap' },
+  { label: 'Circulating Supply', value: '100M BDX',    sub: '10% of max' },
+  { label: 'Seed Price',         value: '$0.05',        sub: 'per BDX' },
+  { label: 'Fully Diluted Val.', value: '$50M',         sub: 'at seed price' },
+  { label: 'Seed Round Target',  value: '$1M',          sub: '20M BDX / 2%' },
+  { label: 'Token Standard',     value: 'ERC-20',       sub: 'EIP-2612 permit' },
 ];
 
 const TOKEN_DIST = [

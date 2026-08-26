@@ -38,6 +38,7 @@ const NAV = [
       { id: 'pool',      label: 'Pool (AMM)' },
       { id: 'factory',   label: 'PoolFactory' },
       { id: 'mocktoken', label: 'MockToken' },
+      { id: 'weth',      label: 'WETH' },
     ],
   },
   {
