@@ -6,9 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-base-bg text-ink font-sans">
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePool, useSwapQuote } from '@/hooks/usePool';
 import { useSwap, parseAmount, applySlippage } from '@/hooks/useSwap';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
@@ -327,10 +328,9 @@ export default function SwapPage() {
           {isConnected && pool.isConfigured && (
             <p className="text-center text-xs text-ink-faint">
               Need testnet tokens?{' '}
-              <a href="/dashboard/faucet"
-                className="text-ink-secondary transition-colors hover:text-ink underline underline-offset-2">
-                Get from Faucet →
-              </a>
+              <Link href="/dashboard/faucet" className="text-ink-secondary underline underline-offset-2 hover:text-ink transition-colors">
+                Get from Faucet
+              </Link>
             </p>
           )}
         </div>
