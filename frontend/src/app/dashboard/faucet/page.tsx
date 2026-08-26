@@ -98,7 +98,7 @@ function ETHCard() {
           href="https://cloud.google.com/application/web3/faucet/ethereum/sepolia"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink transition-colors hover:border-green/30 hover:text-green"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink transition-colors hover:border-base-border-light hover:text-ink-secondary"
         >
           Get ETH
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -223,7 +223,7 @@ function MUSDCCard({
             href={etherscanUrl(txHash, 'tx')}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-ink-faint hover:text-green transition-colors"
+            className="text-[11px] text-ink-faint hover:text-ink-secondary transition-colors"
           >
             {shortenHash(txHash)} →
           </a>
@@ -241,7 +241,7 @@ function MUSDCCard({
             {({ openConnectModal }) => (
               <button
                 onClick={openConnectModal}
-                className="w-full rounded-xl bg-green py-2.5 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity"
+                className="w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity"
               >
                 Connect Wallet
               </button>
@@ -254,7 +254,7 @@ function MUSDCCard({
             className={cn(
               'w-full rounded-xl py-2.5 text-sm font-semibold transition-all',
               canClaim && !isPending
-                ? 'bg-green text-base-bg hover:opacity-90'
+                ? 'bg-brand text-base-bg hover:bg-brand-dark'
                 : 'bg-base-elevated text-ink-faint cursor-not-allowed',
             )}
           >

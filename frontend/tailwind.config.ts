@@ -9,44 +9,34 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Bulldex Brand — from logo ──────────────────────────────────────
-        // Logo colors: dark forest green #2D4A2D, sage #4A6741, cream #E8DFC0
+        // ── Brand accent — lime-green CTA (Jupiter "Connect" button style) ──
         brand: {
-          // Primary greens — from logo body
-          DEFAULT:    '#4ADE80',   // bright accent green (Jupiter-style)
-          dark:       '#22C55E',
-          forest:     '#2D4A2D',   // logo dark body
-          sage:       '#4A6741',   // logo mid green
-          // Muted sage for surfaces
-          surface:    '#1A2E1A',   // very dark green-tinted surface
-          // Cream from horns
-          cream:      '#E8DFC0',
-          // Glow
-          faint:      'rgba(74,222,128,0.10)',
-          border:     'rgba(74,222,128,0.20)',
-          'border-lg':'rgba(74,222,128,0.35)',
+          DEFAULT: '#C6F135',   // primary lime-green accent
+          dark:    '#A8D629',   // hover/pressed
+          faint:   'rgba(198,241,53,0.10)',
+          border:  'rgba(198,241,53,0.25)',
         },
 
-        // ── Jupiter-style dark surfaces (green-tinted) ────────────────────
+        // ── Neutral dark surfaces — NO green tint ──────────────────────────
         base: {
-          bg:       '#0C0F0C',   // near-black with slight green tint
-          surface:  '#111411',   // slightly lighter
-          card:     '#161C16',   // card bg — dark green tint
-          elevated: '#1D261D',   // hover state
-          border:   '#243024',   // border — green-tinted dark
-          'border-light': '#2E3E2E',
+          bg:       '#0A0A0B',  // page background — neutral near-black
+          surface:  '#111114',  // sidebar / header background
+          card:     '#17181C',  // cards, panels
+          elevated: '#1E1F24',  // hover / raised state
+          border:   '#26272C',  // hairline borders
+          'border-light': '#333339',
         },
 
-        // ── Text ──────────────────────────────────────────────────────────
+        // ── Text — neutral gray, NOT green-gray ───────────────────────────
         ink: {
-          DEFAULT:   '#E8F0E8',   // primary — slightly green-white
-          secondary: '#8FA88F',   // muted green-gray
-          faint:     '#4A5E4A',   // very muted
+          DEFAULT:   '#F2F2F3', // primary text
+          secondary: '#9A9DA6', // muted/secondary — neutral gray
+          faint:     '#55565D',
         },
 
-        // ── Semantic ──────────────────────────────────────────────────────
-        green:  '#4ADE80',   // bright green — primary accent like Jupiter
-        red:    '#F87171',
+        // ── Semantic colors ───────────────────────────────────────────────
+        green:  '#4ADE80',   // semantic "positive" (price up, gains)
+        red:    '#F87171',   // semantic "negative"
         yellow: '#FCD34D',
         cream:  '#E8DFC0',   // from logo horns
       },
@@ -57,30 +47,30 @@ const config: Config = {
       },
 
       borderRadius: {
-        DEFAULT: '8px',
-        lg:      '12px',
-        xl:      '16px',
-        '2xl':   '20px',
+        DEFAULT: '10px',
+        lg:      '16px',
+        xl:      '20px',
+        '2xl':   '24px',
         pill:    '9999px',
       },
 
       boxShadow: {
         card:       '0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3)',
         elevated:   '0 4px 20px rgba(0,0,0,0.6)',
-        glow:       '0 0 28px rgba(74,222,128,0.18)',
-        'glow-sm':  '0 0 14px rgba(74,222,128,0.12)',
-        'glow-lg':  '0 0 48px rgba(74,222,128,0.25)',
+        glow:       '0 0 28px rgba(198,241,53,0.20)',
+        'glow-sm':  '0 0 14px rgba(198,241,53,0.14)',
+        'glow-lg':  '0 0 48px rgba(198,241,53,0.28)',
         inner:      'inset 0 1px 0 rgba(255,255,255,0.03)',
       },
 
       backgroundImage: {
-        // Page bg — subtle green radial glow like Jupiter
-        'gradient-page':   'radial-gradient(ellipse 70% 40% at 50% -10%, rgba(74,222,128,0.07) 0%, transparent 60%)',
-        'gradient-card':   'linear-gradient(135deg, #161C16 0%, #131813 100%)',
-        'gradient-brand':  'linear-gradient(135deg, #22C55E 0%, #4ADE80 100%)',
+        // Neutral dot-grid — used in globals.css body, replaces green radial
+        'gradient-page':   'none',
+        'gradient-card':   'linear-gradient(135deg, #17181C 0%, #141517 100%)',
+        'gradient-brand':  'linear-gradient(135deg, #A8D629 0%, #C6F135 100%)',
         'gradient-forest': 'linear-gradient(135deg, #2D4A2D 0%, #4A6741 100%)',
         'glass':           'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        'shimmer':         'linear-gradient(90deg, #161C16 0%, #1D261D 40%, #161C16 80%)',
+        'shimmer':         'linear-gradient(90deg, #17181C 0%, #1E1F24 40%, #17181C 80%)',
       },
 
       backdropBlur: {

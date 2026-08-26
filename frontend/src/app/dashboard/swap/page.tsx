@@ -121,16 +121,16 @@ export default function SwapPage() {
         <div className="w-full max-w-sm space-y-2">
 
           {/* ── Swap card ─────────────────────────────────────────────────── */}
-          <div className="rounded-xl border border-base-border bg-base-card">
+          <div className="rounded-2xl border border-base-border bg-base-card">
 
             {/* Card header */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <div className="flex items-center justify-between px-5 pt-5 pb-2">
               <span className="text-sm font-semibold text-ink">Swap</span>
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className={cn(
                   'rounded-lg p-1.5 transition-colors hover:bg-base-elevated',
-                  showSettings ? 'text-green' : 'text-ink-faint',
+                  showSettings ? 'text-brand' : 'text-ink-faint',
                 )}
                 aria-label="Settings"
               >
@@ -142,7 +142,7 @@ export default function SwapPage() {
 
             {/* Slippage settings */}
             {showSettings && (
-              <div className="mx-4 mb-3 rounded-lg border border-base-border bg-base-surface px-3 py-2.5">
+              <div className="mx-5 mb-3 rounded-xl border border-base-border bg-base-surface px-3 py-2.5">
                 <p className="mb-2 text-xs text-ink-faint">Max slippage</p>
                 <div className="flex gap-2">
                   {SLIPPAGE_OPTIONS.map((opt) => (
@@ -150,10 +150,10 @@ export default function SwapPage() {
                       key={opt.bps}
                       onClick={() => setSlippageBps(opt.bps)}
                       className={cn(
-                        'flex-1 rounded-lg py-1.5 text-xs font-medium transition-colors',
+                        'flex-1 rounded-lg py-1.5 text-xs font-medium transition-colors border',
                         slippageBps === opt.bps
-                          ? 'bg-green/15 text-green border border-green/30'
-                          : 'bg-base-elevated text-ink-secondary hover:text-ink border border-base-border',
+                          ? 'bg-brand/10 text-brand border-brand/30'
+                          : 'bg-base-elevated text-ink-secondary hover:text-ink border-base-border',
                       )}
                     >
                       {opt.label}
@@ -164,39 +164,35 @@ export default function SwapPage() {
             )}
 
             {/* You sell */}
-            <div className="mx-4 mb-1 rounded-xl bg-base-surface p-3">
+            <div className="mx-5 mb-1 rounded-2xl bg-base-surface p-4">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs text-ink-faint">You sell</span>
+                <span className="text-xs text-ink-secondary">Sell</span>
                 {isConnected && tokenInBalance !== undefined && (
                   <button
                     onClick={handleMax}
-                    className="text-xs text-ink-faint transition-colors hover:text-green"
+                    className="text-xs text-ink-faint transition-colors hover:text-ink-secondary"
                   >
                     Balance: {formatToken(tokenInBalance, tokenIn.decimals, 4)}
                   </button>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <input
                   type="number"
                   placeholder="0.0"
                   value={amountInStr}
-                  onChange={(e) => {
-                    setAmountInStr(e.target.value);
-                    reset();
-                  }}
-                  className="min-w-0 flex-1 bg-transparent text-2xl font-semibold text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  onChange={(e) => { setAmountInStr(e.target.value); reset(); }}
+                  className="tabular-nums min-w-0 flex-1 bg-transparent text-4xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
                 <TokenPill token={tokenIn} />
               </div>
             </div>
 
-            {/* Flip button */}
-            <div className="relative flex justify-center py-1">
-              <div className="absolute inset-x-4 top-1/2 h-px bg-base-border" />
+            {/* Flip button — circular, centered on seam */}
+            <div className="relative flex justify-center -my-2 z-10">
               <button
                 onClick={handleFlip}
-                className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-base-border bg-base-card text-ink-secondary transition-all duration-150 hover:border-green/30 hover:bg-base-elevated hover:text-green hover:rotate-180"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full border border-base-border bg-base-elevated text-ink-secondary transition-all duration-200 hover:bg-base-card hover:text-ink hover:rotate-180"
               >
                 <svg className="h-4 w-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
@@ -205,15 +201,15 @@ export default function SwapPage() {
             </div>
 
             {/* You receive */}
-            <div className="mx-4 mt-1 rounded-xl bg-base-surface p-3">
-              <p className="mb-2 text-xs text-ink-faint">You receive</p>
-              <div className="flex items-center gap-2">
+            <div className="mx-5 mt-1 rounded-2xl bg-base-surface p-4">
+              <p className="mb-2 text-xs text-ink-secondary">Buy</p>
+              <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
                   {quoteLoading && amountInStr ? (
-                    <div className="h-8 w-28 animate-pulse rounded-lg bg-base-elevated" />
+                    <div className="h-10 w-32 animate-pulse rounded-lg bg-base-elevated" />
                   ) : (
                     <span className={cn(
-                      'text-2xl font-semibold',
+                      'tabular-nums text-4xl font-normal',
                       amountOut && amountOut > 0n ? 'text-ink' : 'text-ink-faint',
                     )}>
                       {amountOut && amountOut > 0n
@@ -228,7 +224,7 @@ export default function SwapPage() {
 
             {/* Info rows */}
             {amountOut && amountOut > 0n && (
-              <div className="mx-4 mt-3 space-y-1.5 rounded-lg bg-base-surface px-3 py-2.5">
+              <div className="mx-5 mt-3 space-y-1.5 rounded-xl bg-base-surface px-4 py-3">
                 {spotPrice && (
                   <InfoRow
                     label="Rate"
@@ -252,64 +248,54 @@ export default function SwapPage() {
             )}
 
             {/* Action button */}
-            <div className="p-4">
+            <div className="p-5">
               {!isConnected ? (
-                <div className="flex justify-center">
-                  <ConnectButton.Custom>
-                    {({ openConnectModal }) => (
-                      <button
-                        onClick={openConnectModal}
-                        className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
-                      >
-                        Connect Wallet
-                      </button>
-                    )}
-                  </ConnectButton.Custom>
-                </div>
+                <ConnectButton.Custom>
+                  {({ openConnectModal }) => (
+                    <button
+                      onClick={openConnectModal}
+                      className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark hover:shadow-glow-sm"
+                    >
+                      Connect Wallet
+                    </button>
+                  )}
+                </ConnectButton.Custom>
               ) : poolNotSeeded ? (
-                <button disabled className="w-full rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-faint cursor-not-allowed">
+                <button disabled className="w-full rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-faint cursor-not-allowed">
                   Pool not deployed yet
                 </button>
               ) : !amountInStr || amountIn === 0n ? (
-                <button disabled className="w-full rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-faint cursor-not-allowed">
+                <button disabled className="w-full rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-faint cursor-not-allowed">
                   Enter an amount
                 </button>
               ) : isInsufficient ? (
-                <button disabled className="w-full rounded-xl bg-red/10 py-3 text-sm font-medium text-red cursor-not-allowed border border-red/20">
+                <button disabled className="w-full rounded-xl bg-red/10 py-3.5 text-sm font-medium text-red cursor-not-allowed border border-red/20">
                   Insufficient {tokenIn.symbol} balance
                 </button>
               ) : step === 'approving' ? (
-                <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-secondary">
-                  <Spinner />
-                  Approving {tokenIn.symbol}...
+                <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-secondary">
+                  <Spinner />Approving {tokenIn.symbol}...
                 </button>
               ) : step === 'swapping' ? (
-                <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-secondary">
-                  <Spinner />
-                  Swapping...
+                <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-secondary">
+                  <Spinner />Swapping...
                 </button>
               ) : step === 'success' ? (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-2 rounded-xl border border-green/30 bg-green/10 py-3">
+                  <div className="flex items-center justify-center gap-2 rounded-xl border border-green/30 bg-green/5 py-3">
                     <svg className="h-4 w-4 text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                     <span className="text-sm font-semibold text-green">Swap complete!</span>
                   </div>
                   {txHash && (
-                    <a
-                      href={etherscanUrl(txHash, 'tx')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 text-xs text-ink-faint transition-colors hover:text-green"
-                    >
+                    <a href={etherscanUrl(txHash, 'tx')} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 text-xs text-ink-faint transition-colors hover:text-ink-secondary">
                       {shortenHash(txHash)} →
                     </a>
                   )}
-                  <button
-                    onClick={() => { reset(); setAmountInStr(''); }}
-                    className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
-                  >
+                  <button onClick={() => { reset(); setAmountInStr(''); }}
+                    className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
                     New swap
                   </button>
                 </div>
@@ -318,25 +304,19 @@ export default function SwapPage() {
                   <div className="rounded-xl border border-red/20 bg-red/10 px-3 py-2.5 text-xs text-red">
                     {error ?? 'Something went wrong'}
                   </div>
-                  <button
-                    onClick={reset}
-                    className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
-                  >
+                  <button onClick={reset}
+                    className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
                     Try again
                   </button>
                 </div>
               ) : needsApproval(amountIn) ? (
-                <button
-                  onClick={handleSwap}
-                  className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
-                >
+                <button onClick={handleSwap}
+                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark hover:shadow-glow-sm">
                   Approve {tokenIn.symbol}
                 </button>
               ) : (
-                <button
-                  onClick={handleSwap}
-                  className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
-                >
+                <button onClick={handleSwap}
+                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark hover:shadow-glow-sm">
                   Swap {tokenIn.symbol} → {tokenOut.symbol}
                 </button>
               )}
@@ -347,13 +327,9 @@ export default function SwapPage() {
           {isConnected && pool.isConfigured && (
             <p className="text-center text-xs text-ink-faint">
               Need testnet tokens?{' '}
-              <a
-                href={etherscanUrl(CONTRACTS.musdc.address, 'address')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green transition-opacity hover:opacity-70"
-              >
-                Call faucet() on MUSDC contract →
+              <a href="/dashboard/faucet"
+                className="text-ink-secondary transition-colors hover:text-ink underline underline-offset-2">
+                Get from Faucet →
               </a>
             </p>
           )}

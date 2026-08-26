@@ -12,12 +12,12 @@ export default function HomePage() {
             <Image src="/bulldex-logo.png" alt="Bulldex" fill className="object-cover" sizes="28px" priority />
           </div>
           <span className="text-sm font-semibold tracking-tight text-ink">
-            Bulldex <span className="text-green">Finance</span>
+            Bulldex <span className="text-ink-secondary font-normal">Finance</span>
           </span>
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/docs" className="text-xs text-ink-secondary transition-colors hover:text-ink">Docs</Link>
-          <Link href="/dashboard/swap" className="rounded-lg bg-green px-3.5 py-1.5 text-xs font-semibold text-base-bg transition-opacity hover:opacity-90">
+          <Link href="/dashboard/swap" className="rounded-lg bg-brand transition-all hover:bg-brand-dark">
             Launch App
           </Link>
         </div>
@@ -31,12 +31,12 @@ export default function HomePage() {
           {/* Hero — 7 cols */}
           <div className="col-span-12 md:col-span-7 rounded-2xl border border-base-border bg-base-card px-8 py-10 flex flex-col justify-between min-h-[280px]">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-green mb-4">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-brand mb-4">
                 DeFi Protocol &nbsp;·&nbsp; Building in Public
               </p>
               <h1 className="text-4xl font-bold leading-tight tracking-tight text-ink lg:text-5xl">
                 The Full-Stack<br />
-                <span className="text-green">DeFi Protocol</span><br />
+                <span className="text-brand">DeFi Protocol</span><br />
                 on Ethereum.
               </h1>
               <p className="mt-4 text-sm leading-relaxed text-ink-secondary max-w-sm">
@@ -45,7 +45,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-2.5">
-              <Link href="/dashboard/swap" className="rounded-xl bg-green px-5 py-2.5 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90">
+              <Link href="/dashboard/swap" className="rounded-xl bg-brand transition-all hover:bg-brand-dark">
                 Launch App
               </Link>
               <Link href="/docs" className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
@@ -70,13 +70,13 @@ export default function HomePage() {
               href="https://github.com/wayphantomme/bulldex-finance"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 flex items-center justify-between rounded-xl border border-green/20 bg-green/5 px-4 py-3"
+              className="mt-4 flex items-center justify-between rounded-xl border border-green/20 bg-brand/5 px-4 py-3"
             >
               <div>
-                <p className="text-xs font-semibold text-green">Open Source</p>
+                <p className="text-xs font-semibold text-brand">Open Source</p>
                 <p className="text-[11px] text-ink-faint mt-0.5">73 tests · verified contracts · GitHub</p>
               </div>
-              <svg className="h-4 w-4 text-green shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4 w-4 text-brand shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
               </svg>
             </a>
@@ -172,9 +172,9 @@ export default function HomePage() {
         <div className="grid grid-cols-12 gap-3">
 
           {/* AMM live — 3 cols */}
-          <div className="col-span-12 md:col-span-3 rounded-2xl border border-green/20 bg-green/5 p-6 flex flex-col justify-between">
+          <div className="col-span-12 md:col-span-3 rounded-2xl border border-brand/20 bg-brand/5 p-6 flex flex-col justify-between">
             <div>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-green/15 text-green">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4" />
                 </svg>
@@ -190,7 +190,7 @@ export default function HomePage() {
             </div>
             <Link
               href="/dashboard/swap"
-              className="mt-6 block text-center rounded-xl bg-green py-2.5 text-xs font-semibold text-base-bg transition-opacity hover:opacity-90"
+              className="mt-6 block text-center rounded-xl bg-brand transition-all hover:bg-brand-dark"
             >
               Try Swap
             </Link>
@@ -251,7 +251,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Link href="/dashboard/swap" className="rounded-xl bg-green px-5 py-2.5 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90">
+            <Link href="/dashboard/swap" className="rounded-xl bg-brand transition-all hover:bg-brand-dark">
               Launch App
             </Link>
             <Link href="/docs" className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">

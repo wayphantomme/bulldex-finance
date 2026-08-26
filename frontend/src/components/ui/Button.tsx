@@ -14,32 +14,33 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<Variant, string> = {
-  // Primary - bright green, dark text like Jupiter
+  // Primary — solid lime-green, black text. Jupiter "Connect" button style.
+  // No gradient, no shadow by default — only glow on hover.
   primary: [
-    'bg-gradient-brand text-base-bg font-semibold',
-    'hover:opacity-90 active:opacity-80',
-    'shadow-glow-sm hover:shadow-glow',
+    'bg-brand text-base-bg font-semibold',
+    'hover:bg-brand-dark hover:shadow-glow-sm',
+    'active:opacity-90',
     'disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none',
   ].join(' '),
 
-  // Secondary - cream/sage tone from logo
+  // Secondary — cream tone
   secondary: [
     'bg-cream text-base-bg font-semibold',
     'hover:opacity-90',
     'disabled:opacity-40 disabled:cursor-not-allowed',
   ].join(' '),
 
-  // Ghost - subtle dark card
+  // Ghost — subtle dark card
   ghost: [
     'bg-base-card text-ink-secondary border border-base-border',
     'hover:bg-base-elevated hover:text-ink hover:border-base-border-light',
     'disabled:opacity-40 disabled:cursor-not-allowed',
   ].join(' '),
 
-  // Outline - green-tinted border
+  // Outline — brand-tinted border, no fill
   outline: [
-    'bg-transparent text-green border border-brand-border',
-    'hover:bg-brand-faint hover:border-brand-border-lg',
+    'bg-transparent text-brand border border-brand-border',
+    'hover:bg-brand-faint hover:border-brand',
     'disabled:opacity-40 disabled:cursor-not-allowed',
   ].join(' '),
 
@@ -55,7 +56,8 @@ const sizes: Record<Size, string> = {
   xs: 'h-7  px-2.5 text-xs  rounded-lg  gap-1',
   sm: 'h-8  px-3   text-xs  rounded-lg  gap-1.5',
   md: 'h-10 px-4   text-sm  rounded-xl  gap-2',
-  lg: 'h-12 px-6   text-sm  rounded-xl  gap-2',
+  // lg: tall pill-ish CTA — matches Jupiter's main action button
+  lg: 'h-14 px-6   text-sm  rounded-xl  gap-2',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -65,7 +67,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled={disabled || isLoading}
       className={cn(
         'inline-flex items-center justify-center font-medium transition-all duration-150 select-none',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green/50 focus-visible:ring-offset-1 focus-visible:ring-offset-base-bg',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-1 focus-visible:ring-offset-base-bg',
         variants[variant],
         sizes[size],
         fullWidth && 'w-full',

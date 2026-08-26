@@ -34,8 +34,8 @@ export default function DashboardPage() {
         <Card className="flex flex-col items-center gap-5 py-14 text-center">
           <div className="relative">
             {/* Glow ring */}
-            <div className="absolute inset-0 rounded-2xl bg-green/10 blur-xl" />
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-green/20 bg-base-elevated">
+            <div className="absolute inset-0 rounded-2xl bg-base-elevated/50 blur-xl" />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-base-border-light bg-base-elevated">
               <svg className="h-8 w-8 text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18-3a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0v3M3 6v3" />
               </svg>
@@ -49,7 +49,7 @@ export default function DashboardPage() {
             {({ openConnectModal }) => (
               <button
                 onClick={openConnectModal}
-                className="h-10 rounded-xl bg-green px-6 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
+                className="h-10 rounded-xl bg-brand px-6 text-sm font-semibold text-base-bg transition-opacity hover:opacity-90"
               >
                 Connect Wallet
               </button>
@@ -153,8 +153,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {ACTIONS.map((a) => (
                 <Link key={a.label} href={a.href}>
-                  <div className="group flex flex-col items-center gap-3 rounded-xl border border-base-border bg-base-card p-5 text-center transition-all duration-150 hover:border-green/25 hover:bg-base-elevated hover:shadow-glow-sm cursor-pointer">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-faint text-green transition-colors group-hover:bg-green/15">
+                  <div className="group flex flex-col items-center gap-3 rounded-xl border border-base-border bg-base-card p-5 text-center transition-all duration-150 hover:border-base-border-light hover:bg-base-elevated cursor-pointer">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-base-elevated text-ink-secondary transition-colors group-hover:bg-base-card">
                       {a.icon}
                     </div>
                     <span className="text-xs font-medium text-ink-secondary group-hover:text-ink transition-colors">

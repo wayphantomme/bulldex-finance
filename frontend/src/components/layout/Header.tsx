@@ -78,7 +78,7 @@ export function Header() {
                   {!connected ? (
                     <button
                       onClick={openConnectModal}
-                      className="h-8 rounded-lg bg-green px-3 text-xs font-semibold text-base-bg transition-opacity hover:opacity-90 active:opacity-80"
+                      className="h-8 rounded-lg bg-brand px-3 text-xs font-semibold text-base-bg transition-all hover:bg-brand-dark hover:shadow-glow-sm active:opacity-90"
                     >
                       Connect Wallet
                     </button>

@@ -16,120 +16,67 @@
 
 ---
 
-## 2. Visual Identity
+## 2. Color Palette
 
-### Logo
+> This section reflects the actual `tailwind.config.ts` as of Aug 2026.
+> Source of truth: `frontend/tailwind.config.ts` — not this file. Keep in sync.
 
-**Primary Logo** (Use most of the time)
-- Bull head symbol
-- Purple + amber colors
-- Clean, modern design
-- Scalable from 16px to 1000px+
+### Brand Accent (CTA color)
 
-**Logo Variations**
-- Icon only (bull head)
-- Horizontal (icon + text)
-- Vertical (icon stacked on text)
-- Monochrome (for special uses)
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `brand` | `#C6F135` | Primary CTA fill (buttons, active tab pill, "New" badge) |
+| `brand-dark` | `#A8D629` | Hover/pressed state of brand CTA |
+| `brand-faint` | `rgba(198,241,53,0.10)` | Subtle brand tint on surfaces |
+| `brand-border` | `rgba(198,241,53,0.25)` | Brand-tinted border |
 
-**Logo Don'ts**
-- ❌ Never rotate logo
-- ❌ Never distort/stretch proportions
-- ❌ Never remove the bull symbol
-- ❌ Never use different colors than brand palette
-- ❌ Never add drop shadows or effects
+**Rule:** `brand` (lime-green) is for *clickable / active / CTA* only — never a background fill on non-interactive surfaces, never a border color on static elements.
 
-### Color Palette
+### Base Surfaces (neutral — no green tint)
 
-#### Primary Colors
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `base-bg` | `#0A0A0B` | Page background — neutral near-black |
+| `base-surface` | `#111114` | Sidebar, header background |
+| `base-card` | `#17181C` | Cards, panels |
+| `base-elevated` | `#1E1F24` | Hover state, raised surface |
+| `base-border` | `#26272C` | Hairline borders |
+| `base-border-light` | `#333339` | Slightly more visible border (hover, active) |
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Bulldex Purple** | #7C3AED | 124, 58, 237 | Primary brand color, buttons, links |
-| **Bulldex Amber** | #F59E0B | 245, 158, 11 | Accent, bull strength, highlights |
-| **Deep Navy** | #0F172A | 15, 23, 42 | Background, dark surfaces |
+### Text (neutral gray — no green cast)
 
-#### Secondary Colors
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `ink` | `#F2F2F3` | Primary text |
+| `ink-secondary` | `#9A9DA6` | Muted/secondary labels |
+| `ink-faint` | `#55565D` | Placeholder, disabled, captions |
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Card Surface** | #1E293B | 30, 41, 59 | Card backgrounds, elevated surfaces |
-| **Success Green** | #10B981 | 16, 185, 129 | Positive actions, gains |
-| **Error Red** | #EF4444 | 239, 68, 68 | Errors, losses, dangers |
-| **Warning Amber** | #FBBF24 | 251, 191, 36 | Warnings, alerts |
-| **Muted Gray** | #64748B | 100, 116, 139 | Disabled text, secondary info |
+### Semantic Colors
 
-#### Color Combinations
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `green` | `#4ADE80` | Positive price, gains, success state — NOT used for CTAs |
+| `red` | `#F87171` | Negative price, losses, errors |
+| `yellow` | `#FCD34D` | Warnings, "soon" badges |
+| `cream` | `#E8DFC0` | From logo horns — secondary accent |
 
-```
-Primary Actions:
-  Background: #7C3AED (Bulldex Purple)
-  Text: #FFFFFF (White)
-  Hover: #6D28D9 (Darker Purple)
+### `brand` vs `green` — two distinct tokens
 
-Secondary Actions:
-  Background: #F59E0B (Bulldex Amber)
-  Text: #0F172A (Deep Navy)
-  Hover: #D97706 (Darker Amber)
+| | `brand` (#C6F135 lime) | `green` (#4ADE80 emerald) |
+|--|--|--|
+| **Use for** | CTA buttons, active state, "New" badge | +3.2% price display, success checkmark, Live dot |
+| **Text on top** | `text-base-bg` (dark) | `text-base-bg` (dark) |
+| **Background** | Yes — CTA fills | No — text/icon only |
+| **Tailwind class** | `bg-brand`, `text-brand` | `text-green`, `bg-green/5` (semantic tint only) |
 
-Success State:
-  Background: #10B981 (Green)
-  Text: #FFFFFF (White)
+### Background Texture
 
-Error State:
-  Background: #EF4444 (Red)
-  Text: #FFFFFF (White)
-```
-
-### Typography
-
-#### Font Stack
+The page body has a subtle dot-grid pattern:
 ```css
-/* Headings */
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", 
-             "Helvetica Neue", sans-serif;
-font-weight: 600-700;
-
-/* Body */
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", 
-             "Helvetica Neue", sans-serif;
-font-weight: 400-500;
-line-height: 1.6;
-
-/* Code/Mono */
-font-family: "Courier New", monospace;
+background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+background-size: 24px 24px;
 ```
-
-#### Font Sizes
-
-| Usage | Size | Weight | Line Height |
-|-------|------|--------|-------------|
-| **Hero/H1** | 32-48px | 700 | 1.2 |
-| **Page Title/H2** | 24-32px | 600 | 1.3 |
-| **Section/H3** | 18-24px | 600 | 1.4 |
-| **Subsection/H4** | 16-18px | 600 | 1.4 |
-| **Body** | 14-16px | 400 | 1.6 |
-| **Small/Caption** | 12-14px | 400 | 1.5 |
-| **Mono/Code** | 12-13px | 400 | 1.5 |
-
-#### Font Usage
-
-```
-Hero Text:
-"Trade Like a Bull. Earn Like a Beast."
-32px, 700 weight, Bulldex Purple
-
-Page Titles:
-"Swap Tokens"
-28px, 600 weight, Bulldex Purple
-
-Body Copy:
-"Connect your wallet to start trading"
-14px, 400 weight, Gray
-
-Interactive Elements:
-Buttons, Links use 500 weight for emphasis
-```
+Visible in empty canvas space. Disappears under cards (cards have opaque background). No color — purely neutral.
 
 ---
 
@@ -137,415 +84,241 @@ Buttons, Links use 500 weight for emphasis
 
 ### Buttons
 
-**Primary Button** (Main CTA)
+**Primary Button** (Main CTA — "Connect Wallet", "Swap", "Add Liquidity")
 ```
-Background: #7C3AED (Purple)
-Text: White
-Padding: 12px 24px
-Border-radius: 8px
-Font-size: 14px
-Font-weight: 500
-Transition: 0.2s ease
-
-Hover: #6D28D9 (Darker)
-Disabled: #94A3B8 (Gray)
+Background:    #C6F135 (brand)
+Text:          #0A0A0B (base-bg — dark text on lime)
+Height:        h-10 (md) / h-14 (lg — full-width CTA)
+Radius:        rounded-xl (20px)
+Hover:         bg-brand-dark (#A8D629) + shadow-glow-sm
+Active:        opacity-90
+Disabled:      opacity-40, no shadow
+Shadow:        none by default — glow only on hover
 ```
 
-**Secondary Button** (Alternative CTA)
+**Ghost Button** (Secondary actions)
 ```
-Background: #F59E0B (Amber)
-Text: #0F172A (Navy)
-Padding: 12px 24px
-Border-radius: 8px
-Font-size: 14px
-Font-weight: 500
-Transition: 0.2s ease
-
-Hover: #D97706 (Darker Amber)
-Disabled: #CBD5E1 (Gray)
+Background:    base-card
+Text:          ink-secondary
+Border:        1px base-border
+Hover:         bg-base-elevated, text-ink, border-base-border-light
 ```
 
-**Tertiary Button** (Link style)
+**Outline Button** (Tertiary)
 ```
-Background: Transparent
-Text: #7C3AED (Purple)
-Padding: 8px 16px
-Border: 1px solid #E2E8F0 (Border)
-Border-radius: 8px
-Font-size: 14px
+Background:    transparent
+Text:          brand
+Border:        brand-border
+Hover:         bg-brand-faint, border-brand
+```
 
-Hover: Background #F3F4F6 (Light gray)
+**Danger Button**
+```
+Background:    red/10
+Text:          red
+Border:        red/20
+Hover:         bg-red/20
 ```
 
 ### Cards
 
-**Standard Card**
 ```
-Background: #1E293B (Card Surface)
-Border: 1px solid #334155 (Border)
-Border-radius: 12px
-Padding: 24px
-Box-shadow: None (flat design)
-Transition: Box-shadow 0.2s ease
-
-Hover: Box-shadow 0 4px 6px rgba(0,0,0,0.1)
-```
-
-**Elevated Card**
-```
-Background: #1E293B
-Border: None
-Border-radius: 12px
-Padding: 24px
-Box-shadow: 0 4px 12px rgba(0,0,0,0.15)
-
-On Hover: Box-shadow 0 8px 16px rgba(0,0,0,0.2)
+Background:    base-card (#17181C)
+Border:        1px base-border (#26272C)
+Radius:        rounded-2xl (24px) — noticeably roomy
+Padding:       p-5 (20px)
+Shadow:        none by default (separation by shade, not shadow)
+Hover:         bg-base-elevated (shade shift, no border color change to green)
 ```
 
 ### Input Fields
 
 ```
-Background: #0F172A (Dark)
-Border: 1px solid #334155
-Border-radius: 8px
-Padding: 12px 16px
-Font-size: 14px
-Color: White
-
-Focus: Border #7C3AED (Purple highlight)
-Error: Border #EF4444 (Red)
-Disabled: Background #1E293B, Opacity 0.5
+Background:    base-surface
+Border:        1px base-border
+Radius:        rounded-xl
+Padding:       px-4 py-3
+Font-size:     text-sm (labels) / text-4xl (swap amount)
+Number fields: font-variant-numeric: tabular-nums (.tabular-nums class)
+Focus:         border-base-border-light, no glow (glow reserved for CTAs)
 ```
 
-### Badge/Pill
+### Token Selector Pill
 
 ```
-Background: #7C3AED (Purple)
-Text: White
-Padding: 4px 12px
-Border-radius: 16px (fully rounded)
-Font-size: 12px
-Font-weight: 500
-
-Variants:
-  - Success: Green background
-  - Error: Red background
-  - Warning: Amber background
+Background:    base-elevated
+Border:        1px base-border
+Radius:        rounded-xl
+Contents:      token icon (24px circle) + symbol text
+Hover:         border-base-border-light
 ```
+
+### Badge / Pill
+
+| Variant | Bg | Text |
+|---------|-----|------|
+| `brand` / "New" | `bg-brand` | `text-base-bg` |
+| `green` / positive | `bg-green/10` | `text-green` |
+| `yellow` / soon | `bg-yellow/15` | `text-yellow` |
+| `ghost` | `bg-base-elevated` | `text-ink-secondary` |
 
 ---
 
 ## 4. Layout & Spacing
 
+### Sidebar
+- Width: `w-16` (icon-only) — 64px
+- Background: `base-surface`
+- No visible border separation from page (same shade)
+- Nav grouped by section: **Trade**, **Earn**, **Manage**
+- Section labels: `text-[9px] font-semibold uppercase tracking-widest text-ink-faint`
+- Active item: `bg-base-elevated text-ink` (neutral highlight — NOT brand fill)
+- Active indicator: small `bg-brand` dot at top-right of active icon
+- "Soon" items: small `bg-yellow` dot
+
 ### Spacing Scale
 ```
-xs: 4px
-sm: 8px
-md: 16px
-lg: 24px
-xl: 32px
-2xl: 48px
-3xl: 64px
+xs: 4px   | sm: 8px   | md: 16px
+lg: 24px  | xl: 32px  | 2xl: 48px
 ```
 
-### Grid System
+### Border Radius
 ```
-Base: 12-column grid
-Gutter: 24px (md)
-Max-width: 1280px (2xl)
-Padding: 16px-32px (responsive)
+DEFAULT: 10px  | lg: 16px  | xl: 20px  | 2xl: 24px  | pill: 9999px
 ```
 
-### Card Spacing
-```
-Horizontal gap between cards: 24px
-Vertical gap between cards: 24px
-Padding inside cards: 24px
-```
+Cards use `rounded-2xl` (24px). Buttons use `rounded-xl` (20px). Chips/badges use `rounded-pill`.
+
+### Gaps
+- Between cards: `gap-3` (12px) or `gap-4` (16px)
+- Inside cards: `p-5` (20px)
+- Between major sections: `space-y-6` (24px)
 
 ---
 
 ## 5. Dark Mode Only
 
-Bulldex Finance is **dark mode only** - no light theme.
+Bulldex Finance is **dark mode only**.
 
 ```
-Background (Page): #0F172A
-Surface (Cards): #1E293B
-Text (Primary): #FFFFFF
-Text (Secondary): #CBD5E1
-Border: #334155
+Page BG:       #0A0A0B  (neutral near-black, NOT green-tinted)
+Card:          #17181C  (neutral charcoal)
+Text primary:  #F2F2F3  (near-white, NOT green-white)
+Text muted:    #9A9DA6  (neutral gray, NOT green-gray)
+Border:        #26272C  (hairline, barely visible)
 ```
 
 **Why dark mode only?**
-- Bullish, modern aesthetic
-- Better for crypto/trading apps
-- Less clutter, better focus
-- Aligns with Jupiter/Uniswap inspiration
+- Bullish, modern aesthetic aligned with Jupiter/Uniswap
+- Better for crypto/trading interfaces
+- Neutral base makes accent colors pop more
 
 ---
 
 ## 6. Icons
 
-**Icon Library:** Tabler Icons (outline only)
-- Consistent, clean style
-- 200+ icons available
-- Scalable to any size
-- Free and open-source
+**Icon Library:** Inline SVG (hand-coded) — same spec as Tabler Icons "Regular"
 
-**Icon Sizing**
+**Spec:**
 ```
-Inline (in text): 16px
-Button icons: 20px
-Large icons: 24px
-Hero section: 48px+
-```
-
-**Icon Colors**
-```
-Primary: #7C3AED (Purple)
-Secondary: #F59E0B (Amber)
-Success: #10B981 (Green)
-Error: #EF4444 (Red)
-Muted: #64748B (Gray)
-White: #FFFFFF
+Size:          18-20px viewBox
+Stroke-width:  1.5px
+Line caps:     round (strokeLinecap="round")
+Joins:         round (strokeLinejoin="round")
+Fill:          none (outline only)
+Color:         inherits currentColor
+Active:        text-ink (white)
+Idle:          text-ink-faint (gray)
 ```
 
-**Icon Usage**
-```
-✓ Use outline icons only
-✓ Pair with text labels when unclear
-✓ Use consistent size throughout
-✗ Don't use filled icons
-✗ Don't change proportions
-✗ Don't apply filters/effects
-```
+**No download needed** — inline SVGs already match this spec. If adding new icons, source from Lucide or Tabler Icons "regular" weight.
 
 ---
 
-## 7. Photography & Imagery
+## 7. Typography
 
-**Style:** Minimalist, abstract, geometric
+**Font:** Inter (loaded via `next/font/google`) — system-ui fallback
 
-**Subject Matter**
-- ✓ Abstract bull/market imagery
-- ✓ Charts, graphs, financial visuals
-- ✓ Digital/crypto aesthetics
-- ✗ Real people's faces
-- ✗ Generic stock photography
-- ✗ Photorealistic images
-
-**Color Treatment**
-- Use brand colors (purple, amber)
-- Keep dark background
-- Overlay with gradient if needed
+| Element | Size | Weight | Color |
+|---------|------|--------|-------|
+| Swap input amount | `text-4xl` (36px) | 400 normal | `text-ink` |
+| Page title / Card title | `text-base` / `text-lg` | 600 semibold | `text-ink` |
+| Nav item | `text-sm` (14px) | 500 medium | `text-ink` / `text-ink-faint` |
+| Body copy | `text-sm` (14px) | 400 | `text-ink-secondary` |
+| Captions / labels | `text-xs` (12px) | 500 medium | `text-ink-faint` |
+| Button label | `text-sm` (14px) | 600 semibold | `text-base-bg` (on primary) |
+| Price / numbers | any | any | + `.tabular-nums` class |
 
 ---
 
 ## 8. Writing Style (Tone of Voice)
 
-### Brand Voice
-
-**Bullish** - Optimistic, confident, empowering
-- "Trade with power"
-- "Maximize your gains"
-
-**Accessible** - Clear, jargon-free, helpful
-- Explain concepts simply
-- Guide users step-by-step
-
-**Playful** - Fun, witty, memorable
-- "Trade Like a Bull. Earn Like a Beast."
-- Use bull/market metaphors
-
-**Professional** - Trustworthy, reliable, secure
-- Clear error messages
-- Transparent pricing/fees
-
-### Copy Guidelines
-
-```
-✓ Active voice: "Swap tokens now"
-✓ Action-oriented: "Claim rewards"
-✓ Short sentences
-✓ Call-to-action buttons in caps: "SWAP", "STAKE"
-
-✗ Passive: "Tokens can be swapped"
-✗ Vague: "Do something"
-✗ Long paragraphs
-✗ Marketing fluff
-```
-
-### Example Copy
+**Bullish** — "Trade Like a Bull. Earn Like a Beast."
+**Accessible** — explain concepts simply, guide step-by-step
+**Direct** — no marketing fluff, active voice, short sentences
 
 | Component | Copy | Tone |
 |-----------|------|------|
-| Hero | "Trade Like a Bull. Earn Like a Beast." | Bullish, catchy |
-| CTA Button | "START TRADING" | Action, bold |
-| Error | "Insufficient balance. Get more funds to continue." | Clear, helpful |
-| Success | "Swap complete! Check Etherscan →" | Positive, linked |
-| Empty State | "No transactions yet. Make your first swap!" | Encouraging |
+| Hero | "Trade Like a Bull. Earn Like a Beast." | Bullish |
+| CTA | "Start Trading" / "Add Liquidity" | Action |
+| Error | "Insufficient balance." | Clear |
+| Success | "Swap complete! View on Etherscan →" | Positive |
+| Empty | "No position yet. Add liquidity to start earning." | Encouraging |
 
 ---
 
-## 9. Application Examples
+## 9. What Green Means at a Glance
 
-### Homepage Hero Section
-```
-Background: Gradient from #0F172A to #1E293B
-Heading: 48px, 700 weight, Purple
-Subheading: 24px, 400 weight, Gray
-Button: Primary (Purple) + Secondary (Amber)
-Icon: Large bull icon, 64px
-```
+> Green is a **signal color**, not a background fill. It occupies ~5% of surface area.
 
-### Swap Card
-```
-Title: "Swap", 20px, 600 weight
-Input 1: Dark input field, "You sell"
-Swap Icon: 24px, centered
-Input 2: Dark input field, "You receive"
-Info Row: Gas cost, slippage (small gray text)
-Button: Primary "SWAP" button
-```
+**`brand` (#C6F135 lime)** — use on:
+- Primary CTA button fill
+- Active tab/nav indicator dot
+- "New" / live badge
 
-### Transaction Pending
-```
-Background: Card surface #1E293B
-Spinner: Animated purple circle
-Text: "Swapping...", gray secondary text
-Hash: Monospace address (truncated)
-Link: "View on Etherscan" (amber link)
-```
+**`green` (#4ADE80 emerald)** — use on:
+- Positive price numbers (+3.2%)
+- Success checkmark icon
+- "Live" pulse dot
+- "Done" roadmap indicators
 
-### Success State
-```
-Background: Card with green accent
-Icon: Checkmark (green), 48px
-Heading: "Transaction Complete", green text
-Hash: "0x1234..." with copy button
-Link: "View on Etherscan" (amber)
-Button: "Done" or "Back to Dashboard"
-```
+**Everything else** — use neutral `base-*` and `ink-*` tokens.
 
 ---
 
-## 10. Social Media & Marketing
-
-### Social Media Assets
-
-**Twitter/X**
-- Header: 1500x500px
-- Avatar: 400x400px (bull icon)
-- Post images: 1200x675px
-- Colors: Use full brand palette
-- Tone: Bullish, playful, informative
-
-**Discord** (Future)
-- Server icon: Bull head, 1024x1024px
-- Banner: 960x540px
-- Roles: Purple/amber colors
-
-### Hashtags
-```
-Primary:
-#BulldexFinance #BullDeFi #DeFi
-
-Community:
-#BuildInPublic #DeFiBuilder #Sepolia
-```
-
-### Brand Mentions
-```
-"Bulldex Finance - Decentralized Trading Protocol"
-"Trade Like a Bull. Earn Like a Beast."
-@wayphantomme
-```
-
----
-
-## 11. Usage Examples
-
-### ✅ DO's
-
-✅ Use bull imagery and metaphors  
-✅ Maintain purple + amber color scheme  
-✅ Keep dark background consistent  
-✅ Use outline icons from Tabler  
-✅ Write in active, bullish voice  
-✅ Keep spacing consistent (4px grid)  
-✅ Use only specified fonts  
-✅ Apply hover/active states to interactive elements  
-
-### ❌ DON'Ts
-
-❌ Use light theme/light backgrounds  
-❌ Apply gradient effects to logo  
-❌ Mix other color schemes  
-❌ Use filled/solid icons  
-❌ Use serif fonts  
-❌ Add shadows or heavy effects  
-❌ Distort logo proportions  
-❌ Use marketing fluff or jargon  
-
----
-
-## 12. Resources
-
-### Design Files
-- Figma: (To be created)
-- Logo SVG: `/brand/logo.svg`
-- Colors: `/brand/colors.css`
-- Fonts: Google Fonts (Inter, Geist Sans)
-
-### Tools Used
-- **UI Framework:** Tailwind CSS
-- **Icons:** Tabler Icons (outline)
-- **Design Tool:** Figma (when available)
-- **Fonts:** System fonts + Google Fonts
-
----
-
-## 13. Checklist for New Designs
+## 10. Checklist for New Designs
 
 Before shipping any UI:
 
-- [ ] Uses brand colors (purple/amber)
-- [ ] Dark background only
-- [ ] Consistent typography scale
-- [ ] Proper spacing (4px grid)
-- [ ] Tabler outline icons only
-- [ ] Hover/active states defined
-- [ ] 8px border-radius (12px for cards)
-- [ ] Responsive layout tested
-- [ ] Accessibility checked (contrast ratios)
-- [ ] Copy is bullish and clear
-- [ ] No drop shadows or effects
-- [ ] Brand voice consistent
+- [ ] Page background is neutral black (`base-bg #0A0A0B`), not green-tinted
+- [ ] Cards are neutral charcoal (`base-card #17181C`), not olive
+- [ ] Green only on: CTA fill (`brand`), active indicator, price positive (`green`), success state — nowhere else
+- [ ] Muted text is neutral gray (`ink-secondary #9A9DA6`), not green-gray
+- [ ] Dot-grid background visible in empty space, invisible under cards
+- [ ] Icons: thin outline, 18-20px, 1.5px stroke, single color (no fill, no glow)
+- [ ] Font: Inter, numeric fields use `.tabular-nums`
+- [ ] Card corners: `rounded-2xl` (24px) — noticeably roomy
+- [ ] Main CTA: `bg-brand` solid, `text-base-bg`, `hover:bg-brand-dark`
+- [ ] No green shadows (`shadow-glow`) on static cards — glow on hover only
+- [ ] Responsive layout tested on mobile
 
 ---
 
-## 14. Brand Evolution
+## 11. Resources
 
-**Version 1.0** (Current)
-- Bull logo
-- Purple + Amber colors
-- Dark mode only
-- Tabler icons
-- Sans-serif typography
-
-**Future Considerations**
-- Bull mascot character (v2)
-- Animated bull logo (v2)
-- Light mode option (v3)
-- Additional asset types (v3)
+- **App:** https://bulldex-finance.vercel.app
+- **Docs:** https://bulldex-finance.vercel.app/docs
+- **GitHub:** https://github.com/wayphantomme/bulldex-finance
+- **Config:** `frontend/tailwind.config.ts` — canonical color/radius tokens
+- **Globals:** `frontend/src/app/globals.css` — body bg, shimmer, RainbowKit overrides
+- **Icon source:** Lucide / Tabler Icons (regular weight)
+- **Design reference:** `skills/DESIGN.md` — Jupiter-style analysis + implementation plan
 
 ---
 
-**Last Updated:** 2026-08-24  
-**Maintained by:** Phantom  
-**Questions?** Check PRD.md or TRD.md for context
+**Last Updated:** 2026-08-26 (Phase 1-4 Jupiter-style upgrade)
+**Maintained by:** Phantom (@wayphantomme)
 
 ---
 
-**Trade Like a Bull. Earn Like a Beast. 💪📈**
+**Trade Like a Bull. Earn Like a Beast.**

@@ -15,7 +15,9 @@
 
   body {
     @apply bg-base-bg text-ink font-sans;
-    background-image: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(74,222,128,0.07) 0%, transparent 60%);
+    /* Neutral dot-grid — visible in open space, disappears under cards */
+    background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
     background-attachment: fixed;
     min-height: 100vh;
   }
@@ -45,9 +47,9 @@
     border: 1px solid rgba(255,255,255,0.05);
   }
 
-  /* Shimmer skeleton - green-tinted */
+  /* Shimmer skeleton — neutral */
   .shimmer {
-    background: linear-gradient(90deg, #161C16 0%, #1D261D 40%, #161C16 80%);
+    background: linear-gradient(90deg, #17181C 0%, #1E1F24 40%, #17181C 80%);
     background-size: 200% 100%;
     animation: shimmer 1.6s infinite linear;
   }
@@ -68,20 +70,20 @@
   /* Divider */
   .divider { @apply h-px w-full bg-base-border; }
 
-  /* ── RainbowKit overrides - green theme, no purple ─────────────────────── */
+  /* ── RainbowKit overrides — lime-green brand, no purple ────────────────── */
   [data-rk] {
-    --rk-colors-accentColor: #4ADE80;
-    --rk-colors-accentColorForeground: #0C0F0C;
-    --rk-colors-modalBackground: #161C16;
-    --rk-colors-modalBorder: #243024;
-    --rk-colors-modalText: #E8F0E8;
-    --rk-colors-modalTextSecondary: #8FA88F;
-    --rk-colors-connectButtonBackground: #161C16;
-    --rk-colors-connectButtonBorder: #243024;
-    --rk-colors-connectButtonText: #E8F0E8;
-    --rk-colors-connectButtonInnerBackground: #1D261D;
+    --rk-colors-accentColor: #C6F135;
+    --rk-colors-accentColorForeground: #0A0A0B;
+    --rk-colors-modalBackground: #17181C;
+    --rk-colors-modalBorder: #26272C;
+    --rk-colors-modalText: #F2F2F3;
+    --rk-colors-modalTextSecondary: #9A9DA6;
+    --rk-colors-connectButtonBackground: #17181C;
+    --rk-colors-connectButtonBorder: #26272C;
+    --rk-colors-connectButtonText: #F2F2F3;
+    --rk-colors-connectButtonInnerBackground: #1E1F24;
     --rk-radii-connectButton: 10px;
-    --rk-radii-modal: 16px;
+    --rk-radii-modal: 20px;
     --rk-fonts-body: 'Inter', sans-serif;
   }
 }
@@ -110,6 +112,11 @@
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Tabular numbers for prices/amounts */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 
   /* Glow border */
   .border-glow {

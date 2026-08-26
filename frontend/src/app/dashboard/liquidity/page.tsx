@@ -205,7 +205,7 @@ export default function LiquidityPage() {
                   className={cn(
                     'flex-1 py-3 text-sm font-medium transition-colors',
                     tab === t
-                      ? 'border-b-2 border-green text-green'
+                      ? 'border-b-2 border-brand text-brand'
                       : 'text-ink-secondary hover:text-ink',
                   )}
                 >
@@ -215,7 +215,7 @@ export default function LiquidityPage() {
               {/* Settings */}
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className={cn('px-4 text-ink-faint transition-colors hover:text-ink', showSettings && 'text-green')}
+                className={cn('px-4 text-ink-faint transition-colors hover:text-ink', showSettings && 'text-brand')}
                 aria-label="Settings"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -236,7 +236,7 @@ export default function LiquidityPage() {
                       className={cn(
                         'flex-1 rounded-lg py-1.5 text-xs font-medium transition-colors border',
                         slippageBps === opt.bps
-                          ? 'bg-green/15 text-green border-green/30'
+                          ? 'bg-brand/10 text-brand border-green/30'
                           : 'bg-base-elevated text-ink-secondary border-base-border hover:text-ink',
                       )}
                     >
@@ -391,7 +391,7 @@ function RemoveTab({
       <ConnectButton.Custom>
         {({ openConnectModal }) => (
           <button onClick={openConnectModal}
-            className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
+            className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
             Connect Wallet
           </button>
         )}
@@ -431,7 +431,7 @@ function RemoveTab({
               className={cn(
                 'flex-1 rounded-lg py-1.5 text-xs font-semibold transition-colors border',
                 lpPct === p
-                  ? 'border-green/30 bg-green/15 text-green'
+                  ? 'border-green/30 bg-brand/10 text-brand'
                   : 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink',
               )}
             >
@@ -541,7 +541,7 @@ function ActionButton({
       <ConnectButton.Custom>
         {({ openConnectModal }) => (
           <button onClick={openConnectModal}
-            className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
+            className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
             Connect Wallet
           </button>
         )}
@@ -575,7 +575,7 @@ function ActionButton({
 
   if (stepSuccess) return (
     <div className="space-y-2">
-      <div className="flex items-center justify-center gap-2 rounded-xl border border-green/30 bg-green/10 py-3">
+      <div className="flex items-center justify-center gap-2 rounded-xl border border-green/20 bg-green/5 py-3">
         <svg className="h-4 w-4 text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
@@ -583,7 +583,7 @@ function ActionButton({
       </div>
       {txHash && (
         <a href={etherscanUrl(txHash, 'tx')} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-1 text-xs text-ink-faint hover:text-green transition-colors">
+          className="flex items-center justify-center gap-1 text-xs text-ink-faint hover:text-ink-secondary transition-colors">
           {shortenHash(txHash)} →
         </a>
       )}
@@ -608,7 +608,7 @@ function ActionButton({
 
   return (
     <button onClick={onSubmit}
-      className="w-full rounded-xl bg-green py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
+      className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:opacity-90 transition-opacity">
       {needsApproval ? labels.needsApprove : labels.action}
     </button>
   );

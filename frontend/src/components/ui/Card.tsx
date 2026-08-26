@@ -19,7 +19,7 @@ export function Card({ variant = 'default', noPadding, className, children, ...p
   return (
     <div
       className={cn(
-        'rounded-xl transition-all duration-200',
+        'rounded-2xl transition-all duration-200',
         variants[variant],
         !noPadding && 'p-5',
         className,
