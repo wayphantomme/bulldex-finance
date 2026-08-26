@@ -78,3 +78,23 @@ export const FACTORY_ABI = [
   { type: 'function', name: 'createPool', inputs: [{ name: 'tokenA', type: 'address' }, { name: 'tokenB', type: 'address' }], outputs: [{ name: 'pool', type: 'address' }], stateMutability: 'nonpayable' },
   { type: 'event', name: 'PoolCreated', inputs: [{ name: 'token0', type: 'address', indexed: true }, { name: 'token1', type: 'address', indexed: true }, { name: 'pool', type: 'address', indexed: false }, { name: 'poolCount', type: 'uint256', indexed: false }] },
 ] as const;
+
+// ─── WETH (Wrapped Ether) ─────────────────────────────────────────────────────
+export const WETH_ABI = [
+  { type: 'function', name: 'name',     inputs: [], outputs: [{ type: 'string' }],  stateMutability: 'view' },
+  { type: 'function', name: 'symbol',   inputs: [], outputs: [{ type: 'string' }],  stateMutability: 'view' },
+  { type: 'function', name: 'decimals', inputs: [], outputs: [{ type: 'uint8' }],   stateMutability: 'view' },
+  { type: 'function', name: 'totalSupply', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'balanceOf', inputs: [{ name: 'account', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'allowance', inputs: [{ name: 'owner', type: 'address' }, { name: 'spender', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'approve',  inputs: [{ name: 'guy', type: 'address' }, { name: 'wad', type: 'uint256' }],  outputs: [{ type: 'bool' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'transfer', inputs: [{ name: 'dst', type: 'address' }, { name: 'wad', type: 'uint256' }],  outputs: [{ type: 'bool' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'transferFrom', inputs: [{ name: 'src', type: 'address' }, { name: 'dst', type: 'address' }, { name: 'wad', type: 'uint256' }], outputs: [{ type: 'bool' }], stateMutability: 'nonpayable' },
+  // WETH-specific
+  { type: 'function', name: 'deposit',  inputs: [], outputs: [], stateMutability: 'payable' },
+  { type: 'function', name: 'withdraw', inputs: [{ name: 'wad', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'event',    name: 'Deposit',    inputs: [{ name: 'dst', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
+  { type: 'event',    name: 'Withdrawal', inputs: [{ name: 'src', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
+  { type: 'event',    name: 'Transfer',   inputs: [{ name: 'src', type: 'address', indexed: true }, { name: 'dst', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
+  { type: 'event',    name: 'Approval',   inputs: [{ name: 'src', type: 'address', indexed: true }, { name: 'guy', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
+] as const;

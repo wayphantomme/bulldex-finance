@@ -5,3 +5,6 @@ export { useSwap, parseAmount, applySlippage } from './useSwap';
 export { usePoolStats, usePoolShare } from './usePoolStats';
 export { useAddLiquidity } from './useAddLiquidity';
 export { useRemoveLiquidity } from './useRemoveLiquidity';
+export { useTokenBalances, getBalanceForSymbol } from './useTokenBalances';
+export { useMultiPool } from './useMultiPool';
+export { useMultiSwap } from './useMultiSwap';
