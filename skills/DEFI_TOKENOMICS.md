@@ -253,3 +253,36 @@ healthFactor = (collateralValue * LTV) / borrowedValue
 midPrice = amountIn * reserveOut / reserveIn
 impact   = (midPrice - amountOut) / midPrice * 10000
 ```
+
+
+---
+
+## 11. WETH Pool (Aug 2026)
+
+### Kenapa Perlu WETH
+Pool.sol pakai `IERC20.transferFrom` - tidak bisa menerima native ETH langsung.
+Solusi: deploy WETH9-style wrapper, create BDX/WETH pool.
+
+### BDX/WETH Pool
+```
+Address:       0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4
+Initial seed:  1,000,000 BDX + 0.1 WETH
+Initial price: 1 WETH = 10,000,000 BDX
+```
+
+### Frontend Flow ETH -> BDX
+```
+1. WETH.deposit{value: amountIn}()     // wrap ETH
+2. WETH.approve(pool, MAX)             // approve
+3. Pool.swap(WETH, amount, minOut, user) // swap
+```
+
+User melihat "ETH" di UI tapi di-backend pakai WETH contract.
+
+### Dua Pool Aktif
+| Pool | Address | Tokens |
+|------|---------|--------|
+| BDX/MUSDC | 0xfac1b95... | BDX + MUSDC |
+| BDX/WETH  | 0x3cA1cE1... | BDX + WETH (ETH) |
+
+Pool routing otomatis via `getPoolAddress(tokenA, tokenB)` di contracts.ts.

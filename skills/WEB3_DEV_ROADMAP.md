@@ -860,3 +860,35 @@ GitHub: github.com/wayphantomme/bulldex-finance
 **Author:** @wayphantomme  
 
 **"Ship code. Build in public. Get hired."**
+
+
+---
+
+## Progress Log (Bulldex Finance)
+
+### Completed (Aug 2026)
+- [x] ERC-20 token dengan permit, burn, supply cap (Token.sol)
+- [x] AMM x*y=k dengan LP tokens (Pool.sol) - 40 tests
+- [x] Pool factory dengan bidirectional lookup (PoolFactory.sol)
+- [x] WETH wrapper contract (WETH.sol) - ETH/BDX pool
+- [x] Testnet deployment + liquidity seeding (Sepolia)
+- [x] Full Next.js 14 frontend dengan wagmi v2
+- [x] Liquidity UI - add/remove LP dengan pool share display
+- [x] Faucet page - MUSDC claim 1000/day dengan cooldown
+- [x] Multi-token swap dengan ETH auto-wrap
+- [x] Multi-pool routing (BDX/MUSDC + BDX/WETH)
+- [x] Jupiter-style design - neutral base, lime brand, dot grid, Lucide icons
+- [x] /docs page - nekosinga-style dengan search, TOC, GitHub link
+- [x] 73 tests passing, CI/CD via GitHub Actions, Vercel deploy
+
+### In Progress
+- [ ] Lending & Borrowing (Lending.sol, health factor, liquidation)
+
+### Key Technical Skills Demonstrated
+- Solidity contract architecture - inheritance, custom errors, events
+- Foundry testing - unit, fuzz, invariant, vm.prank
+- wagmi v2 multicall pattern for efficient RPC usage
+- State machine pattern untuk multi-step Web3 transactions
+- Token wrapping flow (ETH -> WETH -> Pool)
+- Dynamic pool routing based on token pair
+- DeFi math: x*y=k, sqrt LP mint, proportional LP burn, price impact
