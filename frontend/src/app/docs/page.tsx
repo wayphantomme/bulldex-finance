@@ -195,9 +195,9 @@ export default function DocsPage() {
               <div key={group.label}>
                 <button
                   onClick={() => setExpandedGroups((p) => ({ ...p, [group.label]: !p[group.label] }))}
-                  className="flex w-full items-center justify-between px-2 mb-1.5"
+                  className="flex w-full items-center justify-between px-2.5 mb-1"
                 >
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#55565D]">
+                  <span className="text-[11px] font-medium uppercase tracking-widest text-[#55565D]">
                     {group.label}
                   </span>
                   <ChevronDown className={cn(
@@ -207,21 +207,18 @@ export default function DocsPage() {
                 </button>
 
                 {expandedGroups[group.label] && (
-                  <ul className="space-y-0.5">
+                    <ul className="space-y-0.5">
                     {group.items.map((item) => (
                       <li key={item.id}>
                         <button
                           onClick={() => navigate(item.id)}
                           className={cn(
-                            'w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors',
+                            'w-full py-1 text-left text-[13px] transition-colors pl-3 border-l-2',
                             activeSection === item.id
-                              ? 'bg-[#1E1F24] text-[#F2F2F3] font-medium'
-                              : 'text-[#9A9DA6] hover:bg-[#17181C] hover:text-[#F2F2F3]',
+                              ? 'border-[#C6F135] text-[#F2F2F3] font-medium'
+                              : 'border-transparent text-[#9A9DA6] hover:text-[#F2F2F3] hover:border-[#333339]',
                           )}
                         >
-                          {activeSection === item.id && (
-                            <span className="mr-2 inline-block h-1 w-1 rounded-full bg-[#C6F135] align-middle" />
-                          )}
                           {item.label}
                         </button>
                       </li>
