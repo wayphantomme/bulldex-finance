@@ -19,8 +19,8 @@ A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, l
 | Week | Deliverable | Status |
 |------|-------------|--------|
 | 1-2 | BDX Token + AMM Swap + Pool | ✅ Live |
-| 3-4 | Liquidity UI + LP analytics | 🔄 Active |
-| 5-6 | Lending & Borrowing | ⬜ |
+| 3-4 | Liquidity UI + LP analytics | ✅ Live |
+| 5-6 | Lending & Borrowing | 🔄 Active |
 | 7-8 | Staking & Farming | ⬜ |
 | 9-10 | Vesting | ⬜ |
 | 11-12 | Flash Loans + Governance DAO | ⬜ |

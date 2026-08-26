@@ -35,8 +35,9 @@ const NAV = [
   {
     label: 'Dev Log',
     items: [
-      { id: 'week2', label: 'Week 2 - AMM Swap' },
-      { id: 'week1', label: 'Week 1 - Foundation' },
+      { id: 'week3', label: 'Week 3-4 | Liquidity UI' },
+      { id: 'week2', label: 'Week 2 | AMM Swap' },
+      { id: 'week1', label: 'Week 1 | Foundation' },
     ],
   },
   {
@@ -444,6 +445,36 @@ lpMinted = min(
             </div>
           </Section>
 
+          {/* ── Week 3-4 ────────────────────────────────────────────────── */}
+          <Section id="week3">
+            <H2>Week 3-4 | Liquidity UI</H2>
+            <p className="text-sm text-ink-secondary">
+              Built full liquidity provision UI — add/remove liquidity with real-time pool stats,
+              LP token display, pool share calculator, and approve flow for both tokens.
+            </p>
+
+            <H3>What was built</H3>
+            <ul className="space-y-1 text-sm text-ink-secondary">
+              {[
+                'usePoolStats.ts - multicall 7 reads, isBDXToken0 detection, formatted reserves/prices, K/M formatting',
+                'useAddLiquidity.ts - sequential approve BDX then MUSDC then addLiquidity, MAX approval, token sort by address',
+                'useRemoveLiquidity.ts - no LP approval needed (_burn(msg.sender)), slider-based % removal',
+                'usePoolShare.ts - calculates share%, bdxAmount, musdcAmount from LP balance',
+                'Liquidity page - Add tab (auto-paired amounts from pool ratio) + Remove tab (% slider with quick buttons)',
+                'Pool stats sidebar - live reserves, prices, fee, total LP',
+                'Your position card - LP balance, pool share %, estimated token amounts',
+                'First deposit warning - detects empty pool, no ratio enforcement',
+              ].map((item, i) => (
+                <li key={i} className="flex gap-2"><span className="text-green">+</span>{item}</li>
+              ))}
+            </ul>
+
+            <H3>Problems & Solutions</H3>
+            <div className="space-y-3">
+              {WEEK3_PROBLEMS.map((p, i) => <ProblemCard key={i} {...p} />)}
+            </div>
+          </Section>
+
           {/* ── Week 2 ────────────────────────────────────────────────────── */}
           <Section id="week2">
             <H2>Week 2 - AMM / DEX Swap</H2>
@@ -660,6 +691,21 @@ function Callout({ type, children }: { type: 'warning' | 'info'; children: React
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
+
+const WEEK3_PROBLEMS = [
+  {
+    problem: 'Pool ABI missing allowance function — useRemoveLiquidity tried to read LP allowance',
+    solution: 'Pool.removeLiquidity calls _burn(msg.sender) directly, no allowance needed. Removed the allowance read entirely, simplified the flow to just call removeLiquidity directly.',
+  },
+  {
+    problem: 'Token sort order mismatch — addLiquidity was passing BDX/MUSDC in wrong order to pool',
+    solution: 'Pool sorts tokens canonically (lower address = token0). Added isBDXToken0 check by comparing CONTRACTS.token.address < CONTRACTS.musdc.address, then swap amount0/amount1 args accordingly.',
+  },
+  {
+    problem: 'Auto-paired input broken on first deposit — division by zero when reserves are empty',
+    solution: 'Added pool.hasLiquidity guard before calculating ratio. On first deposit, both inputs are independent (user sets the initial price).',
+  },
+];
 
 const WEEK2_PROBLEMS = [
   {
