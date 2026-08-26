@@ -15,9 +15,9 @@
 
   body {
     @apply bg-base-bg text-ink font-sans;
-    /* Neutral dot-grid — visible in open space, disappears under cards */
-    background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 24px 24px;
+    /* Dot-grid pattern — same as Jupiter, visible in open space */
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 22px 22px;
     background-attachment: fixed;
     min-height: 100vh;
   }

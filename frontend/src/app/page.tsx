@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { cn } from '@/utils/cn';
 
 export default function HomePage() {
   return (
@@ -17,7 +18,7 @@ export default function HomePage() {
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/docs" className="text-xs text-ink-secondary transition-colors hover:text-ink">Docs</Link>
-          <Link href="/dashboard/swap" className="rounded-lg bg-brand transition-all hover:bg-brand-dark">
+          <Link href="/dashboard/swap" className="rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-base-bg transition-all hover:bg-brand-dark">
             Launch App
           </Link>
         </div>
@@ -45,7 +46,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-2.5">
-              <Link href="/dashboard/swap" className="rounded-xl bg-brand transition-all hover:bg-brand-dark">
+              <Link href="/dashboard/swap" className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark">
                 Launch App
               </Link>
               <Link href="/docs" className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
@@ -143,26 +144,42 @@ export default function HomePage() {
               <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-1">16-Week Build</p>
               <p className="text-base font-bold text-ink">Roadmap</p>
             </div>
-            <div className="flex items-center gap-3 text-xs text-ink-faint">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-green" />Done</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-yellow" />Active</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-base-elevated border border-base-border" />Upcoming</span>
+            <div className="flex items-center gap-4 text-xs text-ink-faint">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-green" />Done
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-yellow" />Active
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-base-border-light" />Upcoming
+              </span>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
             {ROADMAP.map((item) => (
               <div
                 key={item.title}
-                className={`rounded-xl p-3.5 border ${
+                className={cn(
+                  'rounded-xl p-3 border flex flex-col gap-2 transition-all',
                   item.status === 'done'
                     ? 'border-green/25 bg-green/5'
                     : item.status === 'active'
-                    ? 'border-base-border-light bg-base-elevated'
-                    : 'border-base-border bg-base-surface opacity-50'
-                }`}
+                    ? 'border-yellow/30 bg-yellow/5'
+                    : 'border-base-border bg-base-surface opacity-40',
+                )}
               >
-                <p className="text-[10px] font-semibold text-ink-faint mb-2">{item.phase}</p>
-                <p className="text-xs font-semibold text-ink leading-snug">{item.title}</p>
+                {/* Status dot */}
+                <span className={cn(
+                  'h-1.5 w-1.5 rounded-full shrink-0',
+                  item.status === 'done'    ? 'bg-green'
+                  : item.status === 'active' ? 'bg-yellow animate-pulse'
+                  : 'bg-base-border-light',
+                )} />
+                <div>
+                  <p className="text-[9px] font-semibold uppercase tracking-widest text-ink-faint">{item.phase}</p>
+                  <p className="text-xs font-semibold text-ink leading-snug mt-0.5">{item.title}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -190,7 +207,7 @@ export default function HomePage() {
             </div>
             <Link
               href="/dashboard/swap"
-              className="mt-6 block text-center rounded-xl bg-brand transition-all hover:bg-brand-dark"
+              className="mt-6 block text-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark"
             >
               Try Swap
             </Link>
@@ -251,7 +268,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Link href="/dashboard/swap" className="rounded-xl bg-brand transition-all hover:bg-brand-dark">
+            <Link href="/dashboard/swap" className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg transition-all hover:bg-brand-dark">
               Launch App
             </Link>
             <Link href="/docs" className="rounded-xl border border-base-border px-5 py-2.5 text-sm font-medium text-ink-secondary transition-colors hover:text-ink">
