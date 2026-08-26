@@ -18,7 +18,8 @@ export interface TokenInfo {
   symbol: string;
   name: string;
   decimals: number;
-  logoColor: string; // Tailwind color class for placeholder avatar
+  logoColor: string;
+  logoSrc: string; // path to icon in /public
 }
 
 export const TOKENS: Record<'BDX' | 'MUSDC', TokenInfo> = {
@@ -28,6 +29,7 @@ export const TOKENS: Record<'BDX' | 'MUSDC', TokenInfo> = {
     name: 'Bulldex Finance',
     decimals: 18,
     logoColor: 'bg-green/20 text-green',
+    logoSrc: '/bulldex-logo.png',
   },
   MUSDC: {
     address: CONTRACT_ADDRESSES.musdc,
@@ -35,6 +37,7 @@ export const TOKENS: Record<'BDX' | 'MUSDC', TokenInfo> = {
     name: 'Mock USDC',
     decimals: 18,
     logoColor: 'bg-blue-500/20 text-blue-400',
+    logoSrc: '/musdc-icon.svg',
   },
 } as const;
 

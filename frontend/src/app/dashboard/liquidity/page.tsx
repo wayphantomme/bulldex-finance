@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
+import Image from 'next/image';
 import { usePoolStats, usePoolShare } from '@/hooks/usePoolStats';
 import { useAddLiquidity } from '@/hooks/useAddLiquidity';
 import { useRemoveLiquidity } from '@/hooks/useRemoveLiquidity';
@@ -311,13 +312,7 @@ function AddTab({
       )}
 
       {/* BDX input */}
-      <TokenInput
-        label="BDX amount"
-        symbol="BDX"
-        color="text-green"
-        value={bdxInput}
-        onChange={onBdxChange}
-      />
+      <TokenInput label="BDX amount"   symbol="BDX"   value={bdxInput}   onChange={onBdxChange} />
 
       <div className="flex justify-center">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-base-border bg-base-elevated text-ink-faint">
@@ -328,13 +323,7 @@ function AddTab({
       </div>
 
       {/* MUSDC input */}
-      <TokenInput
-        label="MUSDC amount"
-        symbol="MUSDC"
-        color="text-blue-400"
-        value={musdcInput}
-        onChange={onMusdcChange}
-      />
+      <TokenInput label="MUSDC amount" symbol="MUSDC" value={musdcInput} onChange={onMusdcChange} />
 
       {/* Preview */}
       {!isEmpty && estimatedLP > 0n && (
@@ -489,11 +478,12 @@ function RemoveTab({
 // ─── Reusable sub-components ──────────────────────────────────────────────────
 
 function TokenInput({
-  label, symbol, color, value, onChange,
+  label, symbol, value, onChange,
 }: {
-  label: string; symbol: string; color: string;
+  label: string; symbol: string;
   value: string; onChange: (v: string) => void;
 }) {
+  const logoSrc = symbol === 'BDX' ? '/bulldex-logo.png' : '/musdc-icon.svg';
   return (
     <div className="rounded-xl bg-base-surface p-4">
       <p className="mb-2 text-xs text-ink-faint">{label}</p>
@@ -505,12 +495,9 @@ function TokenInput({
           onChange={(e) => onChange(e.target.value)}
           className="flex-1 bg-transparent text-2xl font-semibold text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
-        <div className="flex items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-3 py-2 shrink-0">
-          <div className={cn(
-            'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shrink-0',
-            symbol === 'BDX' ? 'bg-green/20 text-green' : 'bg-blue-500/20 text-blue-400',
-          )}>
-            {symbol[0]}
+        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-3 py-2">
+          <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full">
+            <Image src={logoSrc} alt={symbol} fill className="object-cover" sizes="24px" />
           </div>
           <span className="text-sm font-semibold text-ink">{symbol}</span>
         </div>

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
+import Image from 'next/image';
 import { usePool, useSwapQuote } from '@/hooks/usePool';
 import { useSwap, parseAmount, applySlippage } from '@/hooks/useSwap';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
@@ -164,7 +165,7 @@ export default function SwapPage() {
 
             {/* You sell */}
             <div className="mx-4 mb-1 rounded-xl bg-base-surface p-3">
-              <div className="mb-1.5 flex items-center justify-between">
+              <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs text-ink-faint">You sell</span>
                 {isConnected && tokenInBalance !== undefined && (
                   <button
@@ -175,7 +176,7 @@ export default function SwapPage() {
                   </button>
                 )}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <input
                   type="number"
                   placeholder="0.0"
@@ -184,7 +185,7 @@ export default function SwapPage() {
                     setAmountInStr(e.target.value);
                     reset();
                   }}
-                  className="flex-1 bg-transparent text-2xl font-semibold text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="min-w-0 flex-1 bg-transparent text-2xl font-semibold text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
                 <TokenPill token={tokenIn} />
               </div>
@@ -205,9 +206,9 @@ export default function SwapPage() {
 
             {/* You receive */}
             <div className="mx-4 mt-1 rounded-xl bg-base-surface p-3">
-              <p className="mb-1.5 text-xs text-ink-faint">You receive</p>
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
+              <p className="mb-2 text-xs text-ink-faint">You receive</p>
+              <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1">
                   {quoteLoading && amountInStr ? (
                     <div className="h-8 w-28 animate-pulse rounded-lg bg-base-elevated" />
                   ) : (
@@ -365,14 +366,10 @@ export default function SwapPage() {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function TokenPill({ token }: { token: TokenInfo }) {
-  const isBDX = token.symbol === 'BDX';
   return (
-    <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-3 py-2">
-      <div className={cn(
-        'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shrink-0',
-        isBDX ? 'bg-green/20 text-green' : 'bg-blue-500/20 text-blue-400',
-      )}>
-        {token.symbol.slice(0, 1)}
+    <div className="flex shrink-0 items-center gap-1.5 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5">
+      <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
+        <Image src={token.logoSrc} alt={token.symbol} fill className="object-cover" sizes="20px" />
       </div>
       <span className="text-sm font-semibold text-ink">{token.symbol}</span>
     </div>
