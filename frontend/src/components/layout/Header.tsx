@@ -11,6 +11,7 @@ const NAV = [
   { label: 'Liquidity', href: '/dashboard/liquidity' },
   { label: 'Stake',     href: '/dashboard/staking' },
   { label: 'Farm',      href: '/dashboard/farming' },
+  { label: 'Faucet',    href: '/dashboard/faucet' },
   { label: 'Docs',      href: '/docs' },
 ];
 
