@@ -48,6 +48,17 @@ deploy-sepolia:
 		--etherscan-api-key $(ETHERSCAN_KEY) \
 		-vvv
 
+deploy-weth-pool:
+	@echo "Deploying WETH + BDX/WETH pool to Sepolia..."
+	forge script script/DeployWETHPool.s.sol:DeployWETHPool \
+		--rpc-url $(SEPOLIA_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast \
+		--skip-simulation \
+		--gas-price 5000000000 \
+		--timeout 90 \
+		-vvv
+
 deploy-dry:
 	@echo "Dry run (no broadcast)..."
 	forge script script/Deploy.s.sol:DeployScript \
