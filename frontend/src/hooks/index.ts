@@ -8,3 +8,5 @@ export { useRemoveLiquidity } from './useRemoveLiquidity';
 export { useTokenBalances, getBalanceForSymbol } from './useTokenBalances';
 export { useMultiPool } from './useMultiPool';
 export { useMultiSwap } from './useMultiSwap';
+export { useSubgraph } from './useSubgraph';
+export { usePriceTicker } from './usePriceTicker';

@@ -1,0 +1,14 @@
+{
+  "name": "bulldex-finance-subgraph",
+  "version": "0.1.0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build":   "graph build",
+    "deploy":  "graph deploy bulldex-finance",
+    "auth":    "graph auth 214b3ed940826bb5da8df4e9481114b3"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.93.1",
+    "@graphprotocol/graph-ts":  "^0.35.1"
+  }
+}

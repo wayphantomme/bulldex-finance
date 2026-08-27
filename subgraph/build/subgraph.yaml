@@ -1,0 +1,60 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: PoolBdxMusdc
+    network: sepolia
+    source:
+      address: "0xfac1b95480e87ccef0e995612ceca23f3ddb0197"
+      abi: Pool
+      startBlock: 11556913
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+        - Swap
+        - LiquidityEvent
+        - User
+        - Protocol
+      abis:
+        - name: Pool
+          file: PoolBdxMusdc/Pool.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,indexed address)
+          handler: handleSwap
+        - event: AddLiquidity(indexed address,uint256,uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(indexed address,uint256,uint256,uint256)
+          handler: handleRemoveLiquidity
+      file: PoolBdxMusdc/PoolBdxMusdc.wasm
+  - kind: ethereum
+    name: PoolBdxWeth
+    network: sepolia
+    source:
+      address: "0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4"
+      abi: Pool
+      startBlock: 11571075
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+        - Swap
+        - LiquidityEvent
+        - User
+        - Protocol
+      abis:
+        - name: Pool
+          file: PoolBdxWeth/Pool.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,indexed address)
+          handler: handleSwap
+        - event: AddLiquidity(indexed address,uint256,uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(indexed address,uint256,uint256,uint256)
+          handler: handleRemoveLiquidity
+      file: PoolBdxMusdc/PoolBdxMusdc.wasm

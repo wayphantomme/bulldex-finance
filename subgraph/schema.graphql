@@ -1,0 +1,74 @@
+# ─── Pool ─────────────────────────────────────────────────────────────────────
+
+type Pool @entity(immutable: false) {
+  id: ID!               # pool contract address
+  token0: Bytes!
+  token1: Bytes!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  totalSwaps: Int!
+  totalVolumeToken0: BigDecimal!
+  totalVolumeToken1: BigDecimal!
+  txCount: Int!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+# ─── Swap ─────────────────────────────────────────────────────────────────────
+
+type Swap @entity(immutable: true) {
+  id: ID!               # txHash-logIndex
+  pool: Pool!
+  sender: Bytes!
+  tokenIn: Bytes!
+  tokenOut: Bytes!
+  amountIn: BigDecimal!
+  amountOut: BigDecimal!
+  to: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+  user: User!
+}
+
+# ─── LiquidityEvent ──────────────────────────────────────────────────────────
+
+type LiquidityEvent @entity(immutable: true) {
+  id: ID!               # txHash-logIndex
+  pool: Pool!
+  provider: Bytes!
+  amount0: BigDecimal!
+  amount1: BigDecimal!
+  lpMinted: BigDecimal!    # 0 for remove
+  lpBurned: BigDecimal!    # 0 for add
+  type: String!            # "add" | "remove"
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+  user: User!
+}
+
+# ─── User ─────────────────────────────────────────────────────────────────────
+
+type User @entity(immutable: false) {
+  id: ID!               # wallet address (lowercase)
+  swapCount: Int!
+  liquidityEventCount: Int!
+  totalAmountIn: BigDecimal!   # sum of all amountIn across all swaps
+  firstSeenAt: BigInt!
+  lastSeenAt: BigInt!
+  swaps: [Swap!]! @derivedFrom(field: "user")
+  liquidityEvents: [LiquidityEvent!]! @derivedFrom(field: "user")
+}
+
+# ─── Protocol ─────────────────────────────────────────────────────────────────
+# Single entity tracking overall protocol stats
+
+type Protocol @entity(immutable: false) {
+  id: ID!               # always "bulldex"
+  totalSwaps: Int!
+  totalUniqueUsers: Int!
+  totalPools: Int!
+  totalVolumeToken0: BigDecimal! # BDX volume
+  updatedAt: BigInt!
+}
