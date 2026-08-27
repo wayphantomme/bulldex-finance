@@ -84,7 +84,7 @@ export default function AnalyticsPage() {
           <p className="mt-0.5 text-xs text-ink-secondary">
             {useSubgraphData
               ? 'Data from The Graph subgraph — full historical index.'
-              : 'Data from Alchemy RPC getLogs — last 50,000 blocks.'}
+              : 'The Graph unavailable. RPC getLogs limited to 10 blocks on Alchemy free tier.'}
           </p>
         </div>
         <div className="flex items-center gap-2">

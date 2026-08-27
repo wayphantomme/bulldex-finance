@@ -110,6 +110,10 @@ const ANALYTICS_QUERY = `{
     totalVolumeToken0
     txCount
   }
+}`;
+
+// Separate lending query — runs independently, won't break main analytics if not synced yet
+const LENDING_QUERY = `{
   lendingProtocols(first: 1) {
     id
     totalDeposits
@@ -139,7 +143,6 @@ const ANALYTICS_QUERY = `{
 }`;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
-
 /**
  * Fetch analytics data from The Graph subgraph.
  * Falls back gracefully if subgraph is not yet synced or URL not configured.
@@ -163,6 +166,7 @@ export function useSubgraph(): SubgraphData {
     async function fetch() {
       setData(d => ({ ...d, isLoading: true, error: null }));
       try {
+        // ── Run main query (swaps/pools/users) ────────────────────────────────
         const res = await window.fetch(SUBGRAPH_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -177,16 +181,36 @@ export function useSubgraph(): SubgraphData {
         const d = json.data;
         if (cancelled) return;
 
+        // ── Run lending query separately — won't break main if not synced ─────
+        let lendingData = { lendingProtocols: [], lendingDeposits: [], lendingBorrows: [] };
+        try {
+          const lendRes = await window.fetch(SUBGRAPH_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: LENDING_QUERY }),
+          });
+          if (lendRes.ok) {
+            const lendJson = await lendRes.json();
+            if (!lendJson.errors && lendJson.data) {
+              lendingData = lendJson.data;
+            }
+          }
+        } catch {
+          // Lending subgraph not ready yet — silently ignore
+        }
+
+        if (cancelled) return;
+
         // Merge lending events
-        const deposits = (d.lendingDeposits ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'deposit' as const }));
-        const borrows  = (d.lendingBorrows  ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'borrow'  as const }));
+        const deposits = (lendingData.lendingDeposits ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'deposit' as const }));
+        const borrows  = (lendingData.lendingBorrows  ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'borrow'  as const }));
         const recentLending = [...deposits, ...borrows]
           .sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
           .slice(0, 15);
 
         setData({
           protocol:        d.protocols?.[0] ?? null,
-          lendingProtocol: d.lendingProtocols?.[0] ?? null,
+          lendingProtocol: (lendingData.lendingProtocols as SubgraphLendingProtocol[])?.[0] ?? null,
           recentSwaps:     d.swaps ?? [],
           recentLending,
           leaderboard:     d.users ?? [],

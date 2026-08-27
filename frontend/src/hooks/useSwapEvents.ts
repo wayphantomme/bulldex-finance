@@ -61,8 +61,10 @@ export interface AnalyticsData {
   toBlock:        bigint;
 }
 
-// Read last N blocks — Alchemy free tier allows ~2000 blocks per getLogs call
-const BLOCKS_TO_READ = BigInt(50_000); // ~7 days on Sepolia (~12s/block)
+// Read last N blocks — Note: Alchemy free tier limits to 10 blocks per getLogs
+// So RPC fallback is limited. Use The Graph as primary source.
+// This hook is kept for local dev / paid RPC tiers only.
+const BLOCKS_TO_READ = BigInt(10); // Alchemy free tier max per call
 
 export function useSwapEvents(): AnalyticsData {
   const [data, setData] = useState<AnalyticsData>({
@@ -234,7 +236,11 @@ export function useSwapEvents(): AnalyticsData {
 
       } catch (e) {
         if (!cancelled) {
-          setData(d => ({ ...d, isLoading: false, error: e instanceof Error ? e.message : 'Failed to fetch events' }));
+          const msg = e instanceof Error ? e.message : 'Failed to fetch events';
+          const display = msg.includes('block range') || msg.includes('Free tier')
+            ? 'Alchemy free tier limits RPC getLogs to 10 blocks. Use The Graph for full history.'
+            : msg;
+          setData(d => ({ ...d, isLoading: false, error: display }));
         }
       }
     }
