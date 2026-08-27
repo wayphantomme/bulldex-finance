@@ -549,3 +549,77 @@ Status: Swap ✅ | Liquidity Pools 🔄 (Week 2) | Farming 🔄 (Month 1)
 - ETH di DeFi selalu butuh WETH wrapper - design dari awal
 - Stack too deep di Solidity script - extract ke helper functions (max ~7 local vars per function)
 - MINIMUM_LIQUIDITY menyebabkan rounding - test dengan assertApproxEqRel bukan exact equality
+
+
+---
+
+## Deployer vs User — Cara Kerja Dapp
+
+### Siapa Deployer?
+Deployer adalah wallet yang menjalankan `make deploy-sepolia`. Wallet ini:
+- Deploy semua contracts (Token, MockToken, Pool, PoolFactory, Lending)
+- Mint initial BDX supply (100M BDX ke wallet deployer)
+- Seed liquidity pool (deposit BDX + MUSDC ke pool)
+- Fund lending reserve (transfer MUSDC ke Lending contract)
+
+**Deployer Bulldex:** `0x1Daa1EFD9Adf43eC16fE2bBE7671cCD3E329A215`
+
+### Siapa User?
+User adalah wallet siapapun yang membuka dapp. User TIDAK punya token saat pertama connect.
+
+**Flow user baru:**
+```
+Connect wallet (wallet kosong)
+  ↓
+Step 1: Get ETH Sepolia (gas)
+  → https://cloud.google.com/application/web3/faucet/ethereum/sepolia
+  → Receive 0.5 ETH
+  ↓
+Step 2: Claim MUSDC dari Faucet page
+  → Call MockToken.faucet() → receive 1,000 MUSDC
+  → Cooldown 24 jam per wallet
+  ↓
+Step 3: Swap MUSDC → BDX di Swap page
+  → 1,000 MUSDC → ~499 BDX (setelah fee 0.3%)
+  → User sekarang punya BDX
+  ↓
+Step 4: Bisa add liquidity atau deposit ke lending
+  → Add Liquidity: butuh BDX + MUSDC
+  → Lending: butuh BDX sebagai collateral
+```
+
+### Kenapa User Tidak Bisa Langsung Punya BDX?
+- BDX adalah "protocol token" — nilainya dari usage
+- User harus beli/swap untuk mendapatkan
+- Ini mendukung price discovery dan demand BDX
+- Di production: user beli BDX dari DEX
+- Di testnet: user dapat MUSDC gratis, lalu swap ke BDX
+
+### MINIMUM_LIQUIDITY — Kenapa Tidak Bisa Ubah Harga?
+Ketika pool pertama kali di-seed, 1000 wei LP token di-lock ke `address(1)` selamanya.
+Ini berarti 1000 wei dari initial seed PERMANENT dan menentukan "baseline ratio" pool.
+
+```
+Initial seed: 10M BDX + 20M MUSDC → locked 1000 wei LP at 2:1
+Setelah remove semua LP → pool masih ada 125 BDX + 250 MUSDC (dari 1000 wei locked LP)
+Add liquidity baru harus mengikuti rasio existing: 2:1
+
+→ Tidak bisa mengubah pool price melalui addLiquidity
+→ Hanya bisa mengubah price melalui swap (price impact)
+```
+
+**Kesimpulan:** Pool price bisa diubah via swap saja, tidak via liquidity provision.
+
+### Prevent Re-deploy
+```bash
+# JANGAN jalankan ini sembarangan:
+make deploy-sepolia  # → deploy contract BARU dengan address BARU
+
+# Gunakan ini untuk operasi spesifik:
+make deploy-lending    # deploy Lending saja
+make deploy-weth-pool  # deploy WETH + BDX/WETH pool saja
+make reseed-pool       # reseed existing pool
+```
+
+Setiap `make deploy-sepolia` = address baru = app harus update semua env vars.
+Di Ethereum tidak ada "update" contract — deploy = baru.

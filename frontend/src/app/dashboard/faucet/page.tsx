@@ -43,6 +43,31 @@ export default function FaucetPage() {
         </p>
       </div>
 
+      {/* User flow guide */}
+      <div className="rounded-2xl border border-brand/20 bg-brand/5 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-brand mb-3">
+          Getting started — 3 steps
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { n: '1', title: 'Get ETH for gas', desc: 'Free from Google faucet. ~0.5 ETH is enough for many transactions.' },
+            { n: '2', title: 'Claim 1,000 MUSDC', desc: 'Free testnet MUSDC below. Use it to swap into BDX.' },
+            { n: '3', title: 'Swap MUSDC → BDX', desc: 'Go to Swap page. BDX is required for Liquidity and Lending.' },
+          ].map(s => (
+            <div key={s.n} className="flex gap-3 rounded-xl bg-base-card px-4 py-3">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-base-bg">{s.n}</span>
+              <div>
+                <p className="text-xs font-semibold text-ink">{s.title}</p>
+                <p className="text-[11px] text-ink-faint mt-0.5">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-[11px] text-ink-faint">
+          Note: MUSDC is a testnet MockToken — not real USD. BDX is the protocol token earned by trading.
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <ETHCard />
         <MUSDCCard address={address} isConnected={isConnected} />

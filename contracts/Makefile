@@ -39,13 +39,48 @@ test-fuzz:
 # ─── Deployment ───────────────────────────────────────────────────────────────
 
 deploy-sepolia:
-	@echo "Deploying to Sepolia..."
+	@echo ""
+	@echo "⚠️  WARNING: deploy-sepolia deploys NEW contracts with NEW addresses!"
+	@echo "   This should only be run ONCE on initial setup."
+	@echo "   Re-running will create duplicate contracts and break the app."
+	@echo ""
+	@echo "   Canonical contracts are already live on Sepolia:"
+	@echo "   BDX:     0x193d18048b343983971bfc50893a720e97322ae5"
+	@echo "   Factory: 0x90e1189242272ad1700a5ad0e1c5001676a23984"
+	@echo "   Lending: 0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF"
+	@echo ""
+	@echo "   Use deploy-lending for Lending, deploy-weth-pool for new pools."
+	@echo "   Press Ctrl+C to abort. Press Enter to continue anyway (DANGEROUS)."
+	@read confirm
 	forge script script/Deploy.s.sol:DeployScript \
 		--rpc-url $(SEPOLIA_RPC_URL) \
 		--private-key $(PRIVATE_KEY) \
 		--broadcast \
-		--verify \
-		--etherscan-api-key $(ETHERSCAN_KEY) \
+		--skip-simulation \
+		--gas-price 5000000000 \
+		--timeout 90 \
+		-vvv
+
+deploy-lending:
+	@echo "Deploying Lending contract to Sepolia..."
+	forge script script/DeployLending.s.sol:DeployLending \
+		--rpc-url $(SEPOLIA_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast \
+		--skip-simulation \
+		--gas-price 5000000000 \
+		--timeout 90 \
+		-vvv
+
+reseed-pool:
+	@echo "Reseeding BDX/MUSDC pool..."
+	forge script script/ReseedPool.s.sol:ReseedPool \
+		--rpc-url $(SEPOLIA_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast \
+		--skip-simulation \
+		--gas-price 5000000000 \
+		--timeout 90 \
 		-vvv
 
 deploy-weth-pool:

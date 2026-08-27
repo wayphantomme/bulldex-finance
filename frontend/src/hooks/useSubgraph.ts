@@ -110,7 +110,7 @@ const ANALYTICS_QUERY = `{
     totalVolumeToken0
     txCount
   }
-  lendingProtocols: lendingProtocols(first: 1) {
+  lendingProtocols(first: 1) {
     id
     totalDeposits
     totalBorrows
