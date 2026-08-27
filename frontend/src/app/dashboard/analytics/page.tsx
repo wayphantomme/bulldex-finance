@@ -5,7 +5,7 @@ import { useSwapEvents } from '@/hooks/useSwapEvents';
 import { usePriceTicker } from '@/hooks/usePriceTicker';
 import { formatUnits } from 'viem';
 import { etherscanUrl } from '@/constants/contracts';
-import { shortenAddress } from '@/utils/format';
+import { shortenAddress, shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 export default function AnalyticsPage() {
@@ -108,13 +108,23 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Total Swaps"    value={isLoading ? '...' : totalSwaps.toString()}          sub="all pools" />
         <StatCard label="Unique Wallets" value={isLoading ? '...' : uniqueWallets.toString()}        sub="traders + LPs" />
-        <StatCard label="Volume (BDX)"   value={isLoading ? '...' : fmtVol(volumeNum)}              sub={fmtVolUSD(volumeNum) ?? 'price loading'} />
+        <StatCard label="Swap Volume"    value={isLoading ? '...' : fmtVol(volumeNum)}              sub={fmtVolUSD(volumeNum) ?? 'price loading'} />
         <StatCard
           label="Active Pools"
           value={isLoading ? '...' : (useSubgraphData ? (subgraph.pools.length.toString()) : '2')}
           sub="BDX/MUSDC + BDX/WETH"
         />
       </div>
+
+      {/* ── Lending stats ────────────────────────────────────────────── */}
+      {useSubgraphData && subgraph.lendingProtocol && (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard label="Lending Deposits" value={subgraph.lendingProtocol.totalDeposits.toString()} sub="total collateral deposits" />
+          <StatCard label="Borrows" value={subgraph.lendingProtocol.totalBorrows.toString()} sub="total borrow events" />
+          <StatCard label="Repays" value={subgraph.lendingProtocol.totalRepays.toString()} sub="total repay events" />
+          <StatCard label="Liquidations" value={subgraph.lendingProtocol.totalLiquidations.toString()} sub="positions liquidated" />
+        </div>
+      )}
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -220,6 +230,35 @@ export default function AnalyticsPage() {
                   className="text-[11px] text-brand hover:opacity-70 transition-opacity shrink-0">
                   Etherscan
                 </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lending events */}
+      {useSubgraphData && subgraph.recentLending.length > 0 && (
+        <div className="rounded-2xl border border-base-border bg-base-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-semibold text-ink">Recent Lending Events</p>
+            <span className="text-[10px] text-ink-faint uppercase tracking-wider">latest first</span>
+          </div>
+          <div className="space-y-1.5 max-h-60 overflow-y-auto no-scrollbar">
+            {subgraph.recentLending.map((e) => (
+              <div key={e.id} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5">
+                <span className={cn(
+                  'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold',
+                  e.type === 'deposit' ? 'bg-brand/10 text-brand' : 'bg-blue-500/10 text-blue-400',
+                )}>
+                  {e.type === 'deposit' ? 'DEPOSIT' : 'BORROW'}
+                </span>
+                <a href={etherscanUrl(e.txHash, 'tx')} target="_blank" rel="noopener noreferrer"
+                  className="flex-1 font-mono text-xs text-ink-secondary hover:text-ink transition-colors truncate">
+                  {shortenAddress(e.user, 4)}
+                </a>
+                <span className="text-xs font-semibold text-ink tabular-nums">
+                  {fmtVol(parseFloat(e.amount))} {e.type === 'deposit' ? 'BDX' : 'MUSDC'}
+                </span>
               </div>
             ))}
           </div>

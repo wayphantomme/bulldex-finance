@@ -44,14 +44,35 @@ export interface SubgraphProtocol {
   updatedAt:         string;
 }
 
+export interface SubgraphLendingProtocol {
+  totalDeposits:        number;
+  totalBorrows:         number;
+  totalRepays:          number;
+  totalLiquidations:    number;
+  totalVolumeDeposited: string;
+  totalVolumeBorrowed:  string;
+}
+
+export interface SubgraphLendingEvent {
+  id:          string;
+  user:        string;
+  amount:      string;
+  blockNumber: string;
+  timestamp:   string;
+  txHash:      string;
+  type:        'deposit' | 'borrow';
+}
+
 export interface SubgraphData {
-  protocol:         SubgraphProtocol | null;
-  recentSwaps:      SubgraphSwap[];
-  leaderboard:      SubgraphUser[];
-  pools:            SubgraphPool[];
-  isLoading:        boolean;
-  error:            string | null;
-  isSynced:         boolean;
+  protocol:          SubgraphProtocol | null;
+  lendingProtocol:   SubgraphLendingProtocol | null;
+  recentSwaps:       SubgraphSwap[];
+  recentLending:     SubgraphLendingEvent[];
+  leaderboard:       SubgraphUser[];
+  pools:             SubgraphPool[];
+  isLoading:         boolean;
+  error:             string | null;
+  isSynced:          boolean;
 }
 
 // ─── GraphQL queries ──────────────────────────────────────────────────────────
@@ -89,6 +110,32 @@ const ANALYTICS_QUERY = `{
     totalVolumeToken0
     txCount
   }
+  lendingProtocols: lendingProtocols(first: 1) {
+    id
+    totalDeposits
+    totalBorrows
+    totalRepays
+    totalLiquidations
+    totalVolumeDeposited
+    totalVolumeBorrowed
+    updatedAt
+  }
+  lendingDeposits(first: 10, orderBy: blockNumber, orderDirection: desc) {
+    id
+    user
+    amount
+    blockNumber
+    timestamp
+    txHash
+  }
+  lendingBorrows(first: 10, orderBy: blockNumber, orderDirection: desc) {
+    id
+    user
+    amount
+    blockNumber
+    timestamp
+    txHash
+  }
 }`;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -100,7 +147,9 @@ const ANALYTICS_QUERY = `{
 export function useSubgraph(): SubgraphData {
   const [data, setData] = useState<SubgraphData>({
     protocol: null,
+    lendingProtocol: null,
     recentSwaps: [],
+    recentLending: [],
     leaderboard: [],
     pools: [],
     isLoading: true,
@@ -128,14 +177,23 @@ export function useSubgraph(): SubgraphData {
         const d = json.data;
         if (cancelled) return;
 
+        // Merge lending events
+        const deposits = (d.lendingDeposits ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'deposit' as const }));
+        const borrows  = (d.lendingBorrows  ?? []).map((e: { id: string; user: string; amount: string; blockNumber: string; timestamp: string; txHash: string }) => ({ ...e, type: 'borrow'  as const }));
+        const recentLending = [...deposits, ...borrows]
+          .sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
+          .slice(0, 15);
+
         setData({
-          protocol:    d.protocols?.[0] ?? null,
-          recentSwaps: d.swaps ?? [],
-          leaderboard: d.users ?? [],
-          pools:       d.pools ?? [],
-          isLoading:   false,
-          error:       null,
-          isSynced:    true,
+          protocol:        d.protocols?.[0] ?? null,
+          lendingProtocol: d.lendingProtocols?.[0] ?? null,
+          recentSwaps:     d.swaps ?? [],
+          recentLending,
+          leaderboard:     d.users ?? [],
+          pools:           d.pools ?? [],
+          isLoading:       false,
+          error:           null,
+          isSynced:        true,
         });
       } catch (e) {
         if (!cancelled) {

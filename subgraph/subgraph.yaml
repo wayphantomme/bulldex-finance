@@ -62,3 +62,35 @@ dataSources:
         - event: RemoveLiquidity(indexed address,uint256,uint256,uint256)
           handler: handleRemoveLiquidity
       file: ./src/mappings.ts
+
+  # ── Lending ───────────────────────────────────────────────────────────────
+  - kind: ethereum
+    name: Lending
+    network: sepolia
+    source:
+      address: "0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF"
+      abi: Lending
+      startBlock: 11577100
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - LendingDeposit
+        - LendingBorrow
+        - LendingRepay
+        - LendingLiquidation
+        - LendingProtocol
+      abis:
+        - name: Lending
+          file: ./abis/Lending.json
+      eventHandlers:
+        - event: CollateralDeposited(indexed address,uint256)
+          handler: handleCollateralDeposited
+        - event: Borrowed(indexed address,uint256)
+          handler: handleBorrowed
+        - event: Repaid(indexed address,uint256,uint256)
+          handler: handleRepaid
+        - event: Liquidated(indexed address,indexed address,uint256,uint256)
+          handler: handleLiquidated
+      file: ./src/lending-mappings.ts

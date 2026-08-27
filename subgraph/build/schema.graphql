@@ -72,3 +72,56 @@ type Protocol @entity(immutable: false) {
   totalVolumeToken0: BigDecimal! # BDX volume
   updatedAt: BigInt!
 }
+
+# ─── Lending entities ─────────────────────────────────────────────────────────
+
+type LendingDeposit @entity(immutable: true) {
+  id: ID!
+  user: Bytes!
+  amount: BigDecimal!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type LendingBorrow @entity(immutable: true) {
+  id: ID!
+  user: Bytes!
+  amount: BigDecimal!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type LendingRepay @entity(immutable: true) {
+  id: ID!
+  user: Bytes!
+  principal: BigDecimal!
+  interest: BigDecimal!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type LendingLiquidation @entity(immutable: true) {
+  id: ID!
+  liquidator: Bytes!
+  borrower: Bytes!
+  debtRepaid: BigDecimal!
+  collateralSeized: BigDecimal!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  txHash: Bytes!
+}
+
+type LendingProtocol @entity(immutable: false) {
+  id: ID!    # always "lending"
+  totalDeposits: Int!
+  totalBorrows: Int!
+  totalRepays: Int!
+  totalLiquidations: Int!
+  totalVolumeDeposited: BigDecimal!
+  totalVolumeBorrowed: BigDecimal!
+  uniqueUsers: Int!
+  updatedAt: BigInt!
+}

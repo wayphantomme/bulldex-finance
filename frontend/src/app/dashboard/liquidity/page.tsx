@@ -344,7 +344,7 @@ export default function LiquidityPage() {
 
                     {/* Success/error */}
                     {addLiq.step === 'success' && (
-                      <SuccessMsg txHash={addLiq.txHash} msg="Liquidity added!" onClose={addLiq.reset} />
+                      <SuccessMsg txHash={addLiq.txHash} msg="Liquidity added!" onClose={() => { addLiq.reset(); setT0Input(''); setT1Input(''); }} />
                     )}
                     {addLiq.step === 'error' && (
                       <ErrorMsg error={addLiq.error} onReset={addLiq.reset} />
@@ -355,9 +355,7 @@ export default function LiquidityPage() {
                       <ConnectWalletBtn />
                     ) : ['approving_bdx','approving_musdc','adding'].includes(addLiq.step) ? (
                       <BusyBtn label={addLiq.step === 'adding' ? 'Adding...' : 'Approving...'} />
-                    ) : addLiq.step === 'success' ? (
-                      <DoneBtn onClick={() => { addLiq.reset(); setT0Input(''); setT1Input(''); }} />
-                    ) : addLiq.step === 'error' ? null : (
+                    ) : addLiq.step === 'success' || addLiq.step === 'error' ? null : (
                       <button onClick={handleAddLiquidity}
                         disabled={t0Amount === 0n || t1Amount === 0n}
                         className={cn('w-full rounded-xl py-3 text-sm font-semibold transition-all',
