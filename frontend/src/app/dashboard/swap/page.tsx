@@ -17,9 +17,9 @@ import { formatToken, shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 const SLIPPAGE_OPTIONS = [
-  { label: '0.1%', bps: 10 },
   { label: '0.5%', bps: 50 },
   { label: '1.0%', bps: 100 },
+  { label: '2.0%', bps: 200 },
 ];
 
 export default function SwapPage() {
@@ -31,7 +31,7 @@ export default function SwapPage() {
   const [showTokenInPicker,  setShowTokenInPicker]  = useState(false);
   const [showTokenOutPicker, setShowTokenOutPicker] = useState(false);
   const [amountInStr,  setAmountInStr]  = useState('');
-  const [slippageBps,  setSlippageBps]  = useState(50);
+  const [slippageBps,  setSlippageBps]  = useState(100); // 1% default — prevents SlippageExceeded on most swaps
   const [showSettings, setShowSettings] = useState(false);
 
   // ── Pool for this pair ─────────────────────────────────────────────────────

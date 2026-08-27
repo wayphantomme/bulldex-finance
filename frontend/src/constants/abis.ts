@@ -98,3 +98,38 @@ export const WETH_ABI = [
   { type: 'event',    name: 'Transfer',   inputs: [{ name: 'src', type: 'address', indexed: true }, { name: 'dst', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
   { type: 'event',    name: 'Approval',   inputs: [{ name: 'src', type: 'address', indexed: true }, { name: 'guy', type: 'address', indexed: true }, { name: 'wad', type: 'uint256', indexed: false }] },
 ] as const;
+
+// ─── Lending ──────────────────────────────────────────────────────────────────
+export const LENDING_ABI = [
+  // Read
+  { type: 'function', name: 'positions', inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: 'collateral', type: 'uint256' }, { name: 'borrowed', type: 'uint256' }, { name: 'borrowBlock', type: 'uint256' }, { name: 'interestAccrued', type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'healthFactor', inputs: [{ name: 'user', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'borrowLimit', inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: 'maxBorrow', type: 'uint256' }, { name: 'currentDebt', type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getPosition', inputs: [{ name: 'user', type: 'address' }], outputs: [{ name: 'collateral', type: 'uint256' }, { name: 'borrowed', type: 'uint256' }, { name: 'interest', type: 'uint256' }, { name: 'hf', type: 'uint256' }, { name: 'collateralValueUSD', type: 'uint256' }, { name: 'maxBorrowable', type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getBdxPrice', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'totalCollateral', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'totalBorrowed', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'reserveBalance', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'LTV_NUMERATOR', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'LIQ_THRESHOLD_NUMERATOR', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // Write
+  { type: 'function', name: 'depositCollateral', inputs: [{ name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'withdrawCollateral', inputs: [{ name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'borrow', inputs: [{ name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'repay', inputs: [{ name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'liquidate', inputs: [{ name: 'borrower', type: 'address' }, { name: 'debtToCover', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  // Custom errors — required for frontend to decode revert reasons
+  { type: 'error', name: 'InsufficientCollateral', inputs: [] },
+  { type: 'error', name: 'InsufficientBorrowBalance', inputs: [] },
+  { type: 'error', name: 'ExceedsBorrowLimit', inputs: [] },
+  { type: 'error', name: 'PositionHealthy', inputs: [] },
+  { type: 'error', name: 'ZeroAmount', inputs: [] },
+  { type: 'error', name: 'InsufficientReserve', inputs: [] },
+  { type: 'error', name: 'ZeroAddress', inputs: [] },
+  // Events
+  { type: 'event', name: 'CollateralDeposited', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'CollateralWithdrawn', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'Borrowed', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'Repaid', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'principal', type: 'uint256', indexed: false }, { name: 'interest', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'Liquidated', inputs: [{ name: 'liquidator', type: 'address', indexed: true }, { name: 'borrower', type: 'address', indexed: true }, { name: 'debtRepaid', type: 'uint256', indexed: false }, { name: 'collateralSeized', type: 'uint256', indexed: false }] },
+] as const;

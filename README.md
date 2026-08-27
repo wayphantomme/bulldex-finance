@@ -20,8 +20,8 @@ A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, l
 |------|-------------|--------|
 | 1-2 | BDX Token + AMM Swap + Pool | ✅ Live |
 | 3-4 | Liquidity UI + ETH/WETH pool + Faucet + Design | ✅ Live |
-| 5-6 | Lending & Borrowing | 🔄 Active |
-| 7-8 | Staking & Farming | ⬜ |
+| 5-6 | Lending & Borrowing | ✅ Live |
+| 7-8 | Staking & Farming | 🔄 Active |
 | 9-10 | Vesting | ⬜ |
 | 11-12 | Flash Loans + Governance DAO | ⬜ |
 | 13-14 | Gas Optimization | ⬜ |
@@ -60,9 +60,12 @@ A full-stack DeFi protocol built in public — AMM swaps, liquidity provision, l
 | BDX Token | [`0x193d18048b343983971bfc50893a720e97322ae5`](https://sepolia.etherscan.io/address/0x193d18048b343983971bfc50893a720e97322ae5) |
 | MockToken (MUSDC) | [`0x91a39c49defe004dd8627223b752212ba944ceb1`](https://sepolia.etherscan.io/address/0x91a39c49defe004dd8627223b752212ba944ceb1) |
 | WETH | [`0xEbFe8d5E0b674925599af1E970975Ae4fd2A4b62`](https://sepolia.etherscan.io/address/0xEbFe8d5E0b674925599af1E970975Ae4fd2A4b62) |
+
+> **Why custom WETH?** Sepolia has a canonical WETH at `0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14` but we deployed our own WETH9-identical contract to have full control during development. The logic is identical to mainnet WETH. For production, swap `NEXT_PUBLIC_WETH_ADDRESS` to the canonical address without redeploying any pool logic.
 | PoolFactory | [`0x90e1189242272ad1700a5ad0e1c5001676a23984`](https://sepolia.etherscan.io/address/0x90e1189242272ad1700a5ad0e1c5001676a23984) |
 | BDX/MUSDC Pool | [`0xfac1b95480e87ccef0e995612ceca23f3ddb0197`](https://sepolia.etherscan.io/address/0xfac1b95480e87ccef0e995612ceca23f3ddb0197) |
 | BDX/WETH Pool | [`0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4`](https://sepolia.etherscan.io/address/0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4) |
+| Lending | [`0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF`](https://sepolia.etherscan.io/address/0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF) |
 
 **Initial liquidity:**
 - BDX/MUSDC: 10M BDX + 20M MUSDC (1 BDX = 2 MUSDC)

@@ -101,7 +101,15 @@ export function useMultiSwap(userAddress: `0x${string}` | undefined): UseMultiSw
 
   const handleError = (e: unknown) => {
     const msg = e instanceof Error ? e.message : 'Transaction failed';
-    setError(msg.includes('User rejected') ? 'Transaction rejected' : msg.slice(0, 120));
+    let display = msg;
+    if (msg.includes('0xfb8f41b2') || msg.toLowerCase().includes('slippage')) {
+      display = 'Slippage exceeded — price moved too much. Try increasing slippage tolerance in settings.';
+    } else if (msg.includes('User rejected')) {
+      display = 'Transaction rejected';
+    } else {
+      display = msg.slice(0, 140);
+    }
+    setError(display);
     setStep('error');
   };
 

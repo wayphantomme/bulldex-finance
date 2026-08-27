@@ -42,7 +42,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Earn',
     items: [
-      { href: '/dashboard/lending',  label: 'Lend',  icon: <Landmark    className={ICON} strokeWidth={1.5} />, soon: true },
+      { href: '/dashboard/lending',  label: 'Lend',  icon: <Landmark    className={ICON} strokeWidth={1.5} /> },
       { href: '/dashboard/staking',  label: 'Stake', icon: <ShieldCheck className={ICON} strokeWidth={1.5} />, soon: true },
       { href: '/dashboard/farming',  label: 'Farm',  icon: <Sprout      className={ICON} strokeWidth={1.5} />, soon: true },
     ],
@@ -73,12 +73,18 @@ export function Sidebar() {
         ? pathname === '/dashboard'
         : pathname.startsWith(item.href);
 
+    const tourId = item.href === '/dashboard/faucet'    ? 'sidebar-faucet'
+                 : item.href === '/dashboard/swap'      ? 'sidebar-swap'
+                 : item.href === '/dashboard/liquidity' ? 'sidebar-liquidity'
+                 : undefined;
+
     return (
       <div className="tooltip-trigger relative flex w-full justify-center">
         <Link
           href={item.href}
           aria-label={item.label}
           aria-current={isActive ? 'page' : undefined}
+          data-tour={tourId}
           className={cn(
             'relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150',
             isActive

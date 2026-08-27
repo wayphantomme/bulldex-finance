@@ -286,3 +286,125 @@ User melihat "ETH" di UI tapi di-backend pakai WETH contract.
 | BDX/WETH  | 0x3cA1cE1... | BDX + WETH (ETH) |
 
 Pool routing otomatis via `getPoolAddress(tokenA, tokenB)` di contracts.ts.
+
+
+---
+
+## 12. Bagaimana Harga Bergerak di AMM
+
+### Konsep Dasar: x * y = k
+
+Harga di AMM **bukan ditentukan oleh order book** seperti CEX — tapi oleh **rasio antara dua token di pool**.
+
+```
+Pool BDX/WETH:
+  x = BDX reserve = 1,000,000
+  y = WETH reserve = 0.1
+  k = x * y = 100,000
+
+Spot price BDX = y / x = 0.1 / 1,000,000 = 0.0000001 WETH per BDX
+```
+
+### Apa yang Menyebabkan Harga Naik?
+
+**Harga BDX naik ketika:**
+
+1. **User membeli BDX (swap WETH → BDX)**
+   ```
+   User masukkan 0.01 WETH
+   Pool: BDX berkurang, WETH bertambah
+   x berkurang → y/x naik → harga BDX naik
+   ```
+
+2. **Liquidity dicabut tidak proporsional**
+   Jarang terjadi, tapi removal dengan ratio berbeda bisa shift price
+
+3. **Large buy orders (whale)**
+   Semakin besar swap relative ke pool size, semakin besar price impact
+
+### Apa yang Menyebabkan Harga Turun?
+
+**Harga BDX turun ketika:**
+
+1. **User menjual BDX (swap BDX → WETH)**
+   ```
+   User masukkan 100,000 BDX
+   Pool: BDX bertambah, WETH berkurang
+   x naik → y/x turun → harga BDX turun
+   ```
+
+2. **Sell pressure besar** — lebih banyak yang jual daripada beli
+
+### Contoh Konkret
+
+```
+Initial pool: 1,000,000 BDX + 0.1 WETH
+k = 100,000
+
+User A swap: 0.001 WETH → BDX
+amountOut = (0.001 * 997 * 1,000,000) / (0.1 * 1000 + 0.001 * 997)
+          ≈ 9,070 BDX
+
+New state:
+  BDX = 1,000,000 - 9,070 = 990,930
+  WETH = 0.1 + 0.001 = 0.101
+
+New price = 0.101 / 990,930 = 0.0000001019 WETH/BDX
+Price increase: +1.9%  ← naik karena ada yang beli
+```
+
+### Price Impact vs Slippage
+
+| Term | Definisi |
+|------|----------|
+| **Spot price** | Harga saat ini dari rasio reserve |
+| **Price impact** | % perubahan harga akibat satu swap |
+| **Slippage** | Perbedaan harga expected vs actual execution |
+| **Mid price** | Harga tanpa fee: y/x |
+
+Semakin kecil pool (TVL rendah) → semakin besar price impact untuk swap yang sama.
+
+### Kenapa Harga BDX di Pool ≠ $0.05 Seed Price?
+
+Harga seed (`$0.05`) adalah **target valuasi** dari token economics, bukan harga pool.
+
+Harga pool ditentukan oleh **berapa token di-seed**:
+```
+Seeded: 1,000,000 BDX + 0.1 WETH
+ETH price = $2,500 → 0.1 WETH = $250
+
+BDX market cap implied = $250 × 2 = $500 (TVL)
+BDX price = $500 / 1,000,000 BDX = $0.0005 per BDX (bukan $0.05)
+```
+
+Untuk mencapai harga $0.05, butuh:
+```
+Pool seed: 1,000,000 BDX + 20 WETH ($50,000)
+→ BDX price = $100,000 / 2 / 1,000,000 = $0.05
+```
+
+Atau kurangi BDX yang di-seed:
+```
+Pool seed: 20,000 BDX + 0.1 WETH ($250)
+→ BDX price = $500 / 2 / 20,000 = $0.0125
+```
+
+### Apa Itu "Fair Price"?
+
+Di testnet, harga AMM tidak mencerminkan fundamental. Di mainnet, arbitrageurs akan:
+1. Lihat BDX dijual murah di Bulldex
+2. Beli BDX di Bulldex, jual di exchange lain
+3. Proses ini menyeimbangkan harga antar platform (arbitrage)
+
+Tanpa arbitrageurs, harga pool bisa sangat berbeda dari "market price".
+
+### Cara Baca Chainlink Price Feed
+
+```solidity
+// Chainlink ETH/USD Sepolia: 0x694AA1769357215DE4FAC081bf1f309aDC325306
+(, int256 answer, , , ) = priceFeed.latestRoundData();
+uint256 ethPriceUSD = uint256(answer) / 1e8; // 8 decimals
+```
+
+Chainlink aggregator mengambil harga dari puluhan sumber (exchanges, market makers),
+mengambil median, dan update on-chain setiap X% deviation atau Y jam.

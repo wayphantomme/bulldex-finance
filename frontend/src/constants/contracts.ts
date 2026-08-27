@@ -1,15 +1,16 @@
 import { sepolia } from 'wagmi/chains';
-import { TOKEN_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI } from './abis';
+import { TOKEN_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI, LENDING_ABI } from './abis';
 
 // ─── Contract Addresses ───────────────────────────────────────────────────────
 
 export const CONTRACT_ADDRESSES = {
-  token:       (process.env.NEXT_PUBLIC_TOKEN_ADDRESS   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  musdc:       (process.env.NEXT_PUBLIC_MUSDC_ADDRESS   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  weth:        (process.env.NEXT_PUBLIC_WETH_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  factory:     (process.env.NEXT_PUBLIC_FACTORY_ADDRESS ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  pool:        (process.env.NEXT_PUBLIC_POOL_BDX_MUSDC  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  poolBdxWeth: (process.env.NEXT_PUBLIC_POOL_BDX_WETH   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  token:       (process.env.NEXT_PUBLIC_TOKEN_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  musdc:       (process.env.NEXT_PUBLIC_MUSDC_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  weth:        (process.env.NEXT_PUBLIC_WETH_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  factory:     (process.env.NEXT_PUBLIC_FACTORY_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  pool:        (process.env.NEXT_PUBLIC_POOL_BDX_MUSDC   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  poolBdxWeth: (process.env.NEXT_PUBLIC_POOL_BDX_WETH    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  lending:     (process.env.NEXT_PUBLIC_LENDING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
 } as const;
 
 // ─── Token Metadata ───────────────────────────────────────────────────────────
@@ -102,6 +103,11 @@ export const CONTRACTS = {
   poolBdxWeth: {
     address: CONTRACT_ADDRESSES.poolBdxWeth,
     abi: POOL_ABI,
+    chainId: sepolia.id,
+  },
+  lending: {
+    address: CONTRACT_ADDRESSES.lending,
+    abi: LENDING_ABI,
     chainId: sepolia.id,
   },
 } as const;
