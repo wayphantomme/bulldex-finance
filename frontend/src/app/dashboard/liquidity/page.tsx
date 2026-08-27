@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
@@ -11,6 +11,7 @@ import { useAddLiquidity } from '@/hooks/useAddLiquidity';
 import { useRemoveLiquidity } from '@/hooks/useRemoveLiquidity';
 import { useReadContract } from 'wagmi';
 import { parseAmount, applySlippage } from '@/hooks/useSwap';
+import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { CONTRACTS, CONTRACT_ADDRESSES, isConfigured, etherscanUrl } from '@/constants/contracts';
 import { POOL_ABI } from '@/constants/abis';
 import { formatToken, shortenHash } from '@/utils/format';
@@ -53,6 +54,15 @@ export default function LiquidityPage() {
   const [selectedPool, setSelectedPool] = useState<PoolKey | null>(null);
   const [actionType, setActionType]     = useState<ActionType>('add');
   const [slippageBps, setSlippageBps]   = useState(50);
+
+  const balances = useTokenBalances(address); // real wallet balances
+
+  // Escape key to close modal
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setSelectedPool(null); }
+    if (selectedPool) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selectedPool]);
 
   // BDX/MUSDC pool stats
   const musdcPool = usePoolStats();
@@ -148,7 +158,7 @@ export default function LiquidityPage() {
   // Protocol totals
   const totalTvl = musdcPool.hasLiquidity && musdcPool.bdxReserve && musdcPool.musdcReserve
     ? `${formatToken(musdcPool.bdxReserve, 18, 0)} BDX + ${formatToken(musdcPool.musdcReserve, 18, 0)} MUSDC`
-    : '—';
+    : null;
 
   const myPositionCount = [
     lpBalance && (lpBalance as bigint) > 0n,
@@ -159,26 +169,26 @@ export default function LiquidityPage() {
     <div className="animate-fade-in space-y-6">
 
       {/* ── Page header ─────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink">BDX Pools</h1>
-          <p className="mt-1 text-sm text-ink-secondary">
+          <h1 className="text-base font-semibold text-ink">BDX Pools</h1>
+          <p className="mt-0.5 text-xs text-ink-secondary">
             Provide liquidity to earn 0.3% of every swap fee.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-6 text-right">
-          <div>
+        <div className="flex flex-wrap items-center gap-5">
+          <div className="text-right">
             <p className="text-xs text-ink-faint">Total Liquidity</p>
-            <p className="text-sm font-bold text-ink">{totalTvl}</p>
+            <p className="text-sm font-semibold text-ink">{totalTvl ?? '--'}</p>
           </div>
-          <div>
+          <div className="text-right">
             <p className="text-xs text-ink-faint">Active Pools</p>
-            <p className="text-lg font-bold text-ink">2</p>
+            <p className="text-sm font-semibold text-ink">2</p>
           </div>
           {myPositionCount > 0 && (
-            <div>
+            <div className="text-right">
               <p className="text-xs text-ink-faint">My Positions</p>
-              <p className="text-lg font-bold text-brand">{myPositionCount}</p>
+              <p className="text-sm font-semibold text-brand">{myPositionCount}</p>
             </div>
           )}
         </div>
@@ -198,8 +208,8 @@ export default function LiquidityPage() {
 
         {(Object.entries(POOL_CONFIG) as [PoolKey, typeof POOL_CONFIG[PoolKey]][]).map(([key, cfg]) => {
           const isMUSCD = key === 'bdx-musdc';
-          const reserve0Fmt = isMUSCD && musdcPool.bdxReserveFormatted ? musdcPool.bdxReserveFormatted : '—';
-          const reserve1Fmt = isMUSCD && musdcPool.musdcReserveFormatted ? musdcPool.musdcReserveFormatted : '0.1';
+          const reserve0Fmt = isMUSCD && musdcPool.bdxReserveFormatted ? musdcPool.bdxReserveFormatted : '--';
+          const reserve1Fmt = isMUSCD && musdcPool.musdcReserveFormatted ? musdcPool.musdcReserveFormatted : '--';
           const myLPBal = isMUSCD
             ? (lpBalance as bigint | undefined)
             : (wethLPBalance as bigint | undefined);
@@ -332,7 +342,11 @@ export default function LiquidityPage() {
 
                     {/* Token 0 input */}
                     <PoolInput symbol={pool.token0Symbol} logo={pool.token0Logo}
-                      value={t0Input} onChange={handleT0Change} />
+                      value={t0Input} onChange={handleT0Change}
+                      balance={`${parseFloat(formatUnits(balances.bdx, 18)).toFixed(4)} ${pool.token0Symbol}`}
+                      onMax={() => { handleT0Change(parseFloat(formatUnits(balances.bdx, 18)).toFixed(6)); }}
+                      onHalf={() => { handleT0Change((parseFloat(formatUnits(balances.bdx, 18)) / 2).toFixed(6)); }}
+                    />
 
                     <div className="flex justify-center">
                       <div className="h-6 w-6 rounded-full border border-base-border bg-base-elevated flex items-center justify-center text-ink-faint text-[10px]">+</div>
@@ -340,7 +354,11 @@ export default function LiquidityPage() {
 
                     {/* Token 1 input */}
                     <PoolInput symbol={pool.token1Symbol} logo={pool.token1Logo}
-                      value={t1Input} onChange={setT1Input} />
+                      value={t1Input} onChange={setT1Input}
+                      balance={`${parseFloat(formatUnits(
+                        pool.token1Symbol === 'MUSDC' ? balances.musdc : balances.eth, 18
+                      )).toFixed(4)} ${pool.token1Symbol}`}
+                    />
 
                     {/* Success/error */}
                     {addLiq.step === 'success' && (
@@ -420,18 +438,51 @@ export default function LiquidityPage() {
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
-function PoolInput({ symbol, logo, value, onChange }: {
-  symbol: string; logo: string; value: string; onChange: (v: string) => void;
+function PoolInput({ symbol, logo, value, onChange, balance, onHalf, onMax }: {
+  symbol: string;
+  logo: string;
+  value: string;
+  onChange: (v: string) => void;
+  balance?: string;
+  onHalf?: () => void;
+  onMax?: () => void;
 }) {
   return (
-    <div className="rounded-xl bg-base-surface p-4 flex items-center gap-3">
-      <input type="number" placeholder="0.0" value={value} onChange={e => onChange(e.target.value)}
-        className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
-      <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5">
-        <div className="relative h-5 w-5 overflow-hidden rounded-full">
-          <Image src={logo} alt={symbol} fill className="object-cover" sizes="20px" />
+    <div className="rounded-xl bg-base-surface p-4">
+      {(balance || onHalf || onMax) && (
+        <div className="flex items-center justify-between mb-2">
+          {balance ? (
+            <span className="text-[11px] text-ink-faint">{balance}</span>
+          ) : (
+            <span />
+          )}
+          {(onHalf || onMax) && (
+            <div className="flex gap-1">
+              {onHalf && (
+                <button onClick={onHalf}
+                  className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+                  HALF
+                </button>
+              )}
+              {onMax && (
+                <button onClick={onMax}
+                  className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+                  MAX
+                </button>
+              )}
+            </div>
+          )}
         </div>
-        <span className="text-sm font-semibold text-ink">{symbol}</span>
+      )}
+      <div className="flex items-center gap-3">
+        <input type="number" placeholder="0.0" value={value} onChange={e => onChange(e.target.value)}
+          className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
+        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5">
+          <div className="relative h-5 w-5 overflow-hidden rounded-full">
+            <Image src={logo} alt={symbol} fill className="object-cover" sizes="20px" />
+          </div>
+          <span className="text-sm font-semibold text-ink">{symbol}</span>
+        </div>
       </div>
     </div>
   );

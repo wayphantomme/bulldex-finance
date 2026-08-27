@@ -38,13 +38,10 @@ export default function DashboardPage() {
       {/* ── Not connected ───────────────────────────────────────────────── */}
       {!isConnected && (
         <Card className="flex flex-col items-center gap-5 py-14 text-center">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-2xl bg-base-elevated/50 blur-xl" />
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-base-border-light bg-base-elevated">
-              <svg className="h-8 w-8 text-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18-3a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0v3M3 6v3" />
-              </svg>
-            </div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-base-border bg-base-elevated">
+            <svg className="h-6 w-6 text-ink-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18-3a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6m18 0v3M3 6v3" />
+            </svg>
           </div>
           <div>
             <p className="text-sm font-semibold text-ink">Connect your wallet</p>
@@ -69,17 +66,17 @@ export default function DashboardPage() {
 
             {/* BDX Balance */}
             <Card variant="brand" className="col-span-2 lg:col-span-1">
-              <p className="mb-2 text-xs text-ink-secondary">BDX Balance</p>
+              <p className="mb-1 text-xs text-ink-secondary">BDX Balance</p>
               {balLoading ? (
                 <>
-                  <Skeleton className="mb-1.5 h-7 w-28" />
+                  <Skeleton className="mb-1.5 h-6 w-28" />
                   <Skeleton className="h-3 w-12" />
                 </>
               ) : !isContractConfigured ? (
                 <p className="text-xs text-ink-faint">Contract not configured</p>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-ink">{formatToken(balance, 18, 2)}</p>
+                  <p className="text-xl font-semibold text-ink tabular-nums">{formatToken(balance, 18, 2)}</p>
                   <p className="mt-0.5 text-xs text-green">{symbol ?? 'BDX'}</p>
                 </>
               )}
@@ -87,55 +84,55 @@ export default function DashboardPage() {
 
             {/* Total Supply */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">Total Supply</p>
+              <p className="mb-1 text-xs text-ink-secondary">Total Supply</p>
               {infoLoading ? (
-                <Skeleton className="h-7 w-24" />
+                <Skeleton className="h-6 w-24" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-ink">
-                    {totalSupply ? formatToken(totalSupply, 18, 0) : '-'}
+                  <p className="text-xl font-semibold text-ink tabular-nums">
+                    {totalSupply ? formatToken(totalSupply, 18, 0) : '--'}
                   </p>
                   <p className="mt-0.5 text-xs text-ink-secondary">{symbol ?? 'BDX'}</p>
                 </>
               )}
             </Card>
 
-            {/* TVL — from Chainlink × pool reserves */}
+            {/* TVL — from Chainlink x pool reserves */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">Protocol TVL</p>
+              <p className="mb-1 text-xs text-ink-secondary">Protocol TVL</p>
               {pool.isLoading ? (
-                <Skeleton className="h-7 w-24" />
+                <Skeleton className="h-6 w-24" />
               ) : tvlUSD ? (
                 <>
-                  <p className="text-2xl font-bold text-ink tabular-nums">{tvlUSD}</p>
+                  <p className="text-xl font-semibold text-ink tabular-nums">{tvlUSD}</p>
                   <p className="mt-0.5 text-xs text-ink-faint">BDX/MUSDC + BDX/WETH</p>
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-ink">-</p>
+                  <p className="text-xl font-semibold text-ink">--</p>
                   <p className="mt-0.5 text-xs text-ink-faint">Pool not seeded</p>
                 </>
               )}
             </Card>
 
-            {/* BDX Price — from WETH pool × Chainlink */}
+            {/* BDX Price — from WETH pool x Chainlink */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">BDX Price</p>
+              <p className="mb-1 text-xs text-ink-secondary">BDX Price</p>
               {pool.isLoading ? (
-                <Skeleton className="h-7 w-24" />
+                <Skeleton className="h-6 w-24" />
               ) : bdxPriceUSD ? (
                 <>
-                  <p className="text-2xl font-bold text-ink tabular-nums">{bdxPriceUSD}</p>
-                  <p className="mt-0.5 text-xs text-ink-faint">via WETH pool × Chainlink</p>
+                  <p className="text-xl font-semibold text-ink tabular-nums">{bdxPriceUSD}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">via WETH pool x Chainlink</p>
                 </>
               ) : poolPriceDisplay ? (
                 <>
-                  <p className="text-xl font-bold text-ink tabular-nums">{poolPriceDisplay}</p>
+                  <p className="text-xl font-semibold text-ink tabular-nums">{poolPriceDisplay}</p>
                   <p className="mt-0.5 text-xs text-ink-faint">MUSDC per BDX (spot)</p>
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-ink">-</p>
+                  <p className="text-xl font-semibold text-ink">--</p>
                   <p className="mt-0.5 text-xs text-ink-faint">No pool data</p>
                 </>
               )}

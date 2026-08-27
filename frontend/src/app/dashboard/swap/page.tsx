@@ -123,7 +123,7 @@ export default function SwapPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-base font-semibold text-ink">Swap</h1>
-          <p className="mt-0.5 text-xs text-ink-secondary">Exchange tokens at the best rate — 0.3% fee.</p>
+          <p className="mt-0.5 text-xs text-ink-secondary">Exchange tokens at the best rate. 0.3% fee.</p>
         </div>
         {pool.hasLiquidity && (
           <div className="hidden items-center gap-1.5 rounded-lg border border-base-border bg-base-card px-3 py-1.5 sm:flex">
@@ -271,7 +271,7 @@ export default function SwapPage() {
                 </ConnectButton.Custom>
               ) : poolNotReady ? (
                 <button disabled className="w-full rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-faint cursor-not-allowed">
-                  {isConfigured(pool.poolAddress) ? 'Pool empty — add liquidity first' : 'Pool not deployed'}
+                  {isConfigured(pool.poolAddress) ? 'Pool empty, add liquidity first' : 'Pool not deployed'}
                 </button>
               ) : !amountInStr || amountIn === 0n ? (
                 <button disabled className="w-full rounded-xl bg-base-elevated py-3.5 text-sm font-medium text-ink-faint cursor-not-allowed">

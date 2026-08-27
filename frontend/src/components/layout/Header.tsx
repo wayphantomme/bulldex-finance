@@ -112,7 +112,7 @@ export function Header() {
               <Link key={item.label} href={item.href}
                 className={cn(
                   'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors duration-150',
-                  isActive ? 'text-green' : 'text-ink-secondary hover:text-ink',
+                  isActive ? 'bg-base-elevated text-ink' : 'text-ink-secondary hover:text-ink',
                 )}>
                 {item.label}
               </Link>

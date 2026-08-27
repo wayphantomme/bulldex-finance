@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
@@ -11,6 +11,7 @@ import {
   useLendingActions,
   parseTokenAmount,
 } from '@/hooks/useLending';
+import { useTokenBalances } from '@/hooks/useTokenBalances';
 import { etherscanUrl } from '@/constants/contracts';
 import { shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
@@ -25,8 +26,16 @@ export default function LendingPage() {
   const stats    = useLendingStats();
   const position = useLendingPosition(address);
   const actions  = useLendingActions(address);
+  const balances = useTokenBalances(address); // real wallet balances
 
   const amount = parseTokenAmount(inputVal);
+
+  // Escape key to close modal
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') closeAction(); }
+    if (actionType) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [actionType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Safe health factor display — guard against max uint256 scientific notation
   const hfDisplay = !position.collateral || position.collateral === 0n
@@ -93,60 +102,68 @@ export default function LendingPage() {
     ? (parseFloat(formatUnits(position.collateral, 18)) * bdxPriceNum).toFixed(2)
     : null;
 
-  // Quick % buttons
+  // Quick % buttons using real wallet balances
   function setHalf() {
     if (!actionType) return;
     if (actionType === 'deposit') {
-      // half of BDX balance — not available here, just set arbitrary
-      setInputVal('');
+      const bal = parseFloat(formatUnits(balances.bdx, 18));
+      setInputVal((bal / 2).toFixed(6));
     } else if (actionType === 'borrow') {
-      const max = parseFloat(formatUnits(position.maxBorrowable, 18));
+      const max  = parseFloat(formatUnits(position.maxBorrowable, 18));
       const debt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
-      const avail = Math.max(0, max - debt);
-      setInputVal((avail / 2).toFixed(6));
+      setInputVal((Math.max(0, max - debt) / 2).toFixed(6));
     } else if (actionType === 'withdraw') {
-      const col = parseFloat(formatUnits(position.collateral, 18));
-      setInputVal((col / 2).toFixed(6));
+      setInputVal((parseFloat(formatUnits(position.collateral, 18)) / 2).toFixed(6));
     }
   }
 
   function setMax() {
     if (!actionType) return;
-    if (actionType === 'borrow') {
-      const max = parseFloat(formatUnits(position.maxBorrowable, 18));
+    if (actionType === 'deposit') {
+      // Leave a tiny buffer for gas — show full BDX balance
+      const bal = parseFloat(formatUnits(balances.bdx, 18));
+      setInputVal(bal.toFixed(6));
+    } else if (actionType === 'borrow') {
+      const max  = parseFloat(formatUnits(position.maxBorrowable, 18));
       const debt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
-      const avail = Math.max(0, (max - debt) * 0.99); // 99% to leave buffer
-      setInputVal(avail.toFixed(6));
+      setInputVal((Math.max(0, (max - debt) * 0.99)).toFixed(6));
     } else if (actionType === 'withdraw') {
-      const col = parseFloat(formatUnits(position.collateral, 18));
-      setInputVal(col.toFixed(6));
+      setInputVal(parseFloat(formatUnits(position.collateral, 18)).toFixed(6));
     }
+  }
+
+  // Balance label for current action input
+  function getBalanceLabel(): string {
+    if (actionType === 'deposit')  return `Balance: ${parseFloat(formatUnits(balances.bdx, 18)).toFixed(4)} BDX`;
+    if (actionType === 'borrow')   return `Available: ${fmtBig(position.maxBorrowable)} MUSDC`;
+    if (actionType === 'withdraw') return `Deposited: ${fmtBig(position.collateral)} BDX`;
+    return '';
   }
 
   return (
     <div className="animate-fade-in space-y-6">
 
       {/* ── Page header ─────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-ink">BDX Market</h1>
-          <p className="mt-1 text-sm text-ink-secondary">
-            Deposit BDX as collateral and borrow MUSDC with competitive yields.
+          <h1 className="text-base font-semibold text-ink">BDX Market</h1>
+          <p className="mt-0.5 text-xs text-ink-secondary">
+            Deposit BDX as collateral and borrow MUSDC.
           </p>
         </div>
         {/* Protocol-level stats */}
-        <div className="flex flex-wrap items-center gap-6 text-right">
-          <div>
+        <div className="flex flex-wrap items-center gap-5">
+          <div className="text-right">
             <p className="text-xs text-ink-faint">Total Supply</p>
-            <p className="text-lg font-bold text-ink tabular-nums">{fmtBig(stats.totalCollateral)} BDX</p>
+            <p className="text-sm font-semibold text-ink tabular-nums">{fmtBig(stats.totalCollateral)} BDX</p>
           </div>
-          <div>
+          <div className="text-right">
             <p className="text-xs text-ink-faint">Total Borrow</p>
-            <p className="text-lg font-bold text-ink tabular-nums">{fmtBig(stats.totalBorrowed)} MUSDC</p>
+            <p className="text-sm font-semibold text-ink tabular-nums">{fmtBig(stats.totalBorrowed)} MUSDC</p>
           </div>
-          <div>
+          <div className="text-right">
             <p className="text-xs text-ink-faint">Available</p>
-            <p className="text-lg font-bold text-ink tabular-nums">{fmtBig(stats.reserveBalance)} MUSDC</p>
+            <p className="text-sm font-semibold text-ink tabular-nums">{fmtBig(stats.reserveBalance)} MUSDC</p>
           </div>
         </div>
       </div>
@@ -224,7 +241,7 @@ export default function LendingPage() {
             <PositionCell label="Interest" value={`${fmtBig(position.interest)} MUSDC`} />
             <div className="p-4">
               <p className="text-xs text-ink-faint mb-1">Health Factor</p>
-              <p className={cn('text-xl font-bold tabular-nums', hfColor)}>{hfDisplay}</p>
+              <p className={cn('text-xl font-semibold tabular-nums', hfColor)}>{hfDisplay}</p>
               <div className="mt-2 h-1.5 w-full rounded-full bg-base-elevated overflow-hidden">
                 <div className={cn('h-full rounded-full transition-all',
                   position.healthFactorNum < 1.1 ? 'bg-red' :
@@ -317,15 +334,15 @@ export default function LendingPage() {
               <div className="grid grid-cols-3 divide-x divide-base-border border-b border-base-border">
                 <div className="px-4 py-3 text-center">
                   <p className="text-[10px] text-ink-faint">Your Collateral</p>
-                  <p className="text-sm font-bold text-ink tabular-nums">{fmtBig(position.collateral)} BDX</p>
+                  <p className="text-sm font-semibold text-ink tabular-nums">{fmtBig(position.collateral)} BDX</p>
                 </div>
                 <div className="px-4 py-3 text-center">
                   <p className="text-[10px] text-ink-faint">Max Borrow</p>
-                  <p className="text-sm font-bold text-ink tabular-nums">{fmtBig(position.maxBorrowable)} MUSDC</p>
+                  <p className="text-sm font-semibold text-ink tabular-nums">{fmtBig(position.maxBorrowable)} MUSDC</p>
                 </div>
                 <div className="px-4 py-3 text-center">
                   <p className="text-[10px] text-ink-faint">Health</p>
-                  <p className={cn('text-sm font-bold tabular-nums', hfColor)}>{hfDisplay}</p>
+                  <p className={cn('text-sm font-semibold tabular-nums', hfColor)}>{hfDisplay}</p>
                 </div>
               </div>
 
@@ -337,7 +354,8 @@ export default function LendingPage() {
                       <label className="text-xs text-ink-faint capitalize">
                         {actionType} {actionType === 'borrow' ? 'MUSDC' : 'BDX'}
                       </label>
-                      <div className="flex gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-ink-faint">{getBalanceLabel()}</span>
                         <button onClick={setHalf} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">HALF</button>
                         <button onClick={setMax}  className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">MAX</button>
                       </div>
@@ -373,7 +391,7 @@ export default function LendingPage() {
                     </div>
                     <div className="flex justify-between text-xs border-t border-base-border pt-2">
                       <span className="text-ink-faint font-semibold">Total to repay</span>
-                      <span className="text-ink font-bold">{fmtBig(position.borrowed + position.interest)} MUSDC</span>
+                      <span className="text-ink font-semibold">{fmtBig(position.borrowed + position.interest)} MUSDC</span>
                     </div>
                   </div>
                 )}
@@ -460,7 +478,8 @@ function UtilRing({ pct }: { pct: number }) {
   const r = 10;
   const circ = 2 * Math.PI * r;
   const fill = (pct / 100) * circ;
-  const color = pct > 80 ? '#F87171' : pct > 50 ? '#FCD34D' : '#4ADE80';
+  // Use token values: red=#F87171, yellow=#FCD34D, green=#4ADE80
+  const color = pct > 80 ? 'var(--color-red, #F87171)' : pct > 50 ? 'var(--color-yellow, #FCD34D)' : 'var(--color-green, #4ADE80)';
   return (
     <svg width="28" height="28" viewBox="0 0 28 28" className="shrink-0">
       <circle cx="14" cy="14" r={r} fill="none" stroke="#1E1F24" strokeWidth="4" />
@@ -478,7 +497,7 @@ function PositionCell({ label, value, sub }: { label: string; value: string; sub
   return (
     <div className="p-4">
       <p className="text-xs text-ink-faint mb-1">{label}</p>
-      <p className="text-sm font-bold text-ink tabular-nums">{value}</p>
+      <p className="text-sm font-semibold text-ink tabular-nums">{value}</p>
       {sub && <p className="text-[11px] text-ink-faint mt-0.5">{sub}</p>}
     </div>
   );
