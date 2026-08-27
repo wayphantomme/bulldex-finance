@@ -34,11 +34,12 @@ const NAV = [
   {
     label: 'Smart Contracts',
     items: [
-      { id: 'token',     label: 'Token (BDX)' },
-      { id: 'pool',      label: 'Pool (AMM)' },
-      { id: 'factory',   label: 'PoolFactory' },
-      { id: 'mocktoken', label: 'MockToken' },
-      { id: 'weth',      label: 'WETH' },
+      { id: 'token',        label: 'Token (BDX)' },
+      { id: 'pool',         label: 'Pool (AMM)' },
+      { id: 'factory',      label: 'PoolFactory' },
+      { id: 'mocktoken',    label: 'MockToken' },
+      { id: 'weth',         label: 'WETH' },
+      { id: 'price-mechanics', label: 'How Price Moves' },
     ],
   },
   {
@@ -86,6 +87,13 @@ const TOC: Record<string, { id: string; label: string }[]> = {
     { id: 'pool-formula',    label: 'Formula' },
     { id: 'pool-functions',  label: 'Functions' },
     { id: 'pool-security',   label: 'Security' },
+  ],
+  'price-mechanics': [
+    { id: 'price-formula',    label: 'x * y = k formula' },
+    { id: 'price-up',         label: 'What makes price go up' },
+    { id: 'price-down',       label: 'What makes price go down' },
+    { id: 'price-seed',       label: 'Seed price vs pool price' },
+    { id: 'price-chainlink',  label: 'Chainlink oracle' },
   ],
   week4: [
     { id: 'w4-built',     label: 'What was built' },
@@ -359,6 +367,8 @@ function ContentArea({ section }: { section: string }) {
     case 'pool':         return <PoolDoc />;
     case 'factory':      return <FactoryDoc />;
     case 'mocktoken':    return <MockTokenDoc />;
+    case 'weth':         return <WETHDoc />;
+    case 'price-mechanics': return <PriceMechanicsDoc />;
     case 'architecture': return <ArchitectureDoc />;
     case 'hooks':        return <HooksDoc />;
     case 'swap-flow':    return <SwapFlowDoc />;
@@ -667,6 +677,128 @@ function MockTokenDoc() {
         { sig: 'mint(address to, uint256 amount)', mod: 'public', desc: 'Mint tokens to any address' },
         { sig: 'faucet(uint256 amount)',            mod: 'public', desc: 'Mint tokens to msg.sender' },
       ]} />
+    </div>
+  );
+}
+
+function WETHDoc() {
+  return (
+    <div>
+      <P>Wrapped Ether (WETH9-style). Required because Pool.sol uses IERC20.transferFrom — cannot accept native ETH directly.</P>
+      <Callout type="info">Sepolia has a canonical WETH at 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14 but we deployed our own to have full control during development. Logic is identical.</Callout>
+      <H3>Deployed</H3>
+      <Table headers={['Contract', 'Address']} rows={[
+        ['WETH',         '0xEbFe8d5E0b674925599af1E970975Ae4fd2A4b62'],
+        ['BDX/WETH Pool','0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4'],
+      ]} />
+      <H3>Frontend ETH swap flow</H3>
+      <Code>{`// User picks ETH in swap UI
+// useMultiSwap detects isNative = true → 3 steps:
+1. WETH.deposit{value: amountIn}()  // wrap ETH → WETH
+2. WETH.approve(pool, MAX_UINT256)  // approve pool
+3. Pool.swap(WETH, amountIn, minOut, user) // swap`}</Code>
+      <H3>Functions</H3>
+      <FnList items={[
+        { sig: 'deposit()',           mod: 'payable', desc: 'Wrap ETH — send ETH, receive equal WETH' },
+        { sig: 'withdraw(uint256)',   mod: 'nonpayable', desc: 'Unwrap WETH back to ETH' },
+        { sig: 'balanceOf(address)', mod: 'view',     desc: 'WETH ERC-20 balance' },
+        { sig: 'approve(address, uint256)', mod: 'nonpayable', desc: 'Standard ERC-20 approval' },
+      ]} />
+    </div>
+  );
+}
+
+function PriceMechanicsDoc() {
+  return (
+    <div>
+      <P>How price is determined in AMM pools — what makes BDX price go up or down.</P>
+
+      <H2>The Core Formula: x * y = k</H2>
+      <P>Price in AMM is NOT set by order books. It is determined by the <strong>ratio of two token reserves</strong> in the pool.</P>
+      <Code>{`Pool BDX/WETH:
+  x = BDX reserve  = 1,000,000
+  y = WETH reserve = 0.1
+  k = x * y        = 100,000
+
+Spot price BDX = y / x
+              = 0.1 / 1,000,000
+              = 0.0000001 WETH per BDX`}</Code>
+
+      <H2>What Makes Price Go Up?</H2>
+      <P>When someone <strong>buys BDX</strong> (swaps WETH → BDX), BDX leaves the pool and WETH enters. BDX becomes more scarce in the pool, so the price rises.</P>
+      <Code>{`User swaps: 0.001 WETH → BDX
+
+Pool before: 1,000,000 BDX + 0.1 WETH
+amountOut   = (0.001 × 997 × 1,000,000) / (0.1 × 1000 + 0.001 × 997)
+            ≈ 9,070 BDX
+
+Pool after:  990,930 BDX + 0.101 WETH
+New price   = 0.101 / 990,930 = 0.0000001019 WETH/BDX
+
+Price increase: +1.9%`}</Code>
+
+      <H2>What Makes Price Go Down?</H2>
+      <P>When someone <strong>sells BDX</strong> (swaps BDX → WETH), BDX floods into the pool and WETH leaves. BDX becomes more abundant, price falls.</P>
+      <Code>{`User swaps: 100,000 BDX → WETH
+
+Pool before: 1,000,000 BDX + 0.1 WETH
+Pool after:  1,100,000 BDX + 0.0909 WETH (approx)
+
+New price   = 0.0909 / 1,100,000 = 0.0000000826 WETH/BDX
+
+Price decrease: -17.4%`}</Code>
+
+      <H2>Price Impact vs Slippage</H2>
+      <Table headers={['Term', 'Definition']} rows={[
+        ['Spot price',   'Current price from reserve ratio y/x'],
+        ['Price impact', '% price change caused by your swap'],
+        ['Slippage',     'Difference between expected and actual price'],
+        ['Mid price',    'Ideal price without fee: y/x'],
+      ]} />
+      <P>The smaller the pool (low TVL) → the bigger the price impact for the same swap size. A $1,000 swap in a $10,000 pool moves price much more than in a $10,000,000 pool.</P>
+
+      <H2>Why BDX Pool Price ≠ Seed Price $0.05</H2>
+      <P>The $0.05 target is from <strong>tokenomics design</strong> — what we want to sell at. The pool price is set by <strong>how much liquidity we seed</strong>.</P>
+      <Code>{`We seeded: 1,000,000 BDX + 0.1 WETH
+
+ETH price  = $2,500 (Chainlink)
+WETH value = 0.1 × $2,500 = $250
+
+BDX price  = $250 (WETH side) / 1,000,000 BDX
+           = $0.00025 per BDX
+
+To price at $0.05, need:
+  Seed with: 1,000,000 BDX + 20 WETH ($50,000)
+  OR seed fewer BDX: 5,000 BDX + 0.1 WETH
+     → $250 / 5,000 = $0.05 ✓`}</Code>
+
+      <H2>How BDX Price USD is Calculated</H2>
+      <P>There is no Chainlink BDX/USD feed since BDX is a new token. We derive it from two on-chain sources:</P>
+      <Code>{`Step 1: Get spot price from BDX/WETH pool
+  wethPerBdx = wethReserve / bdxReserve
+             = 0.1 / 1,000,000
+             = 0.0000001 WETH
+
+Step 2: Multiply by ETH/USD from Chainlink
+  bdxUSD = wethPerBdx × ethPriceUSD
+         = 0.0000001 × $2,500
+         = $0.00025
+
+Sources:
+  BDX/WETH pool  → on-chain, real-time
+  Chainlink ETH/USD → decentralized oracle, updated every 0.5% deviation`}</Code>
+
+      <H2>What is Arbitrage?</H2>
+      <P>On mainnet, if BDX is cheaper on Bulldex than elsewhere, arbitrageurs will buy it here and sell on other platforms, pushing prices back into alignment. On testnet, there are no arbitrageurs — prices can diverge freely.</P>
+
+      <H2>Chainlink Price Feed</H2>
+      <Table headers={['Feed', 'Address', 'Network', 'Decimals']} rows={[
+        ['ETH/USD', '0x694AA1769357215DE4FAC081bf1f309aDC325306', 'Sepolia', '8'],
+      ]} />
+      <Code>{`// Read ETH price in Solidity
+AggregatorV3Interface feed = AggregatorV3Interface(0x694AA...);
+(, int256 answer, , , ) = feed.latestRoundData();
+uint256 ethUSD = uint256(answer) / 1e8; // 8 decimals → divide by 1e8`}</Code>
     </div>
   );
 }

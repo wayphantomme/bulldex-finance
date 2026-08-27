@@ -12,6 +12,7 @@ import {
   Vote,
   Droplet,
   BookOpen,
+  BarChart2,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -49,8 +50,9 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Manage',
     items: [
-      { href: '/dashboard/governance', label: 'Governance', icon: <Vote    className={ICON} strokeWidth={1.5} />, soon: true },
-      { href: '/dashboard/faucet',     label: 'Faucet',     icon: <Droplet className={ICON} strokeWidth={1.5} /> },
+      { href: '/dashboard/governance', label: 'Governance', icon: <Vote      className={ICON} strokeWidth={1.5} />, soon: true },
+      { href: '/dashboard/analytics',  label: 'Analytics',  icon: <BarChart2 className={ICON} strokeWidth={1.5} /> },
+      { href: '/dashboard/faucet',     label: 'Faucet',     icon: <Droplet   className={ICON} strokeWidth={1.5} /> },
     ],
   },
 ];

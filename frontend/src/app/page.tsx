@@ -137,6 +137,41 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── Row 2.5: Traction (for VC) ─────────────────────────────────── */}
+        <div className="rounded-2xl border border-brand/20 bg-brand/5 p-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-brand mb-1">Live Traction</p>
+              <p className="text-base font-bold text-ink">On-chain activity on Sepolia testnet</p>
+              <p className="text-xs text-ink-secondary mt-1">All data verifiable on Etherscan. No fake numbers.</p>
+            </div>
+            <div className="flex flex-wrap gap-4 shrink-0">
+              {TRACTION.map((t) => (
+                <div key={t.label} className="text-center">
+                  <p className="text-2xl font-bold text-ink tabular-nums">{t.value}</p>
+                  <p className="text-[11px] text-ink-faint">{t.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <a href="https://sepolia.etherscan.io/address/0xfac1b95480e87ccef0e995612ceca23f3ddb0197"
+              target="_blank" rel="noopener noreferrer"
+              className="rounded-lg border border-base-border bg-base-card px-3 py-1.5 text-[11px] text-ink-secondary hover:text-ink transition-colors">
+              BDX/MUSDC Pool on Etherscan
+            </a>
+            <a href="https://sepolia.etherscan.io/address/0x3cA1cE14fd2fE5A449F67CFA63F342acfB8860e4"
+              target="_blank" rel="noopener noreferrer"
+              className="rounded-lg border border-base-border bg-base-card px-3 py-1.5 text-[11px] text-ink-secondary hover:text-ink transition-colors">
+              BDX/WETH Pool on Etherscan
+            </a>
+            <Link href="/dashboard/analytics"
+              className="rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-[11px] text-brand hover:opacity-80 transition-opacity">
+              View Analytics
+            </Link>
+          </div>
+        </div>
+
         {/* ── Row 3: Roadmap ──────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-base-border bg-base-card p-6">
           <div className="flex items-center justify-between mb-5">
@@ -372,6 +407,14 @@ const WHY = [
     title: 'Transparent Development',
     desc: 'Open source, built in public. Every problem documented on GitHub and /docs.',
   },
+];
+
+// Updated manually each deploy — reflects real on-chain state
+const TRACTION = [
+  { value: '4',  label: 'Contracts Deployed' },
+  { value: '73', label: 'Tests Passing' },
+  { value: '2',  label: 'Active Pools' },
+  { value: '30M BDX', label: 'Pool Liquidity' },
 ];
 
 const STACK = [

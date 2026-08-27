@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { useTokenInfo } from '@/hooks/useTokenInfo';
 import { usePoolStats } from '@/hooks/usePoolStats';
+import { usePriceTicker } from '@/hooks/usePriceTicker';
 import { formatToken } from '@/utils/format';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -17,13 +18,12 @@ export default function DashboardPage() {
   const { raw: balance, isLoading: balLoading, isContractConfigured } = useTokenBalance(address);
   const { symbol, totalSupply, isLoading: infoLoading } = useTokenInfo();
 
-  // Pool stats for TVL (sum of both pools simplified as BDX/MUSDC pool)
   const pool = usePoolStats();
+  const { bdxPriceUSD, tvlUSD } = usePriceTicker();
 
-  // TVL approximation: BDX reserve * 2 (assuming BDX = 1 MUSDC for simplicity on testnet)
-  // Real TVL would need price oracle — this is a placeholder that shows real data
-  const tvlDisplay = pool.hasLiquidity && pool.bdxReserve && pool.musdcReserve
-    ? `${pool.bdxReserveFormatted} BDX`
+  // Pool price display — raw spot price from pool
+  const poolPriceDisplay = pool.hasLiquidity && pool.bdxPriceFormatted
+    ? pool.bdxPriceFormatted
     : null;
 
   return (
@@ -100,17 +100,15 @@ export default function DashboardPage() {
               )}
             </Card>
 
-            {/* TVL — real data from pool */}
+            {/* TVL — from Chainlink × pool reserves */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">TVL (BDX/MUSDC)</p>
+              <p className="mb-2 text-xs text-ink-secondary">Protocol TVL</p>
               {pool.isLoading ? (
                 <Skeleton className="h-7 w-24" />
-              ) : tvlDisplay ? (
+              ) : tvlUSD ? (
                 <>
-                  <p className="text-xl font-bold text-ink">{tvlDisplay}</p>
-                  <p className="mt-0.5 text-xs text-ink-faint">
-                    + {pool.musdcReserveFormatted} MUSDC
-                  </p>
+                  <p className="text-2xl font-bold text-ink tabular-nums">{tvlUSD}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">BDX/MUSDC + BDX/WETH</p>
                 </>
               ) : (
                 <>
@@ -120,17 +118,20 @@ export default function DashboardPage() {
               )}
             </Card>
 
-            {/* 24h Volume — on-chain events needed for accurate volume */}
+            {/* BDX Price — from WETH pool × Chainlink */}
             <Card>
-              <p className="mb-2 text-xs text-ink-secondary">Pool Price</p>
+              <p className="mb-2 text-xs text-ink-secondary">BDX Price</p>
               {pool.isLoading ? (
                 <Skeleton className="h-7 w-24" />
-              ) : pool.hasLiquidity ? (
+              ) : bdxPriceUSD ? (
                 <>
-                  <p className="text-xl font-bold text-ink tabular-nums">
-                    {pool.bdxPriceFormatted}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-faint">MUSDC per BDX</p>
+                  <p className="text-2xl font-bold text-ink tabular-nums">{bdxPriceUSD}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">via WETH pool × Chainlink</p>
+                </>
+              ) : poolPriceDisplay ? (
+                <>
+                  <p className="text-xl font-bold text-ink tabular-nums">{poolPriceDisplay}</p>
+                  <p className="mt-0.5 text-xs text-ink-faint">MUSDC per BDX (spot)</p>
                 </>
               ) : (
                 <>

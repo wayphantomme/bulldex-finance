@@ -9,12 +9,13 @@ import { Wallet } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 const NAV = [
-  { label: 'Swap',      href: '/dashboard/swap' },
-  { label: 'Liquidity', href: '/dashboard/liquidity' },
-  { label: 'Stake',     href: '/dashboard/staking' },
-  { label: 'Farm',      href: '/dashboard/farming' },
-  { label: 'Faucet',    href: '/dashboard/faucet' },
-  { label: 'Docs',      href: '/docs' },
+  { label: 'Swap',       href: '/dashboard/swap' },
+  { label: 'Liquidity',  href: '/dashboard/liquidity' },
+  { label: 'Stake',      href: '/dashboard/staking' },
+  { label: 'Farm',       href: '/dashboard/farming' },
+  { label: 'Analytics',  href: '/dashboard/analytics' },
+  { label: 'Faucet',     href: '/dashboard/faucet' },
+  { label: 'Docs',       href: '/docs' },
 ];
 
 // ─── Wallet connector icons ───────────────────────────────────────────────────
