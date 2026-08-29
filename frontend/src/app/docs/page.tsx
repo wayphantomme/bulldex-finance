@@ -32,54 +32,46 @@ const NAV = [
     ],
   },
   {
-    label: 'Smart Contracts',
+    label: 'Phase 1 — Live',
     items: [
+      { id: 'swap',         label: 'AMM Swap' },
+      { id: 'liquidity',    label: 'Liquidity Pools' },
+      { id: 'lending',      label: 'Lending Markets' },
       { id: 'token',        label: 'Token (BDX)' },
-      { id: 'pool',         label: 'Pool (AMM)' },
-      { id: 'factory',      label: 'PoolFactory' },
-      { id: 'mocktoken',    label: 'MockToken' },
-      { id: 'weth',            label: 'WETH' },
-      { id: 'lending',         label: 'Lending' },
-      { id: 'price-mechanics', label: 'How Price Moves' },
+      { id: 'contracts',    label: 'Contracts Reference' },
     ],
   },
   {
-    label: 'Frontend',
+    label: 'Phase 2 — Building',
     items: [
-      { id: 'architecture', label: 'Architecture' },
-      { id: 'hooks',        label: 'Hooks' },
-      { id: 'swap-flow',    label: 'Swap Flow' },
-    ],
-  },
-  {
-    label: 'Phase 2 — Coming Soon',
-    items: [
-      { id: 'staking',   label: '🔒 Staking' },
-      { id: 'farming',   label: '🌱 Yield Farming' },
-      { id: 'vesting',   label: '📅 Vesting' },
+      { id: 'staking',   label: 'Staking' },
+      { id: 'farming',   label: 'Yield Farming' },
+      { id: 'vesting',   label: 'Vesting' },
     ],
   },
   {
     label: 'Phase 3 — Planned',
     items: [
-      { id: 'governance', label: '🗳 Governance (DAO)' },
-      { id: 'router',     label: '🔀 Router & Multi-Hop' },
-      { id: 'flashloan',  label: '⚡ Flash Loans' },
+      { id: 'governance', label: 'Governance (DAO)' },
+      { id: 'router',     label: 'Router & Multi-Hop' },
+      { id: 'flashloan',  label: 'Flash Loans' },
+    ],
+  },
+  {
+    label: 'System Design',
+    items: [
+      { id: 'architecture', label: 'Architecture' },
+      { id: 'hooks',        label: 'Hooks Reference' },
+      { id: 'decisions',    label: 'Technical Decisions' },
     ],
   },
   {
     label: 'Dev Log',
     items: [
-      { id: 'week4', label: 'Week 4 - Design Upgrade' },
-      { id: 'week3', label: 'Week 3 - Liquidity UI' },
-      { id: 'week2', label: 'Week 2 - AMM Swap' },
-      { id: 'week1', label: 'Week 1 - Foundation' },
-    ],
-  },
-  {
-    label: 'Decisions',
-    items: [
-      { id: 'decisions', label: 'Technical Decisions' },
+      { id: 'week4', label: 'Week 4 — Design Upgrade' },
+      { id: 'week3', label: 'Week 3 — Liquidity UI' },
+      { id: 'week2', label: 'Week 2 — AMM Swap' },
+      { id: 'week1', label: 'Week 1 — Foundation' },
     ],
   },
 ];
@@ -95,23 +87,41 @@ const TOC: Record<string, { id: string; label: string }[]> = {
     { id: 'qs-contracts', label: 'Smart Contracts' },
     { id: 'qs-frontend',  label: 'Frontend' },
   ],
+  // Phase 1 features
+  swap: [
+    { id: 'swap-overview',   label: 'Overview' },
+    { id: 'swap-math',       label: 'AMM Math' },
+    { id: 'swap-functions',  label: 'Contract Functions' },
+    { id: 'swap-flow',       label: 'Frontend Flow' },
+    { id: 'swap-eth',        label: 'ETH → Token' },
+  ],
+  liquidity: [
+    { id: 'liq-overview',   label: 'Overview' },
+    { id: 'liq-math',       label: 'LP Math' },
+    { id: 'liq-functions',  label: 'Contract Functions' },
+    { id: 'liq-add',        label: 'Add Liquidity Flow' },
+    { id: 'liq-remove',     label: 'Remove Liquidity Flow' },
+  ],
+  lending: [
+    { id: 'lend-overview',   label: 'Overview' },
+    { id: 'lend-params',     label: 'Parameters' },
+    { id: 'lend-math',       label: 'Health Factor Math' },
+    { id: 'lend-functions',  label: 'Contract Functions' },
+    { id: 'lend-actions',    label: 'Action Flows' },
+  ],
   token: [
     { id: 'token-params',    label: 'Key Parameters' },
     { id: 'token-functions', label: 'Functions' },
     { id: 'token-errors',    label: 'Custom Errors' },
   ],
-  pool: [
-    { id: 'pool-formula',    label: 'Formula' },
-    { id: 'pool-functions',  label: 'Functions' },
-    { id: 'pool-security',   label: 'Security' },
+  contracts: [
+    { id: 'ct-pool',         label: 'Pool (AMM)' },
+    { id: 'ct-factory',      label: 'PoolFactory' },
+    { id: 'ct-mocktoken',    label: 'MockToken' },
+    { id: 'ct-weth',         label: 'WETH' },
+    { id: 'ct-price',        label: 'How Price Moves' },
   ],
-  'price-mechanics': [
-    { id: 'price-formula',    label: 'x * y = k formula' },
-    { id: 'price-up',         label: 'What makes price go up' },
-    { id: 'price-down',       label: 'What makes price go down' },
-    { id: 'price-seed',       label: 'Seed price vs pool price' },
-    { id: 'price-chainlink',  label: 'Chainlink oracle' },
-  ],
+  // Phase 2
   staking: [
     { id: 'staking-overview',  label: 'Overview' },
     { id: 'staking-math',      label: 'Reward Math' },
@@ -129,6 +139,7 @@ const TOC: Record<string, { id: string; label: string }[]> = {
     { id: 'vesting-schedule',  label: 'Vesting Schedule' },
     { id: 'vesting-functions', label: 'Contract Functions' },
   ],
+  // Phase 3
   governance: [
     { id: 'gov-overview',    label: 'Overview' },
     { id: 'gov-flow',        label: 'Proposal Flow' },
@@ -147,23 +158,38 @@ const TOC: Record<string, { id: string; label: string }[]> = {
     { id: 'flash-interface',  label: 'Receiver Interface' },
     { id: 'flash-fee',        label: 'Fee Structure' },
   ],
+  // System Design
+  architecture: [
+    { id: 'arch-contracts', label: 'Contract Layer' },
+    { id: 'arch-frontend',  label: 'Frontend Layer' },
+    { id: 'arch-data',      label: 'Data Layer' },
+  ],
+  hooks: [
+    { id: 'hooks-read',   label: 'Read Hooks' },
+    { id: 'hooks-write',  label: 'Write Hooks' },
+    { id: 'hooks-pattern', label: 'State Machine Pattern' },
+  ],
+  decisions: [
+    { id: 'dec-list', label: 'All Decisions' },
+  ],
+  // Dev Log
   week4: [
-    { id: 'w4-built',     label: 'What was built' },
-    { id: 'w4-problems',  label: 'Problems & Solutions' },
+    { id: 'w4-built',    label: 'What was built' },
+    { id: 'w4-problems', label: 'Problems & Solutions' },
   ],
   week3: [
-    { id: 'w3-built',     label: 'What was built' },
-    { id: 'w3-problems',  label: 'Problems & Solutions' },
+    { id: 'w3-built',    label: 'What was built' },
+    { id: 'w3-problems', label: 'Problems & Solutions' },
   ],
   week2: [
-    { id: 'w2-built',     label: 'What was built' },
-    { id: 'w2-problems',  label: 'Problems & Solutions' },
-    { id: 'w2-gas',       label: 'Gas Report' },
+    { id: 'w2-built',    label: 'What was built' },
+    { id: 'w2-problems', label: 'Problems & Solutions' },
+    { id: 'w2-gas',      label: 'Gas Report' },
   ],
   week1: [
-    { id: 'w1-built',     label: 'What was built' },
-    { id: 'w1-problems',  label: 'Problems & Solutions' },
-    { id: 'w1-gas',       label: 'Gas Report' },
+    { id: 'w1-built',    label: 'What was built' },
+    { id: 'w1-problems', label: 'Problems & Solutions' },
+    { id: 'w1-gas',      label: 'Gas Report' },
   ],
 };
 
@@ -263,7 +289,10 @@ export default function DocsPage() {
                   onClick={() => setExpandedGroups((p) => ({ ...p, [group.label]: !p[group.label] }))}
                   className="flex w-full items-center justify-between px-2.5 mb-1"
                 >
-                  <span className="text-[11px] font-medium uppercase tracking-widest text-[#55565D]">
+                  <span className="text-[11px] font-medium uppercase tracking-widest text-[#55565D] flex items-center gap-1.5">
+                    {group.label.includes('Live') && <span className="h-1.5 w-1.5 rounded-full bg-green-400 shrink-0" />}
+                    {group.label.includes('Building') && <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 shrink-0" />}
+                    {group.label.includes('Planned') && <span className="h-1.5 w-1.5 rounded-full bg-[#55565D] shrink-0" />}
                     {group.label}
                   </span>
                   <ChevronDown className={cn(
@@ -415,26 +444,29 @@ function ContentArea({ section }: { section: string }) {
     case 'introduction': return <Introduction />;
     case 'quickstart':   return <QuickStart />;
     case 'stack':        return <TechStack />;
+    // Phase 1
+    case 'swap':         return <SwapDoc />;
+    case 'liquidity':    return <LiquidityDoc />;
+    case 'lending':      return <LendingDoc />;
     case 'token':        return <TokenDoc />;
-    case 'pool':         return <PoolDoc />;
-    case 'factory':      return <FactoryDoc />;
-    case 'mocktoken':    return <MockTokenDoc />;
-    case 'weth':         return <WETHDoc />;
-    case 'price-mechanics': return <PriceMechanicsDoc />;
-    case 'architecture': return <ArchitectureDoc />;
-    case 'hooks':        return <HooksDoc />;
-    case 'swap-flow':    return <SwapFlowDoc />;
+    case 'contracts':    return <ContractsDoc />;
+    // Phase 2
     case 'staking':      return <StakingDoc />;
     case 'farming':      return <FarmingDoc />;
     case 'vesting':      return <VestingDoc />;
+    // Phase 3
     case 'governance':   return <GovernanceDoc />;
     case 'router':       return <RouterDoc />;
     case 'flashloan':    return <FlashLoanDoc />;
+    // System Design
+    case 'architecture': return <ArchitectureDoc />;
+    case 'hooks':        return <HooksDoc />;
+    case 'decisions':    return <Decisions />;
+    // Dev Log
     case 'week4':        return <Week4Log />;
     case 'week3':        return <Week3Log />;
     case 'week2':        return <Week2Log />;
     case 'week1':        return <Week1Log />;
-    case 'decisions':    return <Decisions />;
     default: return <Introduction />;
   }
 }
@@ -544,6 +576,159 @@ function Built({ items }: { items: string[] }) {
 
 // ─── Section content ───────────────────────────────────────────────────────
 
+// ─── Phase 1 feature wrappers ──────────────────────────────────────────────
+
+function SwapDoc() {
+  return (
+    <div>
+      <H2 id="swap-overview">AMM Swap</H2>
+      <P>Exchange tokens at a market rate determined by the constant-product formula x * y = k. A 0.3% fee is charged on every swap and goes entirely to liquidity providers — no protocol cut.</P>
+      <P>Two pools are live: <strong>BDX/MUSDC</strong> (primary) and <strong>BDX/WETH</strong> (secondary). ETH is automatically wrapped to WETH before swapping.</P>
+
+      <H2 id="swap-math">Formula</H2>
+      <Code>{`amountOut = (amountIn × 997 × reserveOut) / (reserveIn × 1000 + amountIn × 997)
+
+// Price impact (basis points):
+midPrice = amountIn × reserveOut / reserveIn
+impactBps = (midPrice - amountOut) / midPrice × 10000`}</Code>
+
+      <H2 id="swap-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'swap(address tokenIn, uint256 amountIn, uint256 minAmountOut, address to)', mod: 'external nonReentrant', desc: 'Swap exact input for as much output as possible. Reverts if output < minAmountOut.' },
+        { sig: 'getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut)', mod: 'public pure', desc: 'Compute output amount given input. Includes 0.3% fee.' },
+        { sig: 'getAmountIn(uint256 amountOut, uint256 reserveIn, uint256 reserveOut)', mod: 'public pure', desc: 'Compute input needed for a desired output.' },
+        { sig: 'getPriceImpact(address tokenIn, uint256 amountIn)', mod: 'external view', desc: 'Price impact in basis points (100 = 1%).' },
+        { sig: 'getReserves()', mod: 'external view', desc: 'Returns (reserve0, reserve1) — current pool reserves.' },
+      ]} />
+
+      <H2 id="swap-flow">Frontend Flow: ERC-20</H2>
+      <Code>{`1. [if not approved] approve(pool, MAX_UINT256)
+   → wait for receipt
+2. swap(tokenIn, amountIn, minAmountOut, recipient)
+   → success`}</Code>
+
+      <H2 id="swap-eth">Frontend Flow: ETH to Token</H2>
+      <Code>{`1. deposit() on WETH contract  { value: amountIn }
+   → wait for receipt
+2. approve(pool, MAX_UINT256) on WETH
+   → wait for receipt
+3. swap(WETH, amountIn, minAmountOut, recipient)
+   → success`}</Code>
+
+      <Table headers={['Slippage Option', 'Basis Points']} rows={[
+        ['0.5%', '50'],
+        ['1.0% (default)', '100'],
+        ['2.0%', '200'],
+      ]} />
+    </div>
+  );
+}
+
+function LiquidityDoc() {
+  return (
+    <div>
+      <H2 id="liq-overview">Liquidity Pools</H2>
+      <P>Deposit equal-value pairs of tokens to earn 0.3% of every swap. Receive LP tokens representing your share. Burn LP tokens at any time to withdraw.</P>
+      <P>Two pools: BDX/MUSDC and BDX/WETH. The BDX/WETH pool requires WETH (ERC-20), not native ETH — wrap on the Faucet page first.</P>
+
+      <H2 id="liq-math">LP Math</H2>
+      <Code>{`// First deposit:
+liquidity = sqrt(amount0 × amount1) - MINIMUM_LIQUIDITY
+
+// Subsequent deposits:
+liquidity = min(amount0 × totalSupply / reserve0,
+                amount1 × totalSupply / reserve1)
+
+// Withdrawal:
+amount0 = lpBurned × reserve0 / totalSupply
+amount1 = lpBurned × reserve1 / totalSupply`}</Code>
+
+      <H2 id="liq-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'addLiquidity(uint256 amount0Desired, uint256 amount1Desired, uint256 amount0Min, uint256 amount1Min, address to)', mod: 'external nonReentrant', desc: 'Deposit tokens, receive LP tokens. Unused tokens returned to caller.' },
+        { sig: 'removeLiquidity(uint256 liquidity, uint256 amount0Min, uint256 amount1Min, address to)', mod: 'external nonReentrant', desc: 'Burn LP tokens, receive proportional reserves.' },
+        { sig: 'balanceOf(address account)', mod: 'external view', desc: 'LP token balance of an address.' },
+        { sig: 'totalSupply()', mod: 'external view', desc: 'Total LP tokens in circulation.' },
+      ]} />
+
+      <H2 id="liq-add">Add Liquidity Flow</H2>
+      <Code>{`1. approve(pool, MAX_UINT256) for BDX → wait
+2. approve(pool, MAX_UINT256) for MUSDC/WETH → wait
+3. addLiquidity(amount0, amount1, min0, min1, userAddress)
+   → LP tokens minted to user`}</Code>
+
+      <H2 id="liq-remove">Remove Liquidity Flow</H2>
+      <P>No approval needed — LP tokens are burned directly from the caller. Use the percentage slider (25% / 50% / 75% / MAX) to select how much to remove.</P>
+      <Code>{`removeLiquidity(lpToRemove, min0, min1, userAddress)
+→ tokens returned proportionally`}</Code>
+    </div>
+  );
+}
+
+function LendingDoc() {
+  return (
+    <div>
+      <H2 id="lend-overview">Lending Markets</H2>
+      <P>Over-collateralized lending. Deposit BDX as collateral, borrow MUSDC against it. If your health factor drops below 1.0, your position can be liquidated.</P>
+
+      <H2 id="lend-params">Parameters</H2>
+      <Table headers={['Parameter', 'Value']} rows={[
+        ['Collateral', 'BDX'],
+        ['Borrow asset', 'MUSDC'],
+        ['Max LTV', '75% — borrow up to 75% of collateral value'],
+        ['Liquidation threshold', '80% — position liquidatable below this'],
+        ['Liquidation bonus', '5% — liquidator receives collateral + 5%'],
+        ['Interest rate', '~5% APR (simple, per block)'],
+        ['Price oracle', 'BDX/MUSDC pool spot price (testnet)'],
+      ]} />
+
+      <H2 id="lend-math">Health Factor</H2>
+      <Code>{`healthFactor = (collateralUSD × 0.80) / (borrowed + interest)
+
+// Scaled by 1e18:
+// >= 1e18 → safe
+// <  1e18 → liquidatable
+// = MAX_UINT256 → no debt`}</Code>
+
+      <H2 id="lend-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'depositCollateral(uint256 amount)', mod: 'external nonReentrant', desc: 'Deposit BDX as collateral.' },
+        { sig: 'withdrawCollateral(uint256 amount)', mod: 'external nonReentrant', desc: 'Withdraw BDX. Reverts if withdrawal would breach 75% LTV.' },
+        { sig: 'borrow(uint256 amount)', mod: 'external nonReentrant', desc: 'Borrow MUSDC up to your 75% LTV limit.' },
+        { sig: 'repay(uint256 amount)', mod: 'external nonReentrant', desc: 'Repay MUSDC debt + interest. Pass MAX_UINT256 to repay all.' },
+        { sig: 'liquidate(address borrower, uint256 debtToCover)', mod: 'external nonReentrant', desc: 'Liquidate undercollateralized position. Liquidator repays debt, receives collateral + 5%.' },
+        { sig: 'getPosition(address user)', mod: 'external view', desc: 'Returns (collateral, borrowed, interest, healthFactor, collateralUSD, maxBorrowable).' },
+        { sig: 'healthFactor(address user)', mod: 'public view', desc: 'Current health factor, 1e18 scaled.' },
+      ]} />
+
+      <H2 id="lend-actions">Action Flows</H2>
+      <Code>{`Deposit:  approve(lending, MAX) on BDX → depositCollateral(amount)
+Borrow:   borrow(amount)  [no approval — contract sends MUSDC]
+Repay:    approve(lending, MAX) on MUSDC → repay(amount)
+Withdraw: withdrawCollateral(amount)  [no approval]`}</Code>
+
+      <Callout type="warning">The price oracle uses spot price from the BDX/MUSDC pool. This is acceptable for testnet but requires Chainlink TWAP before mainnet deployment.</Callout>
+    </div>
+  );
+}
+
+function ContractsDoc() {
+  return (
+    <div>
+      <H2 id="ct-pool">Pool (AMM)</H2>
+      <PoolDoc />
+      <H2 id="ct-factory">PoolFactory</H2>
+      <FactoryDoc />
+      <H2 id="ct-mocktoken">MockToken (MUSDC)</H2>
+      <MockTokenDoc />
+      <H2 id="ct-weth">WETH</H2>
+      <WETHDoc />
+      <H2 id="ct-price">How Price Moves</H2>
+      <PriceMechanicsDoc />
+    </div>
+  );
+}
+
 function Introduction() {
   return (
     <div>
@@ -561,11 +746,11 @@ function Introduction() {
       <Table
         headers={['Item', 'Detail']}
         rows={[
-          ['Network',   'Sepolia Testnet (chain 11155111)'],
-          ['Tests',     '73 passing (33 Token + 40 Pool)'],
-          ['Contracts', 'Token, MockToken, Pool, PoolFactory'],
-          ['Frontend',  'Next.js 14, wagmi v2, RainbowKit v2'],
-          ['Status',    'Week 3-4 complete — Liquidity UI live'],
+          ['Network',    'Sepolia Testnet (chain 11155111)'],
+          ['Tests',      '111 passing'],
+          ['Contracts',  'Token, MockToken, WETH, Pool, PoolFactory, Lending'],
+          ['Frontend',   'Next.js 14, wagmi v2, RainbowKit v2'],
+          ['Status',     'Phase 1 complete — Swap, Liquidity, Lending live'],
         ]}
       />
     </div>
@@ -1219,7 +1404,7 @@ const DECISION_LIST = [
 function ComingSoonBanner({ phase, timeline }: { phase: string; timeline: string }) {
   return (
     <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-6 flex items-center gap-3">
-      <span className="text-yellow-400 text-lg">🚧</span>
+      <div className="h-2 w-2 rounded-full bg-yellow-400 shrink-0" />
       <div>
         <p className="text-xs font-semibold text-yellow-400">{phase} — Coming Soon</p>
         <p className="text-xs text-[#9A9DA6] mt-0.5">{timeline}</p>
