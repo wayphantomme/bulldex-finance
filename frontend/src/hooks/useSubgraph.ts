@@ -26,7 +26,6 @@ export interface SubgraphLPEvent {
   user:        string;
   amount0:     string;
   amount1:     string;
-  liquidity:   string;
   blockNumber: string;
   timestamp:   string;
   txHash:      string;
@@ -137,14 +136,14 @@ function buildMainQuery(swapSkip = 0, swapFirst = 20) {
       first: 20, orderBy: blockNumber, orderDirection: desc,
       where: { type: "add" }
     ) {
-      id user amount0 amount1 liquidity blockNumber timestamp txHash
+      id user amount0 amount1 blockNumber timestamp txHash
       pool { id }
     }
     liquidityRemoves: liquidityEvents(
       first: 20, orderBy: blockNumber, orderDirection: desc,
       where: { type: "remove" }
     ) {
-      id user amount0 amount1 liquidity blockNumber timestamp txHash
+      id user amount0 amount1 blockNumber timestamp txHash
       pool { id }
     }
   }`;
