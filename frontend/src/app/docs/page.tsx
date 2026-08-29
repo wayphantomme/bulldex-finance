@@ -52,6 +52,22 @@ const NAV = [
     ],
   },
   {
+    label: 'Phase 2 — Coming Soon',
+    items: [
+      { id: 'staking',   label: '🔒 Staking' },
+      { id: 'farming',   label: '🌱 Yield Farming' },
+      { id: 'vesting',   label: '📅 Vesting' },
+    ],
+  },
+  {
+    label: 'Phase 3 — Planned',
+    items: [
+      { id: 'governance', label: '🗳 Governance (DAO)' },
+      { id: 'router',     label: '🔀 Router & Multi-Hop' },
+      { id: 'flashloan',  label: '⚡ Flash Loans' },
+    ],
+  },
+  {
     label: 'Dev Log',
     items: [
       { id: 'week4', label: 'Week 4 - Design Upgrade' },
@@ -95,6 +111,41 @@ const TOC: Record<string, { id: string; label: string }[]> = {
     { id: 'price-down',       label: 'What makes price go down' },
     { id: 'price-seed',       label: 'Seed price vs pool price' },
     { id: 'price-chainlink',  label: 'Chainlink oracle' },
+  ],
+  staking: [
+    { id: 'staking-overview',  label: 'Overview' },
+    { id: 'staking-math',      label: 'Reward Math' },
+    { id: 'staking-functions', label: 'Contract Functions' },
+    { id: 'staking-frontend',  label: 'Frontend Hooks' },
+  ],
+  farming: [
+    { id: 'farming-overview',  label: 'Overview' },
+    { id: 'farming-math',      label: 'MasterChef Math' },
+    { id: 'farming-functions', label: 'Contract Functions' },
+    { id: 'farming-pools',     label: 'Initial Pools' },
+  ],
+  vesting: [
+    { id: 'vesting-overview',  label: 'Overview' },
+    { id: 'vesting-schedule',  label: 'Vesting Schedule' },
+    { id: 'vesting-functions', label: 'Contract Functions' },
+  ],
+  governance: [
+    { id: 'gov-overview',    label: 'Overview' },
+    { id: 'gov-flow',        label: 'Proposal Flow' },
+    { id: 'gov-params',      label: 'Parameters' },
+    { id: 'gov-delegation',  label: 'Delegation' },
+    { id: 'gov-token',       label: 'Token Upgrade Required' },
+  ],
+  router: [
+    { id: 'router-overview',  label: 'Overview' },
+    { id: 'router-paths',     label: 'Supported Paths' },
+    { id: 'router-functions', label: 'Functions' },
+    { id: 'router-deadline',  label: 'Deadline Protection' },
+  ],
+  flashloan: [
+    { id: 'flash-overview',   label: 'Overview' },
+    { id: 'flash-interface',  label: 'Receiver Interface' },
+    { id: 'flash-fee',        label: 'Fee Structure' },
   ],
   week4: [
     { id: 'w4-built',     label: 'What was built' },
@@ -373,6 +424,12 @@ function ContentArea({ section }: { section: string }) {
     case 'architecture': return <ArchitectureDoc />;
     case 'hooks':        return <HooksDoc />;
     case 'swap-flow':    return <SwapFlowDoc />;
+    case 'staking':      return <StakingDoc />;
+    case 'farming':      return <FarmingDoc />;
+    case 'vesting':      return <VestingDoc />;
+    case 'governance':   return <GovernanceDoc />;
+    case 'router':       return <RouterDoc />;
+    case 'flashloan':    return <FlashLoanDoc />;
     case 'week4':        return <Week4Log />;
     case 'week3':        return <Week3Log />;
     case 'week2':        return <Week2Log />;
@@ -1156,3 +1213,276 @@ const DECISION_LIST = [
     rationale: 'Better UX — user only approves once per token. Acceptable security tradeoff for testnet. For mainnet production, would use permit() (EIP-2612) for gasless approvals.',
   },
 ];
+
+// ─── Phase 2 / Phase 3 doc components ────────────────────────────────────
+
+function ComingSoonBanner({ phase, timeline }: { phase: string; timeline: string }) {
+  return (
+    <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-6 flex items-center gap-3">
+      <span className="text-yellow-400 text-lg">🚧</span>
+      <div>
+        <p className="text-xs font-semibold text-yellow-400">{phase} — Coming Soon</p>
+        <p className="text-xs text-[#9A9DA6] mt-0.5">{timeline}</p>
+      </div>
+    </div>
+  );
+}
+
+function StakingDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 2" timeline="Weeks 5–8 of the 16-week build" />
+      <P>BDX holders stake their tokens to earn protocol revenue distributed as BDX rewards. Stakers receive proportional rewards based on their share of the total staked pool. Optional lock periods provide boosted rewards.</P>
+
+      <H2 id="staking-overview">Overview</H2>
+      <Table headers={['Parameter', 'Value']} rows={[
+        ['Staking token', 'BDX'],
+        ['Reward token', 'BDX (self-compounding)'],
+        ['Reward source', 'Protocol inflation + lending interest'],
+        ['Lock options', 'None / 30d (1.2×) / 90d (1.5×) / 180d (2×)'],
+        ['Distribution model', 'Synthetix rewardPerToken accumulator'],
+      ]} />
+
+      <H2 id="staking-math">Reward Math</H2>
+      <P>Uses the &ldquo;rewards per token stored&rdquo; pattern for O(1) per-user updates:</P>
+      <Code>{`rewardPerTokenStored += rewardRate × elapsed × 1e18 / totalStaked
+
+earned(user) = effectiveStake × (rewardPerToken - rewardPerTokenPaid) / 1e18
+             + pendingRewards
+
+effectiveStake = staked × lockMultiplier / 1e18`}</Code>
+
+      <H2 id="staking-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'stake(uint256 amount, uint256 lockDays)', mod: 'external nonReentrant', desc: 'Stake BDX with optional lock. lockDays: 0, 30, 90, or 180.' },
+        { sig: 'unstake(uint256 amount)', mod: 'external nonReentrant', desc: 'Unstake BDX. Reverts if lock has not expired.' },
+        { sig: 'claimRewards()', mod: 'external nonReentrant', desc: 'Claim accumulated BDX rewards without unstaking.' },
+        { sig: 'emergencyWithdraw()', mod: 'external nonReentrant', desc: 'Withdraw all BDX immediately, forfeiting pending rewards.' },
+        { sig: 'pendingRewards(address user)', mod: 'external view', desc: 'Read claimable rewards for an address.' },
+        { sig: 'getStakeInfo(address user)', mod: 'external view', desc: 'Read staked amount, lock end, multiplier, pending rewards.' },
+        { sig: 'notifyRewardAmount(uint256 reward)', mod: 'external onlyOwner', desc: 'Fund a new reward period.' },
+      ]} />
+
+      <H2 id="staking-frontend">Frontend Hooks</H2>
+      <Code>{`useStaking(address)    → { staked, lockEnd, pending, aprPct, isLocked, ... }
+useStakingActions(address) → { stake, unstake, claimRewards, emergencyWithdraw, step, ... }`}</Code>
+
+      <Callout type="info">Staking.sol contract will be deployed at NEXT_PUBLIC_STAKING_ADDRESS once Phase 2 begins.</Callout>
+    </div>
+  );
+}
+
+function FarmingDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 2" timeline="Weeks 5–8 of the 16-week build" />
+      <P>Liquidity providers stake LP tokens in farming pools to earn BDX rewards on top of the 0.3% swap fees they already receive. Based on the MasterChef v1 pattern (Sushi/PancakeSwap style).</P>
+
+      <H2 id="farming-overview">Overview</H2>
+      <Table headers={['Parameter', 'Value']} rows={[
+        ['Staking token', 'LP tokens (BDX/MUSDC or BDX/WETH)'],
+        ['Reward token', 'BDX'],
+        ['Distribution', 'bdxPerBlock shared proportionally by allocPoint'],
+        ['Initial pools', 'BDX/MUSDC (100 pts), BDX/WETH (60 pts)'],
+      ]} />
+
+      <H2 id="farming-math">MasterChef Math</H2>
+      <Code>{`// BDX awarded to a pool per block:
+poolBdxPerBlock = bdxPerBlock × pool.allocPoint / totalAllocPoint
+
+// Accumulator updated on each interaction:
+accBDXPerShare += poolBdxPerBlock × blocksSinceLastReward × 1e12 / lpSupply
+
+// User pending rewards:
+pending = user.amount × accBDXPerShare / 1e12 - user.rewardDebt`}</Code>
+
+      <H2 id="farming-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'deposit(uint256 pid, uint256 amount)', mod: 'external nonReentrant', desc: 'Deposit LP tokens to earn BDX. Also harvests pending rewards.' },
+        { sig: 'withdraw(uint256 pid, uint256 amount)', mod: 'external nonReentrant', desc: 'Withdraw LP tokens. Also harvests pending rewards.' },
+        { sig: 'harvest(uint256 pid)', mod: 'external nonReentrant', desc: 'Claim BDX rewards without withdrawing LP tokens.' },
+        { sig: 'emergencyWithdraw(uint256 pid)', mod: 'external nonReentrant', desc: 'Withdraw LP immediately, forfeiting pending rewards.' },
+        { sig: 'pendingBDX(uint256 pid, address user)', mod: 'external view', desc: 'Read pending BDX for a user in a specific pool.' },
+        { sig: 'add(uint256 allocPoint, IERC20 lpToken, bool withUpdate)', mod: 'external onlyOwner', desc: 'Add a new LP pool.' },
+        { sig: 'set(uint256 pid, uint256 allocPoint, bool withUpdate)', mod: 'external onlyOwner', desc: 'Update allocation points for a pool.' },
+      ]} />
+
+      <H2 id="farming-pools">Initial Farm Pools</H2>
+      <Table headers={['PID', 'LP Token', 'Alloc Points', 'Notes']} rows={[
+        ['0', 'BDX/MUSDC LP', '100', 'Primary pool — highest weight'],
+        ['1', 'BDX/WETH LP', '60', 'Secondary pool'],
+      ]} />
+
+      <Callout type="info">MasterChef.sol will be deployed at NEXT_PUBLIC_MASTERCHEF_ADDRESS once Phase 2 begins.</Callout>
+    </div>
+  );
+}
+
+function VestingDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 2" timeline="Weeks 7–8 of the 16-week build" />
+      <P>Token vesting schedules for team, seed investors, and ecosystem allocations. Beneficiaries can claim linearly vested BDX after the cliff period.</P>
+
+      <H2 id="vesting-overview">Overview</H2>
+      <P>Uses a cliff + linear vesting model. Tokens are locked until the cliff expires, then vest linearly over the duration period.</P>
+
+      <H2 id="vesting-schedule">Vesting Schedule</H2>
+      <Table headers={['Allocation', 'Amount', 'Cliff', 'Duration']} rows={[
+        ['Team (15%)', '150M BDX', '12 months', '36 months linear'],
+        ['Seed (4%)', '40M BDX', '6 months', '18 months linear'],
+        ['Ecosystem (16%)', '160M BDX', '3 months', '24 months linear'],
+        ['Treasury (25%)', '250M BDX', 'None', 'DAO-governed release'],
+        ['Community (40%)', '400M BDX', 'None', 'Farming + staking rewards'],
+      ]} />
+
+      <H2 id="vesting-functions">Contract Functions</H2>
+      <FnList items={[
+        { sig: 'createVestingSchedule(address beneficiary, uint256 start, uint256 cliff, uint256 duration, uint256 amount)', mod: 'external onlyOwner', desc: 'Create a vesting schedule for a beneficiary.' },
+        { sig: 'release(address beneficiary)', mod: 'external', desc: 'Release vested tokens to the beneficiary.' },
+        { sig: 'revoke(address beneficiary)', mod: 'external onlyOwner', desc: 'Revoke unvested tokens (returns to owner).' },
+        { sig: 'computeReleasableAmount(address beneficiary)', mod: 'external view', desc: 'Read how many tokens are claimable right now.' },
+        { sig: 'getVestingSchedule(address beneficiary)', mod: 'external view', desc: 'Read full vesting schedule details.' },
+      ]} />
+    </div>
+  );
+}
+
+function GovernanceDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 3" timeline="Weeks 9–12 of the 16-week build" />
+      <P>On-chain governance using the OpenZeppelin Governor framework. BDX holders propose, vote on, and execute protocol changes via a time-locked DAO. Requires Token.sol upgrade to add ERC20Votes support.</P>
+
+      <H2 id="gov-overview">Overview</H2>
+      <Table headers={['Parameter', 'Value']} rows={[
+        ['Voting delay', '7200 blocks (~1 day)'],
+        ['Voting period', '50400 blocks (~1 week)'],
+        ['Proposal threshold', '10,000 BDX to propose'],
+        ['Quorum', '4% of total supply'],
+        ['Timelock delay', '172800 seconds (2 days)'],
+      ]} />
+
+      <H2 id="gov-flow">Proposal Flow</H2>
+      <Code>{`1. propose()        → Pending (voting delay)
+2. castVote()       → Active  (voting period)
+3. queue()          → Queued  (timelock delay: 2 days)
+4. execute()        → Executed
+
+Vote options: 0 = Against, 1 = For, 2 = Abstain`}</Code>
+
+      <H2 id="gov-params">Key Functions</H2>
+      <FnList items={[
+        { sig: 'propose(address[] targets, uint256[] values, bytes[] calldatas, string description)', mod: 'external', desc: 'Create a new proposal. Requires ≥ 10,000 BDX.' },
+        { sig: 'castVote(uint256 proposalId, uint8 support)', mod: 'external', desc: 'Cast a vote. support: 0=Against, 1=For, 2=Abstain.' },
+        { sig: 'castVoteWithReason(uint256 proposalId, uint8 support, string reason)', mod: 'external', desc: 'Cast vote with an on-chain reason string.' },
+        { sig: 'queue(...)', mod: 'external', desc: 'Queue a Succeeded proposal into the Timelock.' },
+        { sig: 'execute(...)', mod: 'external', desc: 'Execute a Queued proposal after timelock expires.' },
+        { sig: 'state(uint256 proposalId)', mod: 'external view', desc: 'Read ProposalState enum for a proposal.' },
+        { sig: 'proposalVotes(uint256 proposalId)', mod: 'external view', desc: 'Read against/for/abstain vote counts.' },
+      ]} />
+
+      <H2 id="gov-delegation">Delegation Required</H2>
+      <P>BDX voting power must be delegated before it counts toward votes. Token holders who have not delegated have zero voting power even if they hold BDX.</P>
+      <Code>{`// Self-delegate (most users do this once)
+bdxToken.delegate(msg.sender);
+
+// Delegate to another address
+bdxToken.delegate(delegateeAddress);`}</Code>
+
+      <H2 id="gov-token">Token.sol Upgrade Required</H2>
+      <Callout type="warning">
+        Governance requires Token.sol to be redeployed with ERC20Votes extension.
+        This is a breaking change. A migration path (old BDX → new BDX 1:1) will be needed.
+      </Callout>
+    </div>
+  );
+}
+
+function RouterDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 3" timeline="Weeks 9–12 of the 16-week build" />
+      <P>The Router contract adds transaction deadlines, multi-hop swap routing (e.g. MUSDC → BDX → WETH), and native ETH handling. Currently users interact with Pool.sol directly — the Router provides a safer, more feature-rich interface.</P>
+
+      <H2 id="router-overview">What Changes</H2>
+      <Table headers={['Feature', 'Direct Pool', 'With Router']} rows={[
+        ['Deadline protection', '❌ None', '✅ Reverts if expired'],
+        ['Multi-hop swaps', '❌ Manual', '✅ path[] parameter'],
+        ['Native ETH input', '❌ Must wrap manually', '✅ Auto-wrapped'],
+        ['Exact output swaps', '❌ Not supported', '✅ swapTokensForExactTokens'],
+      ]} />
+
+      <H2 id="router-paths">Supported Swap Paths (After Router)</H2>
+      <Table headers={['From', 'To', 'Path', 'Hops']} rows={[
+        ['MUSDC', 'BDX', 'MUSDC → BDX', '1'],
+        ['BDX', 'MUSDC', 'BDX → MUSDC', '1'],
+        ['MUSDC', 'WETH', 'MUSDC → BDX → WETH', '2'],
+        ['ETH', 'BDX', 'ETH → WETH → BDX', 'wrap + 1'],
+        ['ETH', 'MUSDC', 'ETH → WETH → BDX → MUSDC', 'wrap + 2'],
+      ]} />
+
+      <H2 id="router-functions">Key Functions</H2>
+      <FnList items={[
+        { sig: 'swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] path, address to, uint deadline)', mod: 'external', desc: 'Swap exact input through a path of pools.' },
+        { sig: 'swapTokensForExactTokens(uint amountOut, uint amountInMax, address[] path, address to, uint deadline)', mod: 'external', desc: 'Spend as little as needed to receive exact output.' },
+        { sig: 'swapExactETHForTokens(uint amountOutMin, address[] path, address to, uint deadline)', mod: 'external payable', desc: 'Auto-wrap ETH and swap.' },
+        { sig: 'addLiquidity(address tokenA, address tokenB, ...amounts, address to, uint deadline)', mod: 'external', desc: 'Add liquidity with deadline protection.' },
+        { sig: 'getAmountsOut(uint amountIn, address[] path)', mod: 'external view', desc: 'Simulate multi-hop output amounts.' },
+      ]} />
+
+      <H2 id="router-deadline">Deadline Protection</H2>
+      <Code>{`// All swap/liquidity functions include:
+modifier ensure(uint256 deadline) {
+    require(block.timestamp <= deadline, 'EXPIRED');
+    _;
+}
+
+// Frontend sets 20-minute deadline by default:
+const deadline = Math.floor(Date.now() / 1000) + 20 * 60;`}</Code>
+    </div>
+  );
+}
+
+function FlashLoanDoc() {
+  return (
+    <div>
+      <ComingSoonBanner phase="Phase 3" timeline="Weeks 11–12 of the 16-week build" />
+      <P>Flash loans allow borrowing any amount of tokens within a single transaction, with no collateral required. The borrowed amount plus fee must be repaid before the transaction ends or it reverts entirely.</P>
+
+      <H2 id="flash-overview">Use Cases</H2>
+      <Table headers={['Use Case', 'Description']} rows={[
+        ['Arbitrage', 'Exploit price differences between pools without capital'],
+        ['Liquidations', 'Liquidate undercollateralized Lending positions atomically'],
+        ['Collateral swap', 'Replace one type of collateral with another in one tx'],
+      ]} />
+
+      <H2 id="flash-interface">Receiver Interface</H2>
+      <P>To use a flash loan, the caller must implement the IFlashLoanReceiver interface:</P>
+      <Code>{`interface IFlashLoanReceiver {
+    function executeOperation(
+        address token,
+        uint256 amount,
+        uint256 fee,       // amount to repay above borrowed
+        bytes calldata data
+    ) external returns (bool);
+}
+
+// Usage:
+pool.flashLoan(
+    receiverAddress,
+    tokenAddress,
+    amount,
+    abi.encode(myData)  // arbitrary bytes passed to executeOperation
+);`}</Code>
+
+      <H2 id="flash-fee">Fee Structure</H2>
+      <Table headers={['Parameter', 'Value']} rows={[
+        ['Flash loan fee', '0.09%'],
+        ['Fee destination', 'Protocol reserve (reserveBalance)'],
+        ['Repayment', 'Must repay amount + fee in same transaction'],
+        ['Failure behavior', 'Entire transaction reverts if repayment fails'],
+      ]} />
+    </div>
+  );
+}
