@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useReadContracts } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useReadContracts, usePublicClient } from 'wagmi';
 import { CONTRACTS, CONTRACT_ADDRESSES, isConfigured } from '@/constants/contracts';
 
 export type PoolKey = 'bdx-musdc' | 'bdx-weth';
@@ -97,13 +97,32 @@ export function useAddLiquidity(
   const allowanceT1  = allowances?.[1].result as bigint | undefined;
 
   const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
   useWaitForTransactionReceipt({ hash: pendingTx, query: { enabled: !!pendingTx } });
 
   const MAX = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
 
+  async function awaitTx(hash: `0x${string}`) {
+    if (publicClient) {
+      await publicClient.waitForTransactionReceipt({ hash, confirmations: 1 });
+    } else {
+      await new Promise((r) => setTimeout(r, 4000));
+    }
+  }
+
   const handleError = (e: unknown) => {
     const msg = e instanceof Error ? e.message : 'Transaction failed';
-    setError(msg.includes('User rejected') ? 'Transaction rejected' : msg.slice(0, 160));
+    let display = msg.slice(0, 200);
+    if (msg.includes('0xfb8f41b2') || msg.includes('ERC20InsufficientAllowance')) {
+      display = 'Approval did not confirm in time. Please try again.';
+    } else if (msg.includes('InsufficientOutputAmount') || msg.includes('0x42301c23')) {
+      display = 'Slippage exceeded. Try increasing slippage tolerance or adjust amounts.';
+    } else if (msg.includes('InsufficientLiquidityMinted')) {
+      display = 'Liquidity amount too small to mint LP tokens.';
+    } else if (msg.includes('User rejected') || msg.includes('user rejected')) {
+      display = 'Transaction rejected.';
+    }
+    setError(display);
     setStep('error');
   };
 
@@ -129,7 +148,7 @@ export function useAddLiquidity(
           args: [poolContract.address, MAX],
         });
         setPendingTx(h);
-        await new Promise((r) => setTimeout(r, 2500));
+        await awaitTx(h);
         await refetchAllowances();
       }
 
@@ -143,7 +162,7 @@ export function useAddLiquidity(
           args: [poolContract.address, MAX],
         });
         setPendingTx(h);
-        await new Promise((r) => setTimeout(r, 2500));
+        await awaitTx(h);
         await refetchAllowances();
       }
 

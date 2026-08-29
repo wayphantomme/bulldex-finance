@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContracts, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import { formatUnits, parseUnits, maxUint256 } from 'viem';
 import { CONTRACTS, CONTRACT_ADDRESSES, isConfigured } from '@/constants/contracts';
 
@@ -140,25 +140,42 @@ export function useLendingActions(address: `0x${string}` | undefined) {
   const [txHash, setTxHash]   = useState<`0x${string}` | undefined>(undefined);
 
   const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
   useWaitForTransactionReceipt({ hash: txHash, query: { enabled: !!txHash } });
 
   const MAX = maxUint256;
 
+  // Wait for a tx hash to be mined before continuing.
+  // Falls back to a 4s delay if publicClient is unavailable.
+  async function awaitTx(hash: `0x${string}`) {
+    if (publicClient) {
+      await publicClient.waitForTransactionReceipt({ hash, confirmations: 1 });
+    } else {
+      await new Promise(r => setTimeout(r, 4000));
+    }
+  }
+
   const handleError = (e: unknown) => {
     const msg = e instanceof Error ? e.message : 'Transaction failed';
-    let display = msg.slice(0, 160);
-    if (msg.includes('ExceedsBorrowLimit') || msg.includes('0x3a23d825')) {
-      display = 'Exceeds borrow limit — reduce amount or add more collateral.';
-    } else if (msg.includes('InsufficientCollateral')) {
-      display = 'Insufficient collateral deposited.';
-    } else if (msg.includes('InsufficientReserve')) {
+    let display = msg.slice(0, 200);
+    if (msg.includes('0xfb8f41b2') || msg.includes('ERC20InsufficientAllowance')) {
+      display = 'Approval did not confirm in time. Please try again.';
+    } else if (msg.includes('ExceedsBorrowLimit') || msg.includes('0x3a23d825')) {
+      display = 'Amount exceeds your borrow limit. Reduce the amount or add more collateral.';
+    } else if (msg.includes('InsufficientCollateral') || msg.includes('0x86198562') || msg.includes('0x3a23d825')) {
+      display = 'Insufficient collateral. Deposit more BDX first.';
+    } else if (msg.includes('InsufficientBorrowBalance') || msg.includes('0x86198562')) {
+      display = 'No debt to repay.';
+    } else if (msg.includes('InsufficientReserve') || msg.includes('0x28b35f21')) {
       display = 'Not enough MUSDC in reserve. Try a smaller amount.';
+    } else if (msg.includes('ZeroAmount') || msg.includes('0x1f2a2005')) {
+      display = 'Amount must be greater than 0.';
     } else if (msg.includes('PositionHealthy')) {
-      display = 'Position is healthy — cannot be liquidated.';
-    } else if (msg.includes('User rejected')) {
+      display = 'Position is healthy and cannot be liquidated.';
+    } else if (msg.includes('User rejected') || msg.includes('user rejected')) {
       display = 'Transaction rejected.';
     } else if (msg.includes('Cannot convert undefined')) {
-      display = 'Loading position data — please wait and try again.';
+      display = 'Loading position data, please wait and try again.';
     }
     setError(display);
     setStep('error');
@@ -168,7 +185,6 @@ export function useLendingActions(address: `0x${string}` | undefined) {
     if (!address) return;
     setError(null);
     try {
-      // Approve BDX first
       setStep('approving');
       const approveTx = await writeContractAsync({
         ...CONTRACTS.token,
@@ -176,9 +192,8 @@ export function useLendingActions(address: `0x${string}` | undefined) {
         args: [CONTRACT_ADDRESSES.lending, MAX],
       });
       setTxHash(approveTx);
-      await new Promise(r => setTimeout(r, 2500));
+      await awaitTx(approveTx);
 
-      // Deposit
       setStep('depositing');
       const tx = await writeContractAsync({
         ...CONTRACTS.lending,
@@ -188,7 +203,7 @@ export function useLendingActions(address: `0x${string}` | undefined) {
       setTxHash(tx);
       setStep('success');
     } catch (e) { handleError(e); }
-  }, [address, writeContractAsync, MAX]);
+  }, [address, writeContractAsync, MAX]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const withdrawCollateral = useCallback(async (amount: bigint) => {
     if (!address) return;
@@ -224,7 +239,6 @@ export function useLendingActions(address: `0x${string}` | undefined) {
     if (!address) return;
     setError(null);
     try {
-      // Approve MUSDC
       setStep('approving');
       const approveTx = await writeContractAsync({
         ...CONTRACTS.musdc,
@@ -232,7 +246,7 @@ export function useLendingActions(address: `0x${string}` | undefined) {
         args: [CONTRACT_ADDRESSES.lending, MAX],
       });
       setTxHash(approveTx);
-      await new Promise(r => setTimeout(r, 2500));
+      await awaitTx(approveTx);
 
       setStep('repaying');
       const tx = await writeContractAsync({
@@ -243,7 +257,7 @@ export function useLendingActions(address: `0x${string}` | undefined) {
       setTxHash(tx);
       setStep('success');
     } catch (e) { handleError(e); }
-  }, [address, writeContractAsync, MAX]);
+  }, [address, writeContractAsync, MAX]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const repayAll = useCallback(async () => {
     await repay(MAX);
@@ -270,7 +284,10 @@ function fmt(v: bigint, dp = 4): string {
 
 export function parseTokenAmount(val: string, decimals = 18): bigint {
   try {
-    if (!val || val === '0.' || parseFloat(val) === 0) return 0n;
-    return parseUnits(val, decimals);
+    if (!val) return 0n;
+    // Normalize locale-specific comma decimal separators (e.g. "37,47" -> "37.47")
+    const normalized = val.replace(',', '.');
+    if (normalized === '0.' || parseFloat(normalized) === 0) return 0n;
+    return parseUnits(normalized, decimals);
   } catch { return 0n; }
 }
