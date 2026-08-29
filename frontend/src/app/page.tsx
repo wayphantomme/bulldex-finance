@@ -4,7 +4,7 @@ import { cn } from '@/utils/cn';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-base-bg text-ink">
+    <div className="min-h-screen bg-base-bg text-ink animate-fade-in">
 
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <header className="flex h-14 items-center justify-between border-b border-base-border px-8">

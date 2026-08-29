@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const hasLendPosition  = lendPos.collateral > 0n;
 
   return (
-    <div className="animate-fade-in space-y-5">
+    <div className="animate-fade-in space-y-6">
 
       {/* ── Page header ─────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
@@ -157,7 +157,7 @@ export default function DashboardPage() {
 
             {/* ── Your Positions ──────────────────────────────────── */}
             <div className="rounded-2xl border border-base-border bg-base-card p-5 flex flex-col">
-              <p className="text-xs font-semibold text-ink-secondary mb-4">Your Positions</p>
+              <p className="text-sm font-semibold text-ink mb-4">Your Positions</p>
 
               <div className="space-y-3 flex-1">
                 {/* BDX wallet balance */}
@@ -214,7 +214,7 @@ export default function DashboardPage() {
 
             {/* ── Quick Actions ────────────────────────────────────── */}
             <div className="lg:col-span-2 rounded-2xl border border-base-border bg-base-card p-5">
-              <p className="text-xs font-semibold text-ink-secondary mb-4">Quick Actions</p>
+              <p className="text-sm font-semibold text-ink mb-4">Quick Actions</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {ACTIONS.map((a) => (
                   <Link key={a.label} href={a.href}>
@@ -249,7 +249,7 @@ export default function DashboardPage() {
 
             {/* ── Market Overview ──────────────────────────────────── */}
             <div className="rounded-2xl border border-base-border bg-base-card p-5">
-              <p className="text-xs font-semibold text-ink-secondary mb-4">Market</p>
+              <p className="text-sm font-semibold text-ink mb-4">Market</p>
               <div className="space-y-3">
                 <MarketRow
                   logo="/bdx-token.png"

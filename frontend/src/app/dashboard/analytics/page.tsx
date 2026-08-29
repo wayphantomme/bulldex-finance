@@ -7,6 +7,7 @@ import { formatUnits } from 'viem';
 import { etherscanUrl } from '@/constants/contracts';
 import { shortenAddress, shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AnalyticsPage() {
   const subgraph = useSubgraph();
@@ -132,13 +133,13 @@ export default function AnalyticsPage() {
         {/* Leaderboard */}
         <div className="rounded-2xl border border-base-border bg-base-card p-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold text-ink">Leaderboard</p>
+            <h2 className="text-sm font-semibold text-ink">Leaderboard</h2>
             <span className="text-[10px] text-ink-faint uppercase tracking-wider">by swap count</span>
           </div>
 
           {isLoading ? (
             <div className="space-y-2">
-              {[1,2,3,4,5].map(i => <div key={i} className="h-10 animate-pulse rounded-lg bg-base-elevated" />)}
+              {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
             </div>
           ) : leaderboard.length === 0 ? (
             <div className="py-8 text-center">
@@ -148,7 +149,7 @@ export default function AnalyticsPage() {
           ) : (
             <div className="space-y-1.5">
               {leaderboard.map((w, i) => (
-                <div key={w.address} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5">
+                <div key={w.address} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5 hover:bg-base-elevated/40 transition-colors duration-150">
                   <span className={cn(
                     'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold',
                     i === 0 ? 'bg-yellow/20 text-yellow' :
@@ -175,13 +176,13 @@ export default function AnalyticsPage() {
         {/* Recent swaps */}
         <div className="rounded-2xl border border-base-border bg-base-card p-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold text-ink">Recent Swaps</p>
+            <h2 className="text-sm font-semibold text-ink">Recent Swaps</h2>
             <span className="text-[10px] text-ink-faint uppercase tracking-wider">latest first</span>
           </div>
 
           {isLoading ? (
             <div className="space-y-2">
-              {[1,2,3,4,5].map(i => <div key={i} className="h-10 animate-pulse rounded-lg bg-base-elevated" />)}
+              {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-10 w-full" />)}
             </div>
           ) : recentSwaps.length === 0 ? (
             <div className="py-8 text-center">
@@ -190,7 +191,7 @@ export default function AnalyticsPage() {
           ) : (
             <div className="space-y-1.5 max-h-80 overflow-y-auto no-scrollbar">
               {recentSwaps.map((s) => (
-                <div key={s.txHash} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5">
+                <div key={s.txHash} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5 hover:bg-base-elevated/40 transition-colors duration-150">
                   <span className={cn(
                     'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold',
                     s.isBuy ? 'bg-green/10 text-green' : 'bg-red/10 text-red',
@@ -215,10 +216,10 @@ export default function AnalyticsPage() {
       {/* Pool stats (from subgraph) */}
       {useSubgraphData && subgraph.pools.length > 0 && (
         <div className="rounded-2xl border border-base-border bg-base-card p-5">
-          <p className="mb-4 text-sm font-semibold text-ink">Pool Stats</p>
+          <h2 className="mb-4 text-sm font-semibold text-ink">Pool Stats</h2>
           <div className="space-y-2">
             {subgraph.pools.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 rounded-xl bg-base-surface px-4 py-3">
+              <div key={p.id} className="flex items-center gap-3 rounded-xl bg-base-surface px-4 py-3 hover:bg-base-elevated/40 transition-colors duration-150">
                 <div className="flex-1 min-w-0">
                   <p className="font-mono text-xs text-ink truncate">{p.id}</p>
                 </div>
@@ -240,12 +241,12 @@ export default function AnalyticsPage() {
       {useSubgraphData && subgraph.recentLending.length > 0 && (
         <div className="rounded-2xl border border-base-border bg-base-card p-5">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-semibold text-ink">Recent Lending Events</p>
+            <h2 className="text-sm font-semibold text-ink">Recent Lending Events</h2>
             <span className="text-[10px] text-ink-faint uppercase tracking-wider">latest first</span>
           </div>
           <div className="space-y-1.5 max-h-60 overflow-y-auto no-scrollbar">
             {subgraph.recentLending.map((e) => (
-              <div key={e.id} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5">
+              <div key={e.id} className="flex items-center gap-3 rounded-xl bg-base-surface px-3 py-2.5 hover:bg-base-elevated/40 transition-colors duration-150">
                 <span className={cn(
                   'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold',
                   e.type === 'deposit' ? 'bg-brand/10 text-brand' : 'bg-blue-500/10 text-blue-400',
@@ -298,10 +299,10 @@ export default function AnalyticsPage() {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-base-border bg-base-card p-4">
-      <p className="text-xs text-ink-secondary mb-1">{label}</p>
-      <p className="text-2xl font-bold text-ink tabular-nums">{value}</p>
-      {sub && <p className="text-[11px] text-ink-faint mt-0.5">{sub}</p>}
+    <div className="rounded-2xl border border-base-border bg-base-card p-5">
+      <p className="text-xs text-ink-faint mb-1">{label}</p>
+      <p className="text-2xl font-semibold text-ink tabular-nums">{value}</p>
+      {sub && <p className="text-[11px] text-ink-faint mt-1">{sub}</p>}
     </div>
   );
 }

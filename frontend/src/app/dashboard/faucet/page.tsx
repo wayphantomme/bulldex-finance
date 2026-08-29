@@ -527,7 +527,7 @@ function ContractRow({ name, symbol, address, desc }: { name: string; symbol: st
   const isZero = address === '0x0000000000000000000000000000000000000000';
 
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-base-surface px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl bg-base-surface px-4 py-3 hover:bg-base-elevated/40 transition-colors duration-150">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <span className="text-xs font-semibold text-ink">{name}</span>

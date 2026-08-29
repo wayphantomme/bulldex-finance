@@ -229,7 +229,7 @@ export default function LendingPage() {
               <div className="col-span-2 flex justify-end">
                 <button
                   onClick={() => openAction('deposit')}
-                  className="rounded-xl border border-brand/40 bg-brand/10 px-4 py-1.5 text-xs font-semibold text-brand hover:bg-brand/20 transition-colors">
+                  className="rounded-xl bg-brand px-4 py-1.5 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all">
                   Supply
                 </button>
               </div>
@@ -307,107 +307,231 @@ export default function LendingPage() {
             </div>
           ) : !hasPosition ? (
             <div className="rounded-2xl border border-base-border bg-base-card p-10 flex flex-col items-center gap-4 text-center">
-              <p className="text-sm font-semibold text-ink">No active position</p>
-              <p className="text-xs text-ink-secondary">Deposit BDX as collateral to get started</p>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10">
+                <svg className="h-6 w-6 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink">No active position</p>
+                <p className="text-xs text-ink-secondary mt-1">Deposit BDX as collateral to unlock MUSDC borrowing</p>
+              </div>
               <button
                 onClick={() => { setTab('markets'); openAction('deposit'); }}
                 className="rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
-                Deposit BDX
+                Deposit BDX to Start
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {/* Position header */}
-              <div className="rounded-2xl border border-base-border bg-base-card overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-base-border">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+              {/* ── LEFT: Position + Actions (3 cols) ────────────────── */}
+              <div className="lg:col-span-3 rounded-2xl border border-base-border bg-base-card overflow-hidden">
+
+                {/* Card header */}
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-base-border">
                   <h2 className="text-sm font-semibold text-ink">Your Position</h2>
                   {position.isLiquidatable && (
-                    <div className="flex items-center gap-1.5 rounded-lg border border-red/20 bg-red/5 px-2.5 py-1">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-red/30 bg-red/8 px-2.5 py-1">
                       <AlertTriangle className="h-3 w-3 text-red" strokeWidth={1.5} />
-                      <span className="text-[11px] text-red font-medium">At risk of liquidation</span>
+                      <span className="text-[11px] text-red font-semibold">At risk of liquidation</span>
                     </div>
                   )}
                 </div>
 
-                {/* 4 position stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 divide-x-0 sm:divide-x divide-base-border">
-                  <div className="p-5">
-                    <p className="text-[11px] text-ink-faint mb-1">Collateral</p>
-                    <p className="text-lg font-semibold text-ink tabular-nums">{fmtBig(position.collateral)} BDX</p>
-                    {collateralUSD && <p className="text-xs text-ink-faint mt-0.5">${collateralUSD}</p>}
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[11px] text-ink-faint mb-1">Borrowed</p>
-                    <p className="text-lg font-semibold text-ink tabular-nums">{fmtBig(position.borrowed)} MUSDC</p>
-                    <p className="text-xs text-ink-faint mt-0.5">+ {fmtBig(position.interest)} interest</p>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[11px] text-ink-faint mb-1">Borrow Capacity</p>
-                    <p className="text-lg font-semibold text-ink tabular-nums">{fmtBig(position.maxBorrowable)} MUSDC</p>
-                    <p className="text-xs text-ink-faint mt-0.5">75% LTV</p>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[11px] text-ink-faint mb-1">Health Factor</p>
-                    <p className={cn('text-lg font-semibold tabular-nums', hfColor)}>{hfDisplay}</p>
-                    <div className="mt-2 h-1.5 w-full rounded-full bg-base-elevated overflow-hidden">
-                      <div className={cn('h-full rounded-full transition-all',
-                        position.healthFactorNum < 1.1 ? 'bg-red' :
-                        position.healthFactorNum < 1.5 ? 'bg-yellow' : 'bg-green'
-                      )} style={{ width: `${Math.min(100, Math.max(0, ((position.healthFactorNum - 1) / 3) * 100))}%` }} />
+                {/* Stats — 2 rows compact */}
+                <div className="p-5 space-y-4">
+
+                  {/* Collateral + Borrowed side by side */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl bg-base-surface p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[10px] text-ink-faint uppercase tracking-wide">Collateral</p>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/bdx-token.png" alt="BDX" className="h-5 w-5 rounded-full object-cover opacity-70" />
+                      </div>
+                      <p className="text-xl font-semibold text-ink tabular-nums">{fmtBig(position.collateral)}</p>
+                      <p className="text-xs text-ink-faint">BDX {collateralUSD && `· $${collateralUSD}`}</p>
                     </div>
+                    <div className="rounded-xl bg-base-surface p-3.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-[10px] text-ink-faint uppercase tracking-wide">Borrowed</p>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/musdc-icon.svg" alt="MUSDC" className="h-5 w-5 rounded-full object-cover opacity-70" />
+                      </div>
+                      <p className="text-xl font-semibold text-ink tabular-nums">{fmtBig(position.borrowed)}</p>
+                      <p className="text-xs text-ink-faint">
+                        MUSDC{position.interest > 0n && ` · +${fmtBig(position.interest)} int.`}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Borrow capacity bar */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[10px] text-ink-faint uppercase tracking-wide">Borrow Capacity</p>
+                      <p className="text-xs font-semibold text-ink tabular-nums">
+                        {fmtBig(position.borrowed)} / {fmtBig(position.maxBorrowable)} MUSDC
+                      </p>
+                    </div>
+                    {(() => {
+                      const used = position.maxBorrowable > 0n
+                        ? Math.min(100, (Number(position.borrowed) / Number(position.maxBorrowable)) * 100)
+                        : 0;
+                      return (
+                        <div className="h-1.5 w-full rounded-full bg-base-elevated overflow-hidden">
+                          <div
+                            className={cn('h-full rounded-full transition-all duration-500',
+                              used > 80 ? 'bg-red' : used > 60 ? 'bg-yellow' : 'bg-brand'
+                            )}
+                            style={{ width: `${used}%` }}
+                          />
+                        </div>
+                      );
+                    })()}
+                    <p className="text-[10px] text-ink-faint mt-1">75% LTV · 80% liq. threshold</p>
                   </div>
                 </div>
 
-                {/* Action buttons */}
-                <div className="px-5 py-4 border-t border-base-border flex flex-wrap gap-2">
-                  <button onClick={() => openAction('deposit')}
-                    className="rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all">
-                    Deposit BDX
-                  </button>
-                  <button onClick={() => openAction('borrow')} disabled={position.collateral === 0n}
-                    className="rounded-xl border border-base-border bg-base-elevated px-4 py-2 text-xs font-semibold text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                    Borrow MUSDC
-                  </button>
-                  <button onClick={() => openAction('repay')} disabled={position.borrowed === 0n && position.interest === 0n}
-                    className="rounded-xl border border-base-border bg-base-elevated px-4 py-2 text-xs font-semibold text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                    Repay
-                  </button>
-                  <button onClick={() => openAction('withdraw')} disabled={position.collateral === 0n}
-                    className="rounded-xl border border-base-border bg-base-elevated px-4 py-2 text-xs font-semibold text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                    Withdraw
-                  </button>
+                {/* ── Action buttons ─────────────────────────────────── */}
+                <div className="border-t border-base-border px-5 py-4 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => openAction('deposit')}
+                      className="flex items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 text-xs font-semibold text-base-bg hover:bg-brand-dark active:scale-[0.98] transition-all">
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+                      </svg>
+                      Deposit BDX
+                    </button>
+                    <button
+                      onClick={() => openAction('borrow')}
+                      disabled={position.collateral === 0n}
+                      className={cn(
+                        'flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold transition-all',
+                        position.collateral === 0n
+                          ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
+                          : 'border border-brand/30 bg-brand/8 text-brand hover:bg-brand/15 active:scale-[0.98]',
+                      )}>
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                      </svg>
+                      Borrow MUSDC
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => openAction('repay')}
+                      disabled={position.borrowed === 0n && position.interest === 0n}
+                      className={cn(
+                        'flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold border transition-colors',
+                        position.borrowed === 0n && position.interest === 0n
+                          ? 'border-base-border/40 bg-base-elevated/40 text-ink-faint cursor-not-allowed'
+                          : 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink hover:border-base-border-light',
+                      )}>
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                      </svg>
+                      Repay Debt
+                      {(position.borrowed > 0n || position.interest > 0n) && (
+                        <span className="rounded bg-red/15 px-1 py-0.5 text-[9px] font-bold text-red">
+                          {fmtBig(position.borrowed + position.interest)}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => openAction('withdraw')}
+                      disabled={position.collateral === 0n}
+                      className={cn(
+                        'flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold border transition-colors',
+                        position.collateral === 0n
+                          ? 'border-base-border/40 bg-base-elevated/40 text-ink-faint cursor-not-allowed'
+                          : 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink hover:border-base-border-light',
+                      )}>
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                      Withdraw BDX
+                    </button>
+                  </div>
+                  {position.borrowed === 0n && position.collateral > 0n && (
+                    <p className="text-[10px] text-ink-faint text-center pt-0.5">
+                      No active debt — you can withdraw anytime.
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Market details */}
-              <div className="rounded-2xl border border-base-border bg-base-card p-5">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-ink-faint">Market Details</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[
-                    { label: 'Collateral', value: 'BDX' },
-                    { label: 'Borrow asset', value: 'MUSDC' },
-                    { label: 'Max LTV', value: '75%' },
-                    { label: 'Liq. threshold', value: '80%' },
-                    { label: 'Liq. bonus', value: '5%' },
-                    { label: 'Interest rate', value: '~5% APR' },
-                    { label: 'Oracle', value: 'BDX/MUSDC pool' },
-                    {
-                      label: 'Contract',
-                      value: (
-                        <a href={etherscanUrl('0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF', 'address')}
-                          target="_blank" rel="noopener noreferrer"
-                          className="text-brand hover:opacity-70 transition-opacity">
-                          View
-                        </a>
-                      ),
-                    },
-                  ].map((item, i) => (
-                    <div key={i} className="rounded-xl bg-base-surface px-3 py-2.5">
-                      <p className="text-[10px] text-ink-faint">{item.label}</p>
-                      <p className="text-sm font-semibold text-ink mt-0.5">{item.value as React.ReactNode}</p>
+              {/* ── RIGHT: Health + Market Details (2 cols) ──────────── */}
+              <div className="lg:col-span-2 flex flex-col gap-4">
+
+                {/* Health factor compact */}
+                <div className="rounded-2xl border border-base-border bg-base-card p-5">
+                  <p className="text-[10px] text-ink-faint uppercase tracking-wide mb-3">Health Factor</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <p className={cn('text-4xl font-bold tabular-nums tracking-tight leading-none', hfColor)}>
+                      {hfDisplay}
+                    </p>
+                    <HealthBadge hf={position.healthFactorNum} />
+                  </div>
+                  <div className="relative h-2 w-full rounded-full bg-base-elevated overflow-hidden">
+                    <div className="absolute inset-0 flex">
+                      <div className="h-full bg-red/25" style={{ width: '20%' }} />
+                      <div className="h-full bg-yellow/15" style={{ width: '20%' }} />
+                      <div className="h-full bg-green/8" style={{ width: '60%' }} />
                     </div>
-                  ))}
+                    <div
+                      className={cn('absolute top-0 left-0 h-full rounded-full transition-all duration-700',
+                        position.healthFactorNum < 1.1 ? 'bg-red' :
+                        position.healthFactorNum < 1.5 ? 'bg-yellow' : 'bg-green'
+                      )}
+                      style={{ width: `${Math.min(100, Math.max(2, ((position.healthFactorNum - 1) / 4) * 100))}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-1 text-[9px] text-ink-faint">
+                    <span>Danger</span><span>Warning</span><span>Safe</span>
+                  </div>
+                  <p className="mt-2.5 text-[10px] text-ink-faint leading-relaxed">
+                    Below <span className="text-red font-semibold">1.0</span> → liquidation risk.
+                  </p>
                 </div>
+
+                {/* Market details compact */}
+                <div className="rounded-2xl border border-base-border bg-base-card overflow-hidden flex-1">
+                  <div className="px-5 py-3.5 border-b border-base-border">
+                    <h2 className="text-sm font-semibold text-ink">Market Details</h2>
+                  </div>
+                  <div className="divide-y divide-base-border">
+                    {[
+                      { label: 'Collateral',        value: 'BDX' },
+                      { label: 'Borrow asset',       value: 'MUSDC' },
+                      { label: 'Max LTV',            value: '75%' },
+                      { label: 'Liq. threshold',     value: '80%' },
+                      { label: 'Liq. bonus',         value: '5%' },
+                      { label: 'Interest rate',      value: '~5% APR' },
+                      { label: 'Oracle',             value: 'BDX/MUSDC pool' },
+                      {
+                        label: 'Contract',
+                        value: (
+                          <a href={etherscanUrl('0x13aCAB0d760E54Fb9Ab73ff0bF39CAc7D74FD5cF', 'address')}
+                            target="_blank" rel="noopener noreferrer"
+                            className="text-brand hover:opacity-70 transition-opacity inline-flex items-center gap-1">
+                            View
+                            <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                          </a>
+                        ),
+                      },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between px-5 py-2.5 hover:bg-base-elevated/40 transition-colors duration-150">
+                        <span className="text-xs text-ink-faint">{item.label}</span>
+                        <span className="text-xs font-semibold text-ink">{item.value as React.ReactNode}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
               </div>
             </div>
           )}
@@ -430,7 +554,7 @@ export default function LendingPage() {
 
       {/* Connect CTA on markets tab when not connected */}
       {tab === 'markets' && !isConnected && (
-        <div className="rounded-2xl border border-base-border bg-base-card p-6 flex items-center justify-between gap-4">
+        <div className="rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4 flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-ink">Connect wallet to interact</p>
             <p className="text-xs text-ink-secondary mt-0.5">View and manage your BDX lending position.</p>
@@ -438,7 +562,7 @@ export default function LendingPage() {
           <ConnectButton.Custom>
             {({ openConnectModal }) => (
               <button onClick={openConnectModal}
-                className="shrink-0 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                className="shrink-0 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all active:scale-[0.98] active:brightness-95">
                 Connect Wallet
               </button>
             )}
@@ -450,7 +574,7 @@ export default function LendingPage() {
       {actionType && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeAction} />
-          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 px-4">
+          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4">
             <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
 
               {/* Modal header */}
@@ -493,7 +617,7 @@ export default function LendingPage() {
                 </div>
               </div>
 
-              <div className="p-5 space-y-4">
+              <div className="p-5 space-y-3">
                 {/* Input */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -595,8 +719,8 @@ export default function LendingPage() {
                 ) : (
                   <button onClick={handleSubmit} disabled={amount === 0n}
                     className={cn(
-                      'w-full rounded-xl py-3 text-sm font-semibold transition-all',
-                      amount === 0n ? 'bg-base-elevated text-ink-faint cursor-not-allowed' : 'bg-brand text-base-bg hover:bg-brand-dark',
+                      'w-full rounded-xl py-3.5 text-sm font-semibold transition-all',
+                      amount === 0n ? 'bg-base-elevated text-ink-faint cursor-not-allowed' : 'bg-brand text-base-bg hover:bg-brand-dark active:scale-[0.98] active:brightness-95',
                     )}>
                     {actionType === 'deposit' ? 'Deposit BDX' : actionType === 'borrow' ? 'Borrow MUSDC' : actionType === 'repay' ? 'Repay MUSDC' : 'Withdraw BDX'}
                   </button>
@@ -618,4 +742,40 @@ function fmtBig(v: bigint | undefined): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
   if (n >= 1_000)     return `${(n / 1_000).toFixed(2)}K`;
   return n.toFixed(2);
+}
+
+function HealthBadge({ hf }: { hf: number }) {
+  if (!isFinite(hf) || hf > 999) {
+    return (
+      <span className="rounded-lg bg-green/15 px-2.5 py-1 text-xs font-bold text-green uppercase tracking-wide">
+        Safe
+      </span>
+    );
+  }
+  if (hf >= 1.5) {
+    return (
+      <span className="rounded-lg bg-green/15 px-2.5 py-1 text-xs font-bold text-green uppercase tracking-wide">
+        Safe
+      </span>
+    );
+  }
+  if (hf >= 1.2) {
+    return (
+      <span className="rounded-lg bg-yellow/15 px-2.5 py-1 text-xs font-bold text-yellow uppercase tracking-wide">
+        Warning
+      </span>
+    );
+  }
+  if (hf >= 1.0) {
+    return (
+      <span className="rounded-lg bg-red/15 px-2.5 py-1 text-xs font-bold text-red uppercase tracking-wide">
+        At Risk
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-lg bg-red/25 px-2.5 py-1 text-xs font-bold text-red uppercase tracking-wide animate-pulse">
+      Danger
+    </span>
+  );
 }

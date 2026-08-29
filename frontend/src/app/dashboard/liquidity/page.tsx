@@ -213,13 +213,6 @@ export default function LiquidityPage() {
             Provide liquidity to earn trading fees on every swap.
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => openPool('bdx-musdc', 'add')}
-            className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
-            + Add Liquidity
-          </button>
-        </div>
       </div>
 
       {/* ── Stat cards ──────────────────────────────────────────────── */}
@@ -376,7 +369,7 @@ export default function LiquidityPage() {
       {selectedPool && pool && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
-          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 px-4">
+          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4">
             <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
 
               {/* Modal header */}
@@ -490,10 +483,10 @@ export default function LiquidityPage() {
                         onClick={handleAddLiquidity}
                         disabled={t0Amount === 0n || t1Amount === 0n}
                         className={cn(
-                          'w-full rounded-xl py-3 text-sm font-semibold transition-all',
+                          'w-full rounded-xl py-3.5 text-sm font-semibold transition-all',
                           t0Amount === 0n || t1Amount === 0n
                             ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
-                            : 'bg-brand text-base-bg hover:bg-brand-dark',
+                            : 'bg-brand text-base-bg hover:bg-brand-dark active:scale-[0.98] active:brightness-95',
                         )}>
                         Add Liquidity
                       </button>
@@ -558,10 +551,10 @@ export default function LiquidityPage() {
                         onClick={handleRemoveLiquidity}
                         disabled={lpToRemove === 0n}
                         className={cn(
-                          'w-full rounded-xl py-3 text-sm font-semibold transition-all',
+                          'w-full rounded-xl py-3.5 text-sm font-semibold transition-all',
                           lpToRemove === 0n
                             ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
-                            : 'bg-brand text-base-bg hover:bg-brand-dark',
+                            : 'bg-brand text-base-bg hover:bg-brand-dark active:scale-[0.98] active:brightness-95',
                         )}>
                         Remove Liquidity
                       </button>
@@ -643,7 +636,7 @@ function SuccessMsg({ txHash, msg, onClose }: { txHash?: `0x${string}`; msg: str
           )}
         </div>
       </div>
-      <button onClick={onClose} className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onClose} className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
         Done
       </button>
     </div>
@@ -657,7 +650,7 @@ function ErrorMsg({ error, onReset }: { error: string | null; onReset: () => voi
         <XCircle className="h-4 w-4 text-red shrink-0 mt-0.5" strokeWidth={1.5} />
         <p className="text-xs text-red">{error ?? 'Something went wrong'}</p>
       </div>
-      <button onClick={onReset} className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onReset} className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
         Try again
       </button>
     </div>

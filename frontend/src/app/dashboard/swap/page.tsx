@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronDown, Settings2, ArrowDownUp, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { ChevronDown, Settings2, ArrowDownUp, CheckCircle2, XCircle, Loader2, Search, X } from 'lucide-react';
 import { useMultiPool } from '@/hooks/useMultiPool';
 import { useMultiSwap } from '@/hooks/useMultiSwap';
 import { useSwapQuote } from '@/hooks/usePool';
@@ -30,6 +30,7 @@ export default function SwapPage() {
   const [tokenOut, setTokenOut] = useState<TokenInfo>(TOKEN_LIST[0]); // BDX
   const [showTokenInPicker,  setShowTokenInPicker]  = useState(false);
   const [showTokenOutPicker, setShowTokenOutPicker] = useState(false);
+  const sellInputRef = useRef<HTMLInputElement>(null);
   const [amountInStr,  setAmountInStr]  = useState('');
   const [slippageBps,  setSlippageBps]  = useState(100); // 1% default — prevents SlippageExceeded on most swaps
   const [showSettings, setShowSettings] = useState(false);
@@ -108,6 +109,17 @@ export default function SwapPage() {
     reset();
   }
 
+  function openInPicker()  { setShowTokenOutPicker(false); setShowTokenInPicker(true);  }
+  function openOutPicker() { setShowTokenInPicker(false);  setShowTokenOutPicker(true); }
+  function closeAllPickers() { setShowTokenInPicker(false); setShowTokenOutPicker(false); }
+
+  // Close token picker on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') closeAllPickers(); }
+    if (showTokenInPicker || showTokenOutPicker) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showTokenInPicker, showTokenOutPicker]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function handleSwap() {
     if (!address || amountIn === 0n || !pool.poolAddress) return;
     await execute(tokenIn, amountIn, minAmountOut, pool.poolAddress, address);
@@ -118,7 +130,7 @@ export default function SwapPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="animate-fade-in space-y-4">
+    <div className="animate-fade-in space-y-6">
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
@@ -136,7 +148,7 @@ export default function SwapPage() {
       </div>
 
       <div className="flex justify-center">
-        <div className="w-full max-w-sm space-y-2">
+        <div className="w-full max-w-md space-y-2">
 
           {/* ── Swap card ──────────────────────────────────────────────── */}
           <div className="rounded-2xl border border-base-border bg-base-card">
@@ -173,54 +185,42 @@ export default function SwapPage() {
             )}
 
             {/* Sell panel */}
-            <div className="mx-5 mb-1 rounded-2xl border border-transparent bg-base-surface p-4 relative transition-colors duration-200 focus-within:border-brand/25">
+            <div
+              className="mx-5 mb-1 rounded-2xl bg-base-surface p-4 relative border border-transparent hover:border-base-border hover:bg-base-elevated/40 transition-all duration-150 cursor-text"
+              onClick={() => sellInputRef.current?.focus()}
+            >
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs text-ink-secondary">Sell</span>
-                <button onClick={handleMax}
-                  className="text-xs text-ink-faint hover:text-ink transition-colors duration-150">
+                <button onClick={(e) => { e.stopPropagation(); handleMax(); }}
+                  className="text-xs text-ink-faint hover:text-brand transition-colors duration-150">
                   Balance: {formatToken(tokenInBalance, tokenIn.decimals, 4)}
                 </button>
               </div>
               <div className="flex items-center gap-3">
                 <input
+                  ref={sellInputRef}
                   type="number"
                   placeholder="0.0"
                   value={amountInStr}
                   onChange={(e) => { setAmountInStr(e.target.value); reset(); }}
-                  className="tabular-nums min-w-0 flex-1 bg-transparent text-4xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="tabular-nums min-w-0 flex-1 bg-transparent text-4xl font-normal text-ink placeholder:text-ink-faint outline-none focus:outline-none ring-0 focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
-                <TokenSelector token={tokenIn} onClick={() => setShowTokenInPicker(true)} />
+                <TokenSelector token={tokenIn} onClick={(e) => { e.stopPropagation(); openInPicker(); }} />
               </div>
-
-              {/* Token picker — sell */}
-              {showTokenInPicker && (
-                <div className="absolute left-0 right-0 top-full mt-1 z-30 px-0">
-                  <TokenPicker
-                    tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenIn.symbol)}
-                    balances={balances}
-                    onSelect={selectTokenIn}
-                    onClose={() => setShowTokenInPicker(false)}
-                  />
-                </div>
-              )}
             </div>
 
             {/* Flip button */}
-            <div className="relative flex justify-center -my-2 z-10">
+            <div className="relative flex justify-center -my-1.5 z-10">
               <div className="group relative">
                 <button onClick={handleFlip}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-base-border bg-base-elevated text-ink-secondary transition-all duration-200 ease-out hover:border-brand/50 hover:bg-brand/5 hover:text-brand active:scale-95">
-                  <ArrowDownUp className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" strokeWidth={1.5} />
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-base-border bg-base-card text-ink-secondary transition-all duration-200 ease-out hover:border-brand/40 hover:bg-brand/5 hover:text-brand active:scale-95">
+                  <ArrowDownUp className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180" strokeWidth={2} />
                 </button>
-                {/* Tooltip */}
-                <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-8 whitespace-nowrap rounded-lg border border-base-border bg-base-elevated px-2.5 py-1 text-[11px] text-ink-secondary opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                  Switch tokens
-                </span>
               </div>
             </div>
 
             {/* Buy panel */}
-            <div className="mx-5 mt-1 rounded-2xl border border-transparent bg-base-surface p-4 relative transition-colors duration-200">
+            <div className="mx-5 mt-1 rounded-2xl bg-base-surface p-4 relative border border-transparent hover:border-base-border hover:bg-base-elevated/40 transition-all duration-150">
               <p className="mb-2 text-xs text-ink-secondary">Buy</p>
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
@@ -233,20 +233,8 @@ export default function SwapPage() {
                     </span>
                   )}
                 </div>
-                <TokenSelector token={tokenOut} onClick={() => setShowTokenOutPicker(true)} />
+                <TokenSelector token={tokenOut} onClick={(e) => { e.stopPropagation(); openOutPicker(); }} />
               </div>
-
-              {/* Token picker — buy */}
-              {showTokenOutPicker && (
-                <div className="absolute left-0 right-0 top-full mt-1 z-30 px-0">
-                  <TokenPicker
-                    tokens={TOKEN_LIST.filter((t) => t.symbol !== tokenOut.symbol)}
-                    balances={balances}
-                    onSelect={selectTokenOut}
-                    onClose={() => setShowTokenOutPicker(false)}
-                  />
-                </div>
-              )}
             </div>
 
             {/* Info rows */}
@@ -340,25 +328,48 @@ export default function SwapPage() {
               )}
             </div>
           </div>
-
-          {/* Faucet hint */}
-          {isConnected && (
-            <p className="text-center text-xs text-ink-faint">
-              Need testnet tokens?{' '}
-              <Link href="/dashboard/faucet" className="text-ink-secondary underline underline-offset-2 hover:text-ink transition-colors">
-                Get from Faucet
-              </Link>
-            </p>
-          )}
         </div>
       </div>
+
+      {/* ── Token picker overlays ─────────────────────────────────────── */}
+      {(showTokenInPicker || showTokenOutPicker) && (
+        <>
+      {/* Backdrop — click anywhere outside to close */}
+          <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeAllPickers} />
+          {/* Picker centered over the swap card */}
+          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 px-4">
+            <TokenPicker
+              tokens={TOKEN_LIST.filter((t) =>
+                showTokenInPicker
+                  ? t.symbol !== tokenIn.symbol
+                  : t.symbol !== tokenOut.symbol
+              )}
+              balances={balances}
+              onSelect={showTokenInPicker ? selectTokenIn : selectTokenOut}
+              onClose={closeAllPickers}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Faucet hint */}
+      {isConnected && (
+        <div className="flex justify-center">
+          <p className="text-center text-xs text-ink-faint">
+            Need testnet tokens?{' '}
+            <Link href="/dashboard/faucet" className="text-ink-secondary underline underline-offset-2 hover:text-ink transition-colors">
+              Get from Faucet
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── Token selector pill (clickable) ──────────────────────────────────────────
 
-function TokenSelector({ token, onClick }: { token: TokenInfo; onClick: () => void }) {
+function TokenSelector({ token, onClick }: { token: TokenInfo; onClick: (e: React.MouseEvent) => void }) {
   return (
     <button
       onClick={onClick}
@@ -385,33 +396,111 @@ function TokenPicker({
   onSelect: (t: TokenInfo) => void;
   onClose: () => void;
 }) {
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus search on open
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  const filtered = tokens.filter(t =>
+    t.symbol.toLowerCase().includes(query.toLowerCase()) ||
+    t.name.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-base-border">
-        <span className="text-xs font-semibold text-ink">Select token</span>
-        <button onClick={onClose} className="text-ink-faint hover:text-ink transition-colors">
-          <XCircle className="h-4 w-4" strokeWidth={1.5} />
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-4 border-b border-base-border">
+        <p className="text-sm font-semibold text-ink">Select a token</p>
+        <button
+          onClick={onClose}
+          className="text-ink-faint hover:text-ink transition-colors p-1"
+        >
+          <X className="h-4 w-4" strokeWidth={1.5} />
         </button>
       </div>
-      <div className="py-2">
-        {tokens.map((t) => {
-          const bal = getBalanceForSymbol(t.symbol, balances);
-          return (
-            <button key={t.symbol} onClick={() => onSelect(t)}
-              className="flex w-full items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-base-elevated/80 active:bg-base-elevated">
-              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                <Image src={t.logoSrc} alt={t.symbol} fill className="object-cover" sizes="32px" />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-ink">{t.symbol}</p>
-                <p className="text-xs text-ink-faint">{t.name}</p>
-              </div>
-              <p className="text-sm font-medium text-ink tabular-nums">
-                {formatToken(bal, t.decimals, 4)}
-              </p>
+
+      {/* Search */}
+      <div className="px-5 pb-3">
+        <div className="flex items-center gap-2.5 rounded-xl border border-base-border bg-base-surface px-3 py-2.5 focus-within:border-brand/30 transition-colors">
+          <Search className="h-3.5 w-3.5 text-ink-faint shrink-0" strokeWidth={2} />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search by name or symbol"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="flex-1 bg-transparent text-xs text-ink placeholder:text-ink-faint outline-none focus:outline-none ring-0 focus:ring-0"
+          />
+          {query && (
+            <button onClick={() => setQuery('')} className="text-ink-faint hover:text-ink transition-colors">
+              <X className="h-3 w-3" strokeWidth={2} />
             </button>
-          );
-        })}
+          )}
+        </div>
+      </div>
+
+      {/* Column headers */}
+      <div className="flex items-center justify-between px-5 pb-1.5">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-faint">Token</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-faint">Balance</span>
+      </div>
+
+      {/* Token list */}
+      <div className="pb-2 max-h-64 overflow-y-auto">
+        {filtered.length === 0 ? (
+          <div className="px-5 py-8 text-center">
+            <p className="text-xs text-ink-faint">No tokens found for &ldquo;{query}&rdquo;</p>
+          </div>
+        ) : (
+          filtered.map((t) => {
+            const bal = getBalanceForSymbol(t.symbol, balances);
+            const hasBalance = bal > 0n;
+            return (
+              <button
+                key={t.symbol}
+                onClick={() => onSelect(t)}
+                className="group flex w-full items-center gap-3 px-5 py-3 transition-colors duration-150 hover:bg-base-elevated active:scale-[0.99]"
+              >
+                {/* Token icon */}
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-base-border group-hover:ring-brand/20 transition-all">
+                  <Image src={t.logoSrc} alt={t.symbol} fill className="object-cover" sizes="40px" />
+                </div>
+
+                {/* Token info */}
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-semibold text-ink group-hover:text-brand transition-colors duration-150 truncate">
+                    {t.symbol}
+                  </p>
+                  <p className="text-xs text-ink-faint truncate">{t.name}</p>
+                </div>
+
+                {/* Balance */}
+                <div className="text-right shrink-0">
+                  <p className={cn(
+                    'text-sm font-semibold tabular-nums',
+                    hasBalance ? 'text-ink' : 'text-ink-faint',
+                  )}>
+                    {formatToken(bal, t.decimals, 4)}
+                  </p>
+                  {hasBalance && (
+                    <p className="text-[10px] text-ink-faint">
+                      {t.symbol}
+                    </p>
+                  )}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-base-border px-5 py-3">
+        <p className="text-[10px] text-ink-faint text-center">
+          Only tokens with active pools are listed
+        </p>
       </div>
     </div>
   );
