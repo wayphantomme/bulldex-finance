@@ -60,7 +60,7 @@ export function PriceTicker() {
         {/* BDX */}
         <span className="flex items-center gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/bulldex-logo.png" alt="BDX" className="h-3.5 w-3.5 rounded-full object-cover" />
+          <img src="/bdx-token.png" alt="BDX" className="h-3.5 w-3.5 rounded-full object-cover" />
           <span className="font-medium text-ink-secondary">BDX</span>
           {isLoading ? (
             <span className="h-3 w-14 animate-pulse rounded bg-base-elevated inline-block" />

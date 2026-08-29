@@ -209,7 +209,7 @@ export default function LendingPage() {
             <div className="grid grid-cols-10 gap-2 px-5 py-4 items-center hover:bg-base-elevated/40 transition-colors">
               <div className="col-span-4 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/bulldex-logo.png" alt="BDX" className="h-9 w-9 rounded-full object-cover shrink-0" />
+                <img src="/bdx-token.png" alt="BDX" className="h-9 w-9 rounded-full object-cover shrink-0" />
                 <div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-ink">BDX</p>
@@ -458,7 +458,7 @@ export default function LendingPage() {
                 <div className="flex items-center gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={actionType === 'borrow' || actionType === 'repay' ? '/musdc-icon.svg' : '/bulldex-logo.png'}
+                    src={actionType === 'borrow' || actionType === 'repay' ? '/musdc-icon.svg' : '/bdx-token.png'}
                     alt={actionType === 'borrow' || actionType === 'repay' ? 'MUSDC' : 'BDX'}
                     className="h-7 w-7 rounded-full object-cover"
                   />

@@ -34,7 +34,7 @@ const POOL_CONFIG: Record<PoolKey, {
     label:        'BDX / MUSDC',
     token0Symbol: 'BDX',
     token1Symbol: 'MUSDC',
-    token0Logo:   '/bulldex-logo.png',
+    token0Logo:   '/bdx-token.png',
     token1Logo:   '/musdc-icon.svg',
     fee:          '0.30%',
   },
@@ -43,7 +43,7 @@ const POOL_CONFIG: Record<PoolKey, {
     label:        'BDX / WETH',
     token0Symbol: 'BDX',
     token1Symbol: 'WETH',
-    token0Logo:   '/bulldex-logo.png',
+    token0Logo:   '/bdx-token.png',
     token1Logo:   '/eth-icon.svg',
     fee:          '0.30%',
   },
@@ -270,10 +270,10 @@ export default function LiquidityPage() {
         {/* Column headers */}
         <div className="grid grid-cols-12 gap-3 px-5 py-2.5 border-b border-base-border bg-base-surface text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
           <div className="col-span-4">Pool</div>
-          <div className="col-span-3 text-right">TVL</div>
+          <div className="col-span-2 text-right">TVL</div>
           <div className="col-span-2 text-right">Fee</div>
           <div className="col-span-2 text-right">My Liquidity</div>
-          <div className="col-span-1" />
+          <div className="col-span-2" />
         </div>
 
         {(Object.entries(POOL_CONFIG) as [PoolKey, typeof POOL_CONFIG[PoolKey]][]).map(([key, cfg]) => {
@@ -321,8 +321,8 @@ export default function LiquidityPage() {
                 </div>
               </div>
 
-              {/* TVL — 3 cols */}
-              <div className="col-span-3 text-right">
+              {/* TVL — 2 cols */}
+              <div className="col-span-2 text-right">
                 <p className="text-sm font-semibold text-ink tabular-nums">{tvlLine1}</p>
                 {tvlLine2 && <p className="text-[11px] text-ink-faint">{tvlLine2}</p>}
               </div>
@@ -348,20 +348,24 @@ export default function LiquidityPage() {
                 )}
               </div>
 
-              {/* Actions — 1 col */}
-              <div className="col-span-1 flex items-center justify-end gap-1.5">
+              {/* Actions — 2 cols */}
+              <div className="col-span-2 flex items-center justify-end gap-1.5">
                 <button
                   onClick={() => openPool(key, 'add')}
                   className="rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all whitespace-nowrap">
                   Add
                 </button>
-                {hasPosition && (
-                  <button
-                    onClick={() => openPool(key, 'remove')}
-                    className="rounded-xl border border-base-border bg-base-elevated px-3 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors whitespace-nowrap">
-                    Remove
-                  </button>
-                )}
+                <button
+                  onClick={() => hasPosition && openPool(key, 'remove')}
+                  disabled={!hasPosition}
+                  className={cn(
+                    'rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap',
+                    hasPosition
+                      ? 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink hover:border-base-border-light cursor-pointer'
+                      : 'border-base-border/40 bg-base-elevated/40 text-ink-faint cursor-not-allowed',
+                  )}>
+                  Remove
+                </button>
               </div>
             </div>
           );

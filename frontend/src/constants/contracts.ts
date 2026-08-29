@@ -32,7 +32,7 @@ export const TOKENS: Record<'BDX' | 'MUSDC' | 'ETH', TokenInfo> = {
     name:     'Bulldex Finance',
     decimals: 18,
     logoColor: 'bg-green/20 text-green',
-    logoSrc:  '/bulldex-logo.png',
+    logoSrc:  '/bdx-token.png',
   },
   MUSDC: {
     address:  CONTRACT_ADDRESSES.musdc,

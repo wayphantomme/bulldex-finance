@@ -38,8 +38,8 @@ export default function FaucetPage() {
   return (
     <div className="animate-fade-in space-y-6">
       <div>
-        <h1 className="text-base font-semibold text-ink">Faucet & Contracts</h1>
-        <p className="mt-0.5 text-xs text-ink-secondary">
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Faucet & Contracts</h1>
+        <p className="mt-1 text-sm text-ink-secondary">
           Get testnet tokens to start trading. Add contracts to MetaMask.
         </p>
       </div>
@@ -453,7 +453,7 @@ function BDXCard() {
       <div className="flex items-center gap-3 mb-4">
         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/bulldex-logo.png" alt="BDX" className="h-10 w-10 object-cover" />
+          <img src="/bdx-token.png" alt="BDX" className="h-10 w-10 object-cover" />
         </div>
         <div>
           <p className="text-sm font-semibold text-ink">Bulldex Token</p>

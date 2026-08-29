@@ -122,8 +122,8 @@ export default function SwapPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-semibold text-ink">Swap</h1>
-          <p className="mt-0.5 text-xs text-ink-secondary">Exchange tokens at the best rate. 0.3% fee.</p>
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Swap</h1>
+          <p className="mt-1 text-sm text-ink-secondary">Exchange tokens at the best rate. 0.3% fee.</p>
         </div>
         {pool.hasLiquidity && (
           <div className="hidden items-center gap-1.5 rounded-lg border border-base-border bg-base-card px-3 py-1.5 sm:flex">
@@ -173,11 +173,11 @@ export default function SwapPage() {
             )}
 
             {/* Sell panel */}
-            <div className="mx-5 mb-1 rounded-2xl bg-base-surface p-4 relative">
+            <div className="mx-5 mb-1 rounded-2xl border border-transparent bg-base-surface p-4 relative transition-colors duration-200 focus-within:border-brand/25">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs text-ink-secondary">Sell</span>
                 <button onClick={handleMax}
-                  className="text-xs text-ink-faint hover:text-ink-secondary transition-colors">
+                  className="text-xs text-ink-faint hover:text-ink transition-colors duration-150">
                   Balance: {formatToken(tokenInBalance, tokenIn.decimals, 4)}
                 </button>
               </div>
@@ -207,14 +207,20 @@ export default function SwapPage() {
 
             {/* Flip button */}
             <div className="relative flex justify-center -my-2 z-10">
-              <button onClick={handleFlip}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-base-border bg-base-elevated text-ink-secondary transition-all duration-200 hover:bg-base-card hover:text-ink">
-                <ArrowDownUp className="h-4 w-4" strokeWidth={1.5} />
-              </button>
+              <div className="group relative">
+                <button onClick={handleFlip}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-base-border bg-base-elevated text-ink-secondary transition-all duration-200 ease-out hover:border-brand/50 hover:bg-brand/5 hover:text-brand active:scale-95">
+                  <ArrowDownUp className="h-4 w-4 transition-transform duration-200 group-hover:rotate-180" strokeWidth={1.5} />
+                </button>
+                {/* Tooltip */}
+                <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-8 whitespace-nowrap rounded-lg border border-base-border bg-base-elevated px-2.5 py-1 text-[11px] text-ink-secondary opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  Switch tokens
+                </span>
+              </div>
             </div>
 
             {/* Buy panel */}
-            <div className="mx-5 mt-1 rounded-2xl bg-base-surface p-4 relative">
+            <div className="mx-5 mt-1 rounded-2xl border border-transparent bg-base-surface p-4 relative transition-colors duration-200">
               <p className="mb-2 text-xs text-ink-secondary">Buy</p>
               <div className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
@@ -264,7 +270,7 @@ export default function SwapPage() {
                 <ConnectButton.Custom>
                   {({ openConnectModal }) => (
                     <button onClick={openConnectModal}
-                      className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                      className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all duration-200 hover:bg-brand-dark active:scale-[0.98] active:brightness-95">
                       Connect Wallet
                     </button>
                   )}
@@ -323,12 +329,12 @@ export default function SwapPage() {
                 </div>
               ) : needsApproval(tokenIn, amountIn, pool.poolAddress) ? (
                 <button onClick={handleSwap} disabled={isBusy}
-                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all duration-200 hover:bg-brand-dark active:scale-[0.98] active:brightness-95">
                   Approve {tokenIn.symbol}
                 </button>
               ) : (
                 <button onClick={handleSwap} disabled={isBusy}
-                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                  className="w-full rounded-xl bg-brand py-3.5 text-sm font-semibold text-base-bg transition-all duration-200 hover:bg-brand-dark active:scale-[0.98] active:brightness-95">
                   {tokenIn.symbol === 'ETH' ? `Wrap & Swap ETH → ${tokenOut.symbol}` : `Swap ${tokenIn.symbol} → ${tokenOut.symbol}`}
                 </button>
               )}
@@ -356,13 +362,13 @@ function TokenSelector({ token, onClick }: { token: TokenInfo; onClick: () => vo
   return (
     <button
       onClick={onClick}
-      className="flex shrink-0 items-center gap-1.5 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5 hover:border-base-border-light transition-colors"
+      className="group flex shrink-0 items-center gap-1.5 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5 transition-all duration-200 ease-out hover:border-brand/50 hover:bg-brand/5 active:scale-95"
     >
       <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
         <Image src={token.logoSrc} alt={token.symbol} fill className="object-cover" sizes="20px" />
       </div>
-      <span className="text-sm font-semibold text-ink">{token.symbol}</span>
-      <ChevronDown className="h-3.5 w-3.5 text-ink-faint" strokeWidth={1.5} />
+      <span className="text-sm font-semibold text-ink transition-colors duration-150 group-hover:text-brand">{token.symbol}</span>
+      <ChevronDown className="h-3.5 w-3.5 text-ink-faint transition-colors duration-150 group-hover:text-brand" strokeWidth={1.5} />
     </button>
   );
 }
@@ -392,7 +398,7 @@ function TokenPicker({
           const bal = getBalanceForSymbol(t.symbol, balances);
           return (
             <button key={t.symbol} onClick={() => onSelect(t)}
-              className="flex w-full items-center gap-3 px-4 py-3 hover:bg-base-elevated transition-colors">
+              className="flex w-full items-center gap-3 px-4 py-3 transition-colors duration-150 hover:bg-base-elevated/80 active:bg-base-elevated">
               <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
                 <Image src={t.logoSrc} alt={t.symbol} fill className="object-cover" sizes="32px" />
               </div>

@@ -80,8 +80,8 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-base font-semibold text-ink">Analytics</h1>
-          <p className="mt-0.5 text-xs text-ink-secondary">
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Analytics</h1>
+          <p className="mt-1 text-sm text-ink-secondary">
             {useSubgraphData
               ? 'Data from The Graph subgraph — full historical index.'
               : 'The Graph unavailable. RPC getLogs limited to 10 blocks on Alchemy free tier.'}

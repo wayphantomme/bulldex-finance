@@ -6,8 +6,8 @@ export default function GovernancePage() {
   return (
     <div className="animate-fade-in space-y-6">
       <div>
-        <h1 className="text-base font-semibold text-ink">Governance</h1>
-        <p className="mt-0.5 text-xs text-ink-secondary">Vote on proposals and shape the protocol.</p>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Governance</h1>
+        <p className="mt-1 text-sm text-ink-secondary">Vote on proposals and shape the protocol.</p>
       </div>
       <div className="flex justify-center">
         <Card className="w-full max-w-sm">

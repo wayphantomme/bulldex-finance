@@ -55,8 +55,8 @@ export default function DashboardPage() {
       {/* ── Page header ─────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-base font-semibold text-ink">Portfolio Overview</h1>
-          <p className="mt-0.5 text-xs text-ink-secondary">
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Portfolio Overview</h1>
+          <p className="mt-1 text-sm text-ink-secondary">
             {isConnected ? 'Your live positions on Sepolia testnet.' : 'Connect wallet to view your portfolio.'}
           </p>
         </div>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
               <div className="space-y-3 flex-1">
                 {/* BDX wallet balance */}
                 <PositionRow
-                  icon={<img src="/bulldex-logo.png" alt="BDX" className="h-8 w-8 rounded-full object-cover" />}
+                  icon={<img src="/bdx-token.png" alt="BDX" className="h-8 w-8 rounded-full object-cover" />}
                   label="BDX Wallet"
                   sub="Spot balance"
                   value={isContractConfigured ? `${formatToken(balance, 18, 2)} BDX` : '--'}
@@ -175,7 +175,7 @@ export default function DashboardPage() {
                 <PositionRow
                   icon={
                     <div className="relative w-8 h-8 shrink-0">
-                      <img src="/bulldex-logo.png" alt="BDX" className="absolute left-0 top-0 h-6 w-6 rounded-full object-cover ring-2 ring-base-card" />
+                      <img src="/bdx-token.png" alt="BDX" className="absolute left-0 top-0 h-6 w-6 rounded-full object-cover ring-2 ring-base-card" />
                       <img src="/musdc-icon.svg" alt="MUSDC" className="absolute left-2.5 top-2 h-5 w-5 rounded-full object-cover ring-2 ring-base-card" />
                     </div>
                   }
@@ -252,7 +252,7 @@ export default function DashboardPage() {
               <p className="text-xs font-semibold text-ink-secondary mb-4">Market</p>
               <div className="space-y-3">
                 <MarketRow
-                  logo="/bulldex-logo.png"
+                  logo="/bdx-token.png"
                   name="BDX"
                   sub="Bulldex Token"
                   price={bdxPriceUSD}
