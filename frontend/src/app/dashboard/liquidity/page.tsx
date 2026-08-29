@@ -5,13 +5,14 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { formatUnits } from 'viem';
 import Image from 'next/image';
-import { X, CheckCircle2, XCircle, Loader2, ChevronRight } from 'lucide-react';
+import { X, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { usePoolStats, usePoolShare } from '@/hooks/usePoolStats';
 import { useAddLiquidity, type PoolKey } from '@/hooks/useAddLiquidity';
 import { useRemoveLiquidity } from '@/hooks/useRemoveLiquidity';
 import { useReadContract } from 'wagmi';
 import { parseAmount, applySlippage } from '@/hooks/useSwap';
 import { useTokenBalances } from '@/hooks/useTokenBalances';
+import { usePriceTicker } from '@/hooks/usePriceTicker';
 import { CONTRACTS, CONTRACT_ADDRESSES, isConfigured, etherscanUrl } from '@/constants/contracts';
 import { POOL_ABI } from '@/constants/abis';
 import { formatToken, shortenHash } from '@/utils/format';
@@ -19,13 +20,11 @@ import { cn } from '@/utils/cn';
 
 type ActionType = 'add' | 'remove';
 
-// token1Symbol is always the ERC-20 in the pool — BDX/WETH uses "WETH" not "ETH"
-// so the user knows they need wrapped ETH (not native ETH) for addLiquidity
 const POOL_CONFIG: Record<PoolKey, {
   address: `0x${string}`;
   label: string;
   token0Symbol: string;
-  token1Symbol: string;  // "WETH" for bdx-weth
+  token1Symbol: string;
   token0Logo: string;
   token1Logo: string;
   fee: string;
@@ -43,7 +42,7 @@ const POOL_CONFIG: Record<PoolKey, {
     address:      CONTRACT_ADDRESSES.poolBdxWeth,
     label:        'BDX / WETH',
     token0Symbol: 'BDX',
-    token1Symbol: 'WETH',   // ERC-20 WETH, not native ETH
+    token1Symbol: 'WETH',
     token0Logo:   '/bulldex-logo.png',
     token1Logo:   '/eth-icon.svg',
     fee:          '0.30%',
@@ -56,7 +55,8 @@ export default function LiquidityPage() {
   const [actionType, setActionType]     = useState<ActionType>('add');
   const [slippageBps, setSlippageBps]   = useState(50);
 
-  const balances = useTokenBalances(address);
+  const balances  = useTokenBalances(address);
+  const { tvlUSD } = usePriceTicker();
 
   // Close modal on Escape
   useEffect(() => {
@@ -71,12 +71,8 @@ export default function LiquidityPage() {
     setT1Input('');
   }
 
-  // BDX/MUSDC pool stats (TVL display + ratio auto-fill)
   const musdcPool = usePoolStats();
-
-  // BDX/WETH pool stats (ratio auto-fill for BDX/WETH add liquidity)
-  const wethPool = usePoolStats(CONTRACT_ADDRESSES.poolBdxWeth);
-  // Determine token ordering in BDX/WETH pool
+  const wethPool  = usePoolStats(CONTRACT_ADDRESSES.poolBdxWeth);
   const isBdxToken0InWethPool = CONTRACT_ADDRESSES.token.toLowerCase() < CONTRACT_ADDRESSES.weth.toLowerCase();
 
   // BDX/WETH LP balance
@@ -89,21 +85,16 @@ export default function LiquidityPage() {
   });
   const wethLPBalance = wethLPBalanceRaw as bigint | undefined;
 
-  // ── Per-pool hooks — keyed by selectedPool ───────────────────────────────
-  // Hooks are called unconditionally (rules of hooks) but the key param
-  // controls which pool contract they target.
   const poolKeyForHook = selectedPool ?? 'bdx-musdc';
-
   const addLiq    = useAddLiquidity(address, poolKeyForHook);
   const removeLiq = useRemoveLiquidity(address, poolKeyForHook);
 
-  // ── Input state ───────────────────────────────────────────────────────────
+  // ── Input state ──────────────────────────────────────────────────────────
   const [t0Input, setT0Input] = useState('');
   const [t1Input, setT1Input] = useState('');
   const t0Amount = useMemo(() => parseAmount(t0Input), [t0Input]);
   const t1Amount = useMemo(() => parseAmount(t1Input), [t1Input]);
 
-  // Auto-fill t1 from t0 using live pool ratio for both pools.
   function handleT0Change(val: string) {
     setT0Input(val);
     const n = parseFloat(val);
@@ -116,10 +107,8 @@ export default function LiquidityPage() {
       setT1Input(paired.toFixed(6));
       return;
     }
-
     if (selectedPool === 'bdx-weth') {
       if (!wethPool.hasLiquidity || !wethPool.reserve0 || !wethPool.reserve1) return;
-      // bdxReserve and wethReserve depend on token ordering in the WETH pool
       const bdxRes  = isBdxToken0InWethPool ? wethPool.reserve0 : wethPool.reserve1;
       const wethRes = isBdxToken0InWethPool ? wethPool.reserve1 : wethPool.reserve0;
       const paired = (n * Number(formatUnits(wethRes, 18)))
@@ -128,7 +117,7 @@ export default function LiquidityPage() {
     }
   }
 
-  // ── Remove liquidity state ────────────────────────────────────────────────
+  // ── Remove liquidity state ───────────────────────────────────────────────
   const [lpPct, setLpPct] = useState(50);
 
   const { data: lpBalanceRaw } = useReadContract({
@@ -168,13 +157,10 @@ export default function LiquidityPage() {
     return { t0, t1 };
   }, [lpToRemove, musdcPool, isBDXToken0]);
 
-  // ── Action handlers ───────────────────────────────────────────────────────
-
   async function handleAddLiquidity() {
     if (!address || t0Amount === 0n || t1Amount === 0n) return;
     const min0 = applySlippage(t0Amount, slippageBps);
     const min1 = applySlippage(t1Amount, slippageBps);
-    // Hook expects (bdxAmount, t1Amount, bdxMin, t1Min)
     await addLiq.addLiquidity(t0Amount, t1Amount, min0, min1);
   }
 
@@ -197,29 +183,21 @@ export default function LiquidityPage() {
     removeLiq.reset();
   }
 
-  // ── Derived display ───────────────────────────────────────────────────────
-
-  const totalTvl = musdcPool.hasLiquidity && musdcPool.bdxReserve && musdcPool.musdcReserve
-    ? `${formatToken(musdcPool.bdxReserve, 18, 0)} BDX + ${formatToken(musdcPool.musdcReserve, 18, 0)} MUSDC`
-    : null;
+  // ── Derived ──────────────────────────────────────────────────────────────
 
   const myPositionCount = [
     lpBalance && lpBalance > 0n,
     wethLPBalance && wethLPBalance > 0n,
   ].filter(Boolean).length;
 
-  const pool = selectedPool ? POOL_CONFIG[selectedPool] : null;
+  const pool        = selectedPool ? POOL_CONFIG[selectedPool] : null;
+  const t1Balance   = selectedPool === 'bdx-weth' ? balances.weth : balances.musdc;
 
-  // t1 balance label: BDX/MUSDC uses MUSDC, BDX/WETH uses WETH
-  const t1Balance = selectedPool === 'bdx-weth' ? balances.weth : balances.musdc;
-
-  // Busy step labels for add
   const addBusyLabel = addLiq.step === 'adding'
     ? 'Adding...'
     : addLiq.step === 'approving_t1'
     ? `Approving ${pool?.token1Symbol ?? ''}...`
     : 'Approving BDX...';
-
   const addIsBusy = ['approving_bdx', 'approving_t1', 'adding'].includes(addLiq.step);
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -228,83 +206,137 @@ export default function LiquidityPage() {
     <div className="animate-fade-in space-y-6">
 
       {/* ── Page header ─────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <h1 className="text-base font-semibold text-ink">BDX Pools</h1>
-          <p className="mt-0.5 text-xs text-ink-secondary">
-            Provide liquidity to earn 0.3% of every swap fee.
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Liquidity Pools</h1>
+          <p className="mt-1 text-sm text-ink-secondary">
+            Provide liquidity to earn trading fees on every swap.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-5">
-          <div className="text-right">
-            <p className="text-xs text-ink-faint">Total Liquidity</p>
-            <p className="text-sm font-semibold text-ink">{totalTvl ?? '--'}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-ink-faint">Active Pools</p>
-            <p className="text-sm font-semibold text-ink">2</p>
-          </div>
-          {myPositionCount > 0 && (
-            <div className="text-right">
-              <p className="text-xs text-ink-faint">My Positions</p>
-              <p className="text-sm font-semibold text-brand">{myPositionCount}</p>
-            </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => openPool('bdx-musdc', 'add')}
+            className="rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+            + Add Liquidity
+          </button>
+        </div>
+      </div>
+
+      {/* ── Stat cards ──────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {/* TVL */}
+        <div className="rounded-2xl border border-base-border bg-base-card p-5">
+          <p className="text-xs text-ink-faint mb-1">Total Value Locked</p>
+          <p className="text-2xl font-semibold text-ink tabular-nums">
+            {tvlUSD ?? '--'}
+          </p>
+          <p className="text-xs text-ink-faint mt-1">across both pools</p>
+        </div>
+
+        {/* Active pools */}
+        <div className="rounded-2xl border border-base-border bg-base-card p-5">
+          <p className="text-xs text-ink-faint mb-1">Active Pools</p>
+          <p className="text-2xl font-semibold text-ink">2</p>
+          <p className="text-xs text-ink-faint mt-1">0.30% fee per swap</p>
+        </div>
+
+        {/* My liquidity */}
+        <div className="rounded-2xl border border-base-border bg-base-card p-5">
+          <p className="text-xs text-ink-faint mb-1">My Positions</p>
+          {!isConnected ? (
+            <>
+              <p className="text-2xl font-semibold text-ink">--</p>
+              <p className="text-xs text-ink-faint mt-1">Connect wallet to view</p>
+            </>
+          ) : (
+            <>
+              <p className="text-2xl font-semibold text-ink tabular-nums">{myPositionCount}</p>
+              <p className="text-xs text-ink-faint mt-1">
+                {myPositionCount === 0 ? 'No active positions' : `Active LP position${myPositionCount > 1 ? 's' : ''}`}
+              </p>
+            </>
           )}
         </div>
       </div>
 
-      {/* ── Pool table ───────────────────────────────────────────────── */}
+      {/* ── Pool table ──────────────────────────────────────────────── */}
       <div className="rounded-2xl border border-base-border bg-base-card overflow-hidden">
 
-        <div className="grid grid-cols-6 gap-4 px-5 py-3 border-b border-base-border bg-base-surface text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
-          <div className="col-span-2">Pool</div>
-          <div className="text-right">Fee</div>
-          <div className="text-right">TVL</div>
-          <div className="text-right">My Liquidity</div>
-          <div className="text-right" />
+        {/* Table header label */}
+        <div className="px-5 py-4 border-b border-base-border">
+          <h2 className="text-sm font-semibold text-ink">Active Pools</h2>
+        </div>
+
+        {/* Column headers */}
+        <div className="grid grid-cols-12 gap-3 px-5 py-2.5 border-b border-base-border bg-base-surface text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+          <div className="col-span-4">Pool</div>
+          <div className="col-span-3 text-right">TVL</div>
+          <div className="col-span-2 text-right">Fee</div>
+          <div className="col-span-2 text-right">My Liquidity</div>
+          <div className="col-span-1" />
         </div>
 
         {(Object.entries(POOL_CONFIG) as [PoolKey, typeof POOL_CONFIG[PoolKey]][]).map(([key, cfg]) => {
-          const isMUSCD    = key === 'bdx-musdc';
-          const reserve0Fmt = isMUSCD && musdcPool.bdxReserveFormatted   ? musdcPool.bdxReserveFormatted   : (!isMUSCD && wethPool.hasLiquidity && wethPool.reserve0) ? (isBdxToken0InWethPool ? wethPool.bdxReserveFormatted : wethPool.musdcReserveFormatted) : '--';
-          const reserve1Fmt = isMUSCD && musdcPool.musdcReserveFormatted ? musdcPool.musdcReserveFormatted : (!isMUSCD && wethPool.hasLiquidity && wethPool.reserve1) ? (isBdxToken0InWethPool ? wethPool.musdcReserveFormatted : wethPool.bdxReserveFormatted) : '--';
-          const myLPBal    = isMUSCD ? lpBalance : wethLPBalance;
+          const isMUSCD     = key === 'bdx-musdc';
+          const poolData    = isMUSCD ? musdcPool : wethPool;
+
+          // TVL display — show both token reserves
+          const tvlLine1 = poolData.hasLiquidity && poolData.reserve0 && poolData.reserve1
+            ? isMUSCD
+              ? `${musdcPool.bdxReserveFormatted} BDX`
+              : isBdxToken0InWethPool
+                ? `${wethPool.bdxReserveFormatted} BDX`
+                : `${wethPool.musdcReserveFormatted} BDX`
+            : '--';
+          const tvlLine2 = poolData.hasLiquidity && poolData.reserve0 && poolData.reserve1
+            ? isMUSCD
+              ? `${musdcPool.musdcReserveFormatted} MUSDC`
+              : isBdxToken0InWethPool
+                ? `${wethPool.musdcReserveFormatted} WETH`
+                : `${wethPool.bdxReserveFormatted} WETH`
+            : null;
+
+          const myLPBal     = isMUSCD ? lpBalance : wethLPBalance;
           const hasPosition = myLPBal && myLPBal > 0n;
 
           return (
             <div key={key}
-              className="grid grid-cols-6 gap-4 px-5 py-4 border-b border-base-border last:border-0 hover:bg-base-elevated transition-colors items-center">
+              className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-base-border last:border-0 hover:bg-base-elevated/40 transition-colors items-center">
 
-              {/* Pool name */}
-              <div className="col-span-2 flex items-center gap-2.5">
-                <div className="relative w-10 h-7 shrink-0">
-                  <div className="absolute left-0 top-0 h-7 w-7 rounded-full overflow-hidden ring-2 ring-base-card">
-                    <Image src={cfg.token0Logo} alt={cfg.token0Symbol} fill className="object-cover" sizes="28px" />
+              {/* Pool name — 4 cols */}
+              <div className="col-span-4 flex items-center gap-3">
+                <div className="relative w-9 h-6 shrink-0">
+                  <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                    <Image src={cfg.token0Logo} alt={cfg.token0Symbol} fill className="object-cover" sizes="24px" />
                   </div>
-                  <div className="absolute left-4 top-0 h-7 w-7 rounded-full overflow-hidden ring-2 ring-base-card">
-                    <Image src={cfg.token1Logo} alt={cfg.token1Symbol} fill className="object-cover" sizes="28px" />
+                  <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                    <Image src={cfg.token1Logo} alt={cfg.token1Symbol} fill className="object-cover" sizes="24px" />
                   </div>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-ink">{cfg.label}</p>
-                  <p className="text-[11px] text-ink-faint">{isMUSCD ? 'BDX/MUSDC' : 'BDX/WETH'}</p>
+                  <span className="inline-block mt-0.5 rounded-md bg-base-elevated px-1.5 py-0.5 text-[10px] font-semibold text-ink-faint">
+                    {cfg.fee} fee
+                  </span>
                 </div>
               </div>
 
-              {/* Fee */}
-              <div className="text-right">
-                <span className="rounded-lg bg-base-elevated px-2 py-0.5 text-[11px] font-semibold text-ink-secondary">{cfg.fee}</span>
+              {/* TVL — 3 cols */}
+              <div className="col-span-3 text-right">
+                <p className="text-sm font-semibold text-ink tabular-nums">{tvlLine1}</p>
+                {tvlLine2 && <p className="text-[11px] text-ink-faint">{tvlLine2}</p>}
               </div>
 
-              {/* TVL */}
-              <div className="text-right">
-                <p className="text-sm font-semibold text-ink tabular-nums">{reserve0Fmt} {cfg.token0Symbol}</p>
-                <p className="text-[11px] text-ink-faint">{reserve1Fmt} {cfg.token1Symbol}</p>
+              {/* Fee — 2 cols */}
+              <div className="col-span-2 text-right">
+                <span className="text-sm font-semibold text-ink">{cfg.fee}</span>
               </div>
 
-              {/* My liquidity */}
-              <div className="text-right">
-                {hasPosition ? (
+              {/* My liquidity — 2 cols */}
+              <div className="col-span-2 text-right">
+                {!isConnected ? (
+                  <p className="text-xs text-ink-faint">--</p>
+                ) : hasPosition ? (
                   <>
                     <p className="text-sm font-semibold text-green tabular-nums">{formatToken(myLPBal!, 18, 4)} LP</p>
                     {isMUSCD && (
@@ -316,18 +348,17 @@ export default function LiquidityPage() {
                 )}
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-2">
+              {/* Actions — 1 col */}
+              <div className="col-span-1 flex items-center justify-end gap-1.5">
                 <button
                   onClick={() => openPool(key, 'add')}
-                  className="flex items-center gap-1 rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                  className="rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all whitespace-nowrap">
                   Add
-                  <ChevronRight className="h-3 w-3" strokeWidth={2} />
                 </button>
                 {hasPosition && (
                   <button
                     onClick={() => openPool(key, 'remove')}
-                    className="rounded-xl border border-base-border bg-base-elevated px-3 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors">
+                    className="rounded-xl border border-base-border bg-base-elevated px-3 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors whitespace-nowrap">
                     Remove
                   </button>
                 )}
@@ -340,22 +371,19 @@ export default function LiquidityPage() {
       {/* ── Action modal ─────────────────────────────────────────────── */}
       {selectedPool && pool && (
         <>
-          {/* Backdrop */}
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
-
-          {/* Modal */}
           <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 px-4">
             <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
 
-              {/* Header */}
+              {/* Modal header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-base-border">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-7 shrink-0">
-                    <div className="absolute left-0 top-0 h-7 w-7 rounded-full overflow-hidden ring-2 ring-base-card">
-                      <Image src={pool.token0Logo} alt={pool.token0Symbol} fill className="object-cover" sizes="28px" />
+                  <div className="relative w-9 h-6 shrink-0">
+                    <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                      <Image src={pool.token0Logo} alt={pool.token0Symbol} fill className="object-cover" sizes="24px" />
                     </div>
-                    <div className="absolute left-4 top-0 h-7 w-7 rounded-full overflow-hidden ring-2 ring-base-card">
-                      <Image src={pool.token1Logo} alt={pool.token1Symbol} fill className="object-cover" sizes="28px" />
+                    <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                      <Image src={pool.token1Logo} alt={pool.token1Symbol} fill className="object-cover" sizes="24px" />
                     </div>
                   </div>
                   <div>
@@ -363,7 +391,7 @@ export default function LiquidityPage() {
                     <p className="text-[11px] text-ink-faint">{pool.fee} fee</p>
                   </div>
                 </div>
-                <button onClick={closeModal} className="text-ink-faint hover:text-ink transition-colors">
+                <button onClick={closeModal} className="text-ink-faint hover:text-ink transition-colors p-1">
                   <X className="h-4 w-4" strokeWidth={1.5} />
                 </button>
               </div>
@@ -407,22 +435,12 @@ export default function LiquidityPage() {
                       </div>
                     </div>
 
-                    {/* WETH note for BDX/WETH pool */}
-                    {selectedPool === 'bdx-weth' && !wethPool.hasLiquidity && (
-                      <div className="rounded-xl border border-yellow/20 bg-yellow/5 px-3 py-2.5">
-                        <p className="text-[11px] text-yellow leading-relaxed">
-                          This pool uses <strong>WETH</strong> (ERC-20). If you need WETH, wrap ETH on the{' '}
-                          <a href="/dashboard/faucet" className="underline hover:text-yellow/80 transition-colors">
-                            Faucet page
-                          </a>.
-                        </p>
-                      </div>
-                    )}
-                    {selectedPool === 'bdx-weth' && wethPool.hasLiquidity && (
+                    {/* WETH note */}
+                    {selectedPool === 'bdx-weth' && (
                       <div className="rounded-xl border border-base-border bg-base-surface px-3 py-2">
                         <p className="text-[11px] text-ink-faint">
-                          Uses WETH (ERC-20). Need WETH? Wrap ETH on the{' '}
-                          <a href="/dashboard/faucet" className="text-brand hover:opacity-80 transition-opacity">Faucet page</a>.
+                          Requires WETH (ERC-20).{' '}
+                          <a href="/dashboard/faucet" className="text-brand hover:opacity-80 transition-opacity">Wrap ETH on the Faucet page.</a>
                         </p>
                       </div>
                     )}
@@ -439,12 +457,9 @@ export default function LiquidityPage() {
                     />
 
                     <div className="flex justify-center">
-                      <div className="h-6 w-6 rounded-full border border-base-border bg-base-elevated flex items-center justify-center text-ink-faint text-[10px]">
-                        +
-                      </div>
+                      <div className="h-6 w-6 rounded-full border border-base-border bg-base-elevated flex items-center justify-center text-ink-faint text-[10px]">+</div>
                     </div>
 
-                    {/* Token 1 input (MUSDC or WETH) */}
                     <PoolInput
                       symbol={pool.token1Symbol}
                       logo={pool.token1Logo}
@@ -455,19 +470,13 @@ export default function LiquidityPage() {
                       onMax={() => setT1Input(parseFloat(formatUnits(t1Balance, 18)).toFixed(6))}
                     />
 
-                    {/* Feedback */}
                     {addLiq.step === 'success' && (
-                      <SuccessMsg
-                        txHash={addLiq.txHash}
-                        msg="Liquidity added!"
-                        onClose={() => { addLiq.reset(); setT0Input(''); setT1Input(''); }}
-                      />
+                      <SuccessMsg txHash={addLiq.txHash} msg="Liquidity added!" onClose={() => { addLiq.reset(); setT0Input(''); setT1Input(''); }} />
                     )}
                     {addLiq.step === 'error' && (
                       <ErrorMsg error={addLiq.error} onReset={addLiq.reset} />
                     )}
 
-                    {/* CTA */}
                     {!isConnected ? (
                       <ConnectWalletBtn />
                     ) : addIsBusy ? (
@@ -491,7 +500,6 @@ export default function LiquidityPage() {
                 {/* ── REMOVE ──────────────────────────────────────────── */}
                 {actionType === 'remove' && (
                   <>
-                    {/* Slider */}
                     <div className="rounded-xl bg-base-surface p-4">
                       <div className="flex justify-between mb-2">
                         <span className="text-xs text-ink-faint">Amount to remove</span>
@@ -517,12 +525,11 @@ export default function LiquidityPage() {
                       </div>
                     </div>
 
-                    {/* Estimated return — only meaningful for BDX/MUSDC (has live reserves) */}
                     {selectedPool === 'bdx-musdc' && (
                       <div className="rounded-xl bg-base-surface px-4 py-3 space-y-1.5">
-                        <InfoRow label="LP to burn"   value={formatToken(lpToRemove, 18, 6)} />
-                        <InfoRow label="BDX back"     value={`${formatToken(estimatedBack.t0, 18, 4)} BDX`} />
-                        <InfoRow label="MUSDC back"   value={`${formatToken(estimatedBack.t1, 18, 4)} MUSDC`} />
+                        <InfoRow label="LP to burn" value={formatToken(lpToRemove, 18, 6)} />
+                        <InfoRow label="BDX back"   value={`${formatToken(estimatedBack.t0, 18, 4)} BDX`} />
+                        <InfoRow label="MUSDC back" value={`${formatToken(estimatedBack.t1, 18, 4)} MUSDC`} />
                       </div>
                     )}
                     {selectedPool === 'bdx-weth' && (
@@ -531,7 +538,6 @@ export default function LiquidityPage() {
                       </div>
                     )}
 
-                    {/* Feedback — only success OR the action button, never both */}
                     {removeLiq.step === 'success' && (
                       <SuccessMsg txHash={removeLiq.txHash} msg="Liquidity removed!" onClose={removeLiq.reset} />
                     )}
@@ -539,7 +545,6 @@ export default function LiquidityPage() {
                       <ErrorMsg error={removeLiq.error} onReset={removeLiq.reset} />
                     )}
 
-                    {/* CTA — hidden once success/error shown (SuccessMsg/ErrorMsg have their own buttons) */}
                     {!isConnected ? (
                       <ConnectWalletBtn />
                     ) : removeLiq.step === 'removing' ? (
@@ -574,13 +579,8 @@ export default function LiquidityPage() {
 function PoolInput({
   symbol, logo, value, onChange, balance, onHalf, onMax,
 }: {
-  symbol: string;
-  logo: string;
-  value: string;
-  onChange: (v: string) => void;
-  balance?: string;
-  onHalf?: () => void;
-  onMax?: () => void;
+  symbol: string; logo: string; value: string; onChange: (v: string) => void;
+  balance?: string; onHalf?: () => void; onMax?: () => void;
 }) {
   return (
     <div className="rounded-xl bg-base-surface p-4">
@@ -589,14 +589,12 @@ function PoolInput({
           <span className="text-[11px] text-ink-faint">{balance ?? ''}</span>
           <div className="flex gap-1">
             {onHalf && (
-              <button onClick={onHalf}
-                className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+              <button onClick={onHalf} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
                 HALF
               </button>
             )}
             {onMax && (
-              <button onClick={onMax}
-                className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+              <button onClick={onMax} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
                 MAX
               </button>
             )}
@@ -605,10 +603,7 @@ function PoolInput({
       )}
       <div className="flex items-center gap-3">
         <input
-          type="number"
-          placeholder="0.0"
-          value={value}
-          onChange={e => onChange(e.target.value)}
+          type="number" placeholder="0.0" value={value} onChange={e => onChange(e.target.value)}
           className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
         />
         <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5">
@@ -640,14 +635,11 @@ function SuccessMsg({ txHash, msg, onClose }: { txHash?: `0x${string}`; msg: str
           <p className="text-xs font-semibold text-green">{msg}</p>
           {txHash && (
             <a href={etherscanUrl(txHash, 'tx')} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] text-ink-faint hover:text-ink-secondary">
-              {shortenHash(txHash)}
-            </a>
+              className="text-[11px] text-ink-faint hover:text-ink-secondary">{shortenHash(txHash)}</a>
           )}
         </div>
       </div>
-      <button onClick={onClose}
-        className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onClose} className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
         Done
       </button>
     </div>
@@ -661,8 +653,7 @@ function ErrorMsg({ error, onReset }: { error: string | null; onReset: () => voi
         <XCircle className="h-4 w-4 text-red shrink-0 mt-0.5" strokeWidth={1.5} />
         <p className="text-xs text-red">{error ?? 'Something went wrong'}</p>
       </div>
-      <button onClick={onReset}
-        className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onReset} className="w-full rounded-xl border border-base-border bg-base-elevated py-2 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
         Try again
       </button>
     </div>
@@ -672,8 +663,7 @@ function ErrorMsg({ error, onReset }: { error: string | null; onReset: () => voi
 function BusyBtn({ label }: { label: string }) {
   return (
     <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-secondary">
-      <Loader2 className="h-4 w-4 animate-spin" />
-      {label}
+      <Loader2 className="h-4 w-4 animate-spin" />{label}
     </button>
   );
 }
@@ -682,8 +672,7 @@ function ConnectWalletBtn() {
   return (
     <ConnectButton.Custom>
       {({ openConnectModal }) => (
-        <button onClick={openConnectModal}
-          className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+        <button onClick={openConnectModal} className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
           Connect Wallet
         </button>
       )}
