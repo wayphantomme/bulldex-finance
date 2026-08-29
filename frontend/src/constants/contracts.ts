@@ -1,5 +1,5 @@
 import { sepolia } from 'wagmi/chains';
-import { TOKEN_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI, LENDING_ABI } from './abis';
+import { TOKEN_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI, LENDING_ABI, STAKING_ABI } from './abis';
 
 // ─── Contract Addresses ───────────────────────────────────────────────────────
 
@@ -11,6 +11,7 @@ export const CONTRACT_ADDRESSES = {
   pool:        (process.env.NEXT_PUBLIC_POOL_BDX_MUSDC   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
   poolBdxWeth: (process.env.NEXT_PUBLIC_POOL_BDX_WETH    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
   lending:     (process.env.NEXT_PUBLIC_LENDING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  staking:     (process.env.NEXT_PUBLIC_STAKING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
 } as const;
 
 // ─── Token Metadata ───────────────────────────────────────────────────────────
@@ -108,6 +109,11 @@ export const CONTRACTS = {
   lending: {
     address: CONTRACT_ADDRESSES.lending,
     abi: LENDING_ABI,
+    chainId: sepolia.id,
+  },
+  staking: {
+    address: CONTRACT_ADDRESSES.staking,
+    abi: STAKING_ABI,
     chainId: sepolia.id,
   },
 } as const;
