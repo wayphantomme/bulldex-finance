@@ -80,7 +80,8 @@ export default function LendingPage() {
         await actions.borrow(amount);
         break;
       case 'repay':
-        await actions.repayAll();
+        if (amount === 0n) return;
+        await actions.repay(amount);
         break;
       case 'withdraw':
         if (amount === 0n) return;
@@ -112,6 +113,9 @@ export default function LendingPage() {
       const max  = parseFloat(formatUnits(position.maxBorrowable, 18));
       const debt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
       setInputVal((Math.max(0, max - debt) / 2).toFixed(6));
+    } else if (actionType === 'repay') {
+      const totalDebt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
+      setInputVal((totalDebt / 2).toFixed(6));
     } else if (actionType === 'withdraw') {
       setInputVal((parseFloat(formatUnits(position.collateral, 18)) / 2).toFixed(6));
     }
@@ -120,22 +124,25 @@ export default function LendingPage() {
   function setMax() {
     if (!actionType) return;
     if (actionType === 'deposit') {
-      // Leave a tiny buffer for gas — show full BDX balance
       const bal = parseFloat(formatUnits(balances.bdx, 18));
       setInputVal(bal.toFixed(6));
     } else if (actionType === 'borrow') {
       const max  = parseFloat(formatUnits(position.maxBorrowable, 18));
       const debt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
       setInputVal((Math.max(0, (max - debt) * 0.99)).toFixed(6));
+    } else if (actionType === 'repay') {
+      // Use MAX (type(uint256).max) for full repay — contract caps at actual debt
+      const totalDebt = parseFloat(formatUnits(position.borrowed + position.interest, 18));
+      setInputVal(totalDebt.toFixed(6));
     } else if (actionType === 'withdraw') {
       setInputVal(parseFloat(formatUnits(position.collateral, 18)).toFixed(6));
     }
   }
 
-  // Balance label for current action input
   function getBalanceLabel(): string {
     if (actionType === 'deposit')  return `Balance: ${parseFloat(formatUnits(balances.bdx, 18)).toFixed(4)} BDX`;
     if (actionType === 'borrow')   return `Available: ${fmtBig(position.maxBorrowable)} MUSDC`;
+    if (actionType === 'repay')    return `Debt: ${fmtBig(position.borrowed + position.interest)} MUSDC`;
     if (actionType === 'withdraw') return `Deposited: ${fmtBig(position.collateral)} BDX`;
     return '';
   }
@@ -321,7 +328,12 @@ export default function LendingPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/bulldex-logo.png" alt="BDX" className="h-7 w-7 rounded-full object-cover" />
                   <div>
-                    <p className="text-sm font-semibold text-ink capitalize">{actionType} BDX</p>
+                    <p className="text-sm font-semibold text-ink capitalize">{
+                      actionType === 'deposit'  ? 'Deposit BDX' :
+                      actionType === 'borrow'   ? 'Borrow MUSDC' :
+                      actionType === 'repay'    ? 'Repay MUSDC' :
+                                                  'Withdraw BDX'
+                    }</p>
                     <p className="text-[11px] text-ink-faint">BDX Market</p>
                   </div>
                 </div>
@@ -348,53 +360,58 @@ export default function LendingPage() {
 
               <div className="p-5 space-y-4">
                 {/* Input */}
-                {actionType !== 'repay' ? (
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-ink-faint capitalize">
-                        {actionType} {actionType === 'borrow' ? 'MUSDC' : 'BDX'}
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-ink-faint">{getBalanceLabel()}</span>
-                        <button onClick={setHalf} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">HALF</button>
-                        <button onClick={setMax}  className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">MAX</button>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs text-ink-faint">
+                      {actionType === 'deposit'  && 'Deposit BDX'}
+                      {actionType === 'borrow'   && 'Borrow MUSDC'}
+                      {actionType === 'repay'    && 'Repay MUSDC'}
+                      {actionType === 'withdraw' && 'Withdraw BDX'}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-ink-faint">{getBalanceLabel()}</span>
+                      <button onClick={setHalf} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">HALF</button>
+                      <button onClick={setMax}  className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">MAX</button>
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-base-surface p-4 flex items-center gap-3">
+                    <input
+                      type="number"
+                      placeholder="0.00"
+                      value={inputVal}
+                      onChange={e => setInputVal(e.target.value)}
+                      className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <span className="shrink-0 rounded-lg bg-base-elevated px-2.5 py-1.5 text-xs font-semibold text-ink">
+                      {actionType === 'borrow' || actionType === 'repay' ? 'MUSDC' : 'BDX'}
+                    </span>
+                  </div>
+
+                  {/* Debt breakdown shown below repay input */}
+                  {actionType === 'repay' && (position.borrowed > 0n || position.interest > 0n) && (
+                    <div className="mt-2 rounded-xl bg-base-surface px-3 py-2.5 space-y-1.5">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-ink-faint">Principal</span>
+                        <span className="text-ink tabular-nums">{fmtBig(position.borrowed)} MUSDC</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-ink-faint">Accrued interest</span>
+                        <span className="text-ink tabular-nums">{fmtBig(position.interest)} MUSDC</span>
+                      </div>
+                      <div className="flex justify-between text-xs border-t border-base-border pt-1.5">
+                        <span className="text-ink-faint">Total debt</span>
+                        <span className="text-ink font-semibold tabular-nums">{fmtBig(position.borrowed + position.interest)} MUSDC</span>
                       </div>
                     </div>
-                    <div className="rounded-xl bg-base-surface p-4 flex items-center gap-3">
-                      <input
-                        type="number"
-                        placeholder="0.00"
-                        value={inputVal}
-                        onChange={e => setInputVal(e.target.value)}
-                        className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                      <span className="shrink-0 rounded-lg bg-base-elevated px-2.5 py-1.5 text-xs font-semibold text-ink">
-                        {actionType === 'borrow' ? 'MUSDC' : 'BDX'}
-                      </span>
-                    </div>
-                    {/* Est. yearly earnings for borrow */}
-                    {actionType === 'borrow' && amount > 0n && (
-                      <p className="mt-2 text-xs text-ink-faint">
-                        Est. yearly interest: {(parseFloat(formatUnits(amount, 18)) * 0.05).toFixed(2)} MUSDC
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-base-surface px-4 py-3 space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-ink-faint">Principal</span>
-                      <span className="text-ink font-semibold">{fmtBig(position.borrowed)} MUSDC</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-ink-faint">Accrued interest</span>
-                      <span className="text-ink font-semibold">{fmtBig(position.interest)} MUSDC</span>
-                    </div>
-                    <div className="flex justify-between text-xs border-t border-base-border pt-2">
-                      <span className="text-ink-faint font-semibold">Total to repay</span>
-                      <span className="text-ink font-semibold">{fmtBig(position.borrowed + position.interest)} MUSDC</span>
-                    </div>
-                  </div>
-                )}
+                  )}
+
+                  {/* Est. yearly interest for borrow */}
+                  {actionType === 'borrow' && amount > 0n && (
+                    <p className="mt-2 text-xs text-ink-faint">
+                      Est. yearly interest: {(parseFloat(formatUnits(amount, 18)) * 0.05).toFixed(2)} MUSDC
+                    </p>
+                  )}
+                </div>
 
                 {/* State feedback */}
                 {actions.step === 'success' && (
@@ -450,16 +467,16 @@ export default function LendingPage() {
                 ) : (
                   <button
                     onClick={handleSubmit}
-                    disabled={actionType !== 'repay' && amount === 0n}
+                    disabled={amount === 0n}
                     className={cn(
                       'w-full rounded-xl py-3 text-sm font-semibold transition-all',
-                      actionType !== 'repay' && amount === 0n
+                      amount === 0n
                         ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
                         : 'bg-brand text-base-bg hover:bg-brand-dark',
                     )}>
                     {actionType === 'deposit'  ? 'Deposit BDX' :
                      actionType === 'borrow'   ? 'Borrow MUSDC' :
-                     actionType === 'repay'    ? 'Repay Full Debt' :
+                     actionType === 'repay'    ? 'Repay MUSDC' :
                                                   'Withdraw BDX'}
                   </button>
                 )}
