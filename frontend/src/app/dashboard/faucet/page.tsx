@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useBalance, usePublicClient } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { parseUnits } from 'viem';
+import { formatUnits, parseUnits, parseEther } from 'viem';
 import Link from 'next/link';
 import { Wallet } from 'lucide-react';
 import { CONTRACTS, CONTRACT_ADDRESSES, etherscanUrl } from '@/constants/contracts';
+import { WETH_ABI } from '@/constants/abis';
 import { shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
@@ -50,9 +51,9 @@ export default function FaucetPage() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { n: '1', title: 'Get ETH for gas', desc: 'Free from Google faucet. ~0.5 ETH is enough for many transactions.' },
-            { n: '2', title: 'Claim 1,000 MUSDC', desc: 'Free testnet MUSDC below. Use it to swap into BDX.' },
-            { n: '3', title: 'Swap MUSDC → BDX', desc: 'Go to Swap page. BDX is required for Liquidity and Lending.' },
+            { n: '1', title: 'Get ETH for gas', desc: 'Free from Google faucet. Switch MetaMask to Sepolia first. ~0.5 ETH is enough.' },
+            { n: '2', title: 'Claim MUSDC + wrap WETH', desc: 'Claim testnet MUSDC below. Wrap ETH to WETH if you want to use the BDX/WETH pool.' },
+            { n: '3', title: 'Swap MUSDC or WETH for BDX', desc: 'BDX is needed for Liquidity and Lending. Swap on the Swap page.' },
           ].map(s => (
             <div key={s.n} className="flex gap-3 rounded-xl bg-base-card px-4 py-3">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-base-bg">{s.n}</span>
@@ -68,9 +69,10 @@ export default function FaucetPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ETHCard />
         <MUSDCCard address={address} isConnected={isConnected} />
+        <WETHCard address={address} isConnected={isConnected} />
         <BDXCard />
       </div>
 
@@ -263,6 +265,169 @@ function MUSDCCard({
           className="w-full rounded-xl border border-base-border bg-base-surface py-2 text-xs font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors flex items-center justify-center gap-2">
           <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
           Add MUSDC to MetaMask
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── WETH Card ────────────────────────────────────────────────────────────────
+
+function WETHCard({
+  address,
+  isConnected,
+}: {
+  address: `0x${string}` | undefined;
+  isConnected: boolean;
+}) {
+  const [ethInput, setEthInput]   = useState('0.01');
+  const [txHash, setTxHash]       = useState<`0x${string}` | undefined>();
+  const [error, setError]         = useState<string | null>(null);
+
+  const { writeContractAsync, isPending } = useWriteContract();
+  const publicClient = usePublicClient();
+  const { data: ethBalance } = useBalance({ address, query: { enabled: !!address } });
+  const { isSuccess: confirmed } = useWaitForTransactionReceipt({ hash: txHash, query: { enabled: !!txHash } });
+
+  const ethNum = parseFloat(ethInput || '0');
+  const hasEnough = ethBalance ? parseEther(ethInput || '0') < ethBalance.value : false;
+  const canWrap = isConnected && ethNum > 0 && hasEnough && !isPending;
+
+  const handleWrap = useCallback(async () => {
+    if (!address || !canWrap) return;
+    setError(null);
+    try {
+      const hash = await writeContractAsync({
+        address: CONTRACT_ADDRESSES.weth,
+        abi: WETH_ABI,
+        functionName: 'deposit',
+        value: parseEther(ethInput),
+      });
+      setTxHash(hash);
+      // Wait for confirmation so balance updates
+      if (publicClient) {
+        await publicClient.waitForTransactionReceipt({ hash, confirmations: 1 });
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Transaction failed';
+      setError(msg.includes('User rejected') ? 'Transaction rejected.' : 'Wrap failed. Check ETH balance.');
+    }
+  }, [address, canWrap, ethInput, writeContractAsync, publicClient]);
+
+  const handleAddToMetaMask = useCallback(async () => {
+    if (!window.ethereum) return;
+    try {
+      await (window.ethereum as any).request({
+        method: 'wallet_watchAsset',
+        params: { type: 'ERC20', options: { address: CONTRACT_ADDRESSES.weth, symbol: 'WETH', decimals: 18 } },
+      });
+    } catch {}
+  }, []);
+
+  return (
+    <div className="rounded-2xl border border-base-border bg-base-card p-5 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#627EEA]/10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/eth-icon.svg" alt="WETH" className="h-7 w-7" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-ink">Wrapped ETH</p>
+          <p className="text-xs text-ink-faint">For BDX/WETH pool</p>
+        </div>
+        <span className="ml-auto rounded-lg bg-[#627EEA]/10 px-2 py-0.5 text-[10px] font-semibold text-[#627EEA]">
+          WETH
+        </span>
+      </div>
+
+      <p className="text-xs text-ink-secondary leading-relaxed mb-4">
+        The BDX/WETH pool uses WETH (ERC-20), not native ETH. Wrap your Sepolia ETH here before adding liquidity.
+      </p>
+
+      {/* ETH balance */}
+      {ethBalance && (
+        <div className="rounded-lg bg-base-surface px-3 py-2 flex items-center justify-between mb-3">
+          <span className="text-xs text-ink-faint">ETH balance</span>
+          <span className="text-xs font-semibold text-ink tabular-nums">
+            {parseFloat(formatUnits(ethBalance.value, 18)).toFixed(4)} ETH
+          </span>
+        </div>
+      )}
+
+      {/* Amount input */}
+      <div className="rounded-xl bg-base-surface p-3 flex items-center gap-2 mb-3">
+        <input
+          type="number"
+          value={ethInput}
+          onChange={e => setEthInput(e.target.value)}
+          min="0.001"
+          step="0.01"
+          placeholder="0.01"
+          className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-ink placeholder:text-ink-faint focus:outline-none tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+        />
+        <span className="text-xs font-semibold text-ink-secondary shrink-0">ETH</span>
+        <button
+          onClick={() => {
+            if (ethBalance) {
+              // Reserve 0.01 ETH for gas
+              const safe = parseFloat(formatUnits(ethBalance.value, 18)) - 0.01;
+              setEthInput(Math.max(0, safe).toFixed(4));
+            }
+          }}
+          className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors shrink-0">
+          MAX
+        </button>
+      </div>
+
+      {!hasEnough && ethNum > 0 && (
+        <p className="text-xs text-red mb-3">Insufficient ETH balance.</p>
+      )}
+
+      {/* Success */}
+      {confirmed && txHash && (
+        <div className="rounded-lg border border-green/20 bg-green/5 px-3 py-2 text-center space-y-1 mb-3">
+          <p className="text-xs font-semibold text-green">Wrapped to WETH!</p>
+          <a href={etherscanUrl(txHash, 'tx')} target="_blank" rel="noopener noreferrer"
+            className="text-[11px] text-ink-faint hover:text-ink-secondary transition-colors block">
+            {shortenHash(txHash)}
+          </a>
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red text-center mb-3">{error}</p>}
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      <div className="space-y-2">
+        {!isConnected ? (
+          <ConnectButton.Custom>
+            {({ openConnectModal }) => (
+              <button onClick={openConnectModal}
+                className="w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+                Connect Wallet
+              </button>
+            )}
+          </ConnectButton.Custom>
+        ) : (
+          <button
+            onClick={handleWrap}
+            disabled={!canWrap}
+            className={cn(
+              'w-full rounded-xl py-2.5 text-sm font-semibold transition-all',
+              canWrap
+                ? 'bg-brand text-base-bg hover:bg-brand-dark'
+                : 'bg-base-elevated text-ink-faint cursor-not-allowed',
+            )}
+          >
+            {isPending ? 'Wrapping...' : `Wrap ${ethNum > 0 ? ethInput : ''} ETH to WETH`}
+          </button>
+        )}
+        <button onClick={handleAddToMetaMask}
+          className="w-full rounded-xl border border-base-border bg-base-surface py-2 text-xs font-medium text-ink-secondary hover:text-ink hover:border-base-border-light transition-colors flex items-center justify-center gap-2">
+          <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Add WETH to MetaMask
         </button>
       </div>
     </div>

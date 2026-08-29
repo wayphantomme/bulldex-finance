@@ -397,8 +397,12 @@ export default function LiquidityPage() {
                     {selectedPool === 'bdx-weth' && (
                       <div className="rounded-xl border border-yellow/20 bg-yellow/5 px-3 py-2.5">
                         <p className="text-[11px] text-yellow leading-relaxed">
-                          This pool uses <strong>WETH</strong> (wrapped ETH), not native ETH.
-                          Wrap ETH first via the Swap page before adding liquidity here.
+                          This pool uses <strong>WETH</strong> (ERC-20), not native ETH.
+                          Wrap ETH first on the{' '}
+                          <a href="/dashboard/faucet" className="underline hover:text-yellow/80 transition-colors">
+                            Faucet page
+                          </a>
+                          {' '}before adding liquidity here.
                         </p>
                       </div>
                     )}
