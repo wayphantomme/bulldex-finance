@@ -74,6 +74,11 @@ export default function LiquidityPage() {
   // BDX/MUSDC pool stats (TVL display + ratio auto-fill)
   const musdcPool = usePoolStats();
 
+  // BDX/WETH pool stats (ratio auto-fill for BDX/WETH add liquidity)
+  const wethPool = usePoolStats(CONTRACT_ADDRESSES.poolBdxWeth);
+  // Determine token ordering in BDX/WETH pool
+  const isBdxToken0InWethPool = CONTRACT_ADDRESSES.token.toLowerCase() < CONTRACT_ADDRESSES.weth.toLowerCase();
+
   // BDX/WETH LP balance
   const { data: wethLPBalanceRaw } = useReadContract({
     address: CONTRACT_ADDRESSES.poolBdxWeth,
@@ -98,19 +103,28 @@ export default function LiquidityPage() {
   const t0Amount = useMemo(() => parseAmount(t0Input), [t0Input]);
   const t1Amount = useMemo(() => parseAmount(t1Input), [t1Input]);
 
-  // Auto-fill t1 from t0 for BDX/MUSDC using live pool ratio.
-  // For BDX/WETH we can't auto-fill without a WETH pool stats hook, so leave it free.
+  // Auto-fill t1 from t0 using live pool ratio for both pools.
   function handleT0Change(val: string) {
     setT0Input(val);
-    if (selectedPool !== 'bdx-musdc') return;
-    if (!musdcPool.hasLiquidity || !musdcPool.bdxReserve || !musdcPool.musdcReserve) return;
     const n = parseFloat(val);
-    if (!isNaN(n) && n > 0) {
+    if (isNaN(n) || n <= 0) { setT1Input(''); return; }
+
+    if (selectedPool === 'bdx-musdc') {
+      if (!musdcPool.hasLiquidity || !musdcPool.bdxReserve || !musdcPool.musdcReserve) return;
       const paired = (n * Number(formatUnits(musdcPool.musdcReserve, 18)))
                        / Number(formatUnits(musdcPool.bdxReserve, 18));
       setT1Input(paired.toFixed(6));
-    } else {
-      setT1Input('');
+      return;
+    }
+
+    if (selectedPool === 'bdx-weth') {
+      if (!wethPool.hasLiquidity || !wethPool.reserve0 || !wethPool.reserve1) return;
+      // bdxReserve and wethReserve depend on token ordering in the WETH pool
+      const bdxRes  = isBdxToken0InWethPool ? wethPool.reserve0 : wethPool.reserve1;
+      const wethRes = isBdxToken0InWethPool ? wethPool.reserve1 : wethPool.reserve0;
+      const paired = (n * Number(formatUnits(wethRes, 18)))
+                       / Number(formatUnits(bdxRes, 18));
+      setT1Input(paired.toFixed(6));
     }
   }
 
@@ -252,8 +266,8 @@ export default function LiquidityPage() {
 
         {(Object.entries(POOL_CONFIG) as [PoolKey, typeof POOL_CONFIG[PoolKey]][]).map(([key, cfg]) => {
           const isMUSCD    = key === 'bdx-musdc';
-          const reserve0Fmt = isMUSCD && musdcPool.bdxReserveFormatted   ? musdcPool.bdxReserveFormatted   : '--';
-          const reserve1Fmt = isMUSCD && musdcPool.musdcReserveFormatted ? musdcPool.musdcReserveFormatted : '--';
+          const reserve0Fmt = isMUSCD && musdcPool.bdxReserveFormatted   ? musdcPool.bdxReserveFormatted   : (!isMUSCD && wethPool.hasLiquidity && wethPool.reserve0) ? (isBdxToken0InWethPool ? wethPool.bdxReserveFormatted : wethPool.musdcReserveFormatted) : '--';
+          const reserve1Fmt = isMUSCD && musdcPool.musdcReserveFormatted ? musdcPool.musdcReserveFormatted : (!isMUSCD && wethPool.hasLiquidity && wethPool.reserve1) ? (isBdxToken0InWethPool ? wethPool.musdcReserveFormatted : wethPool.bdxReserveFormatted) : '--';
           const myLPBal    = isMUSCD ? lpBalance : wethLPBalance;
           const hasPosition = myLPBal && myLPBal > 0n;
 
@@ -393,16 +407,22 @@ export default function LiquidityPage() {
                       </div>
                     </div>
 
-                    {/* WETH notice for BDX/WETH pool */}
-                    {selectedPool === 'bdx-weth' && (
+                    {/* WETH note for BDX/WETH pool */}
+                    {selectedPool === 'bdx-weth' && !wethPool.hasLiquidity && (
                       <div className="rounded-xl border border-yellow/20 bg-yellow/5 px-3 py-2.5">
                         <p className="text-[11px] text-yellow leading-relaxed">
-                          This pool uses <strong>WETH</strong> (ERC-20), not native ETH.
-                          Wrap ETH first on the{' '}
+                          This pool uses <strong>WETH</strong> (ERC-20). If you need WETH, wrap ETH on the{' '}
                           <a href="/dashboard/faucet" className="underline hover:text-yellow/80 transition-colors">
                             Faucet page
-                          </a>
-                          {' '}before adding liquidity here.
+                          </a>.
+                        </p>
+                      </div>
+                    )}
+                    {selectedPool === 'bdx-weth' && wethPool.hasLiquidity && (
+                      <div className="rounded-xl border border-base-border bg-base-surface px-3 py-2">
+                        <p className="text-[11px] text-ink-faint">
+                          Uses WETH (ERC-20). Need WETH? Wrap ETH on the{' '}
+                          <a href="/dashboard/faucet" className="text-brand hover:opacity-80 transition-opacity">Faucet page</a>.
                         </p>
                       </div>
                     )}

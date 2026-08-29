@@ -33,19 +33,21 @@ export interface PoolStats {
 /**
  * Reads all pool stats in a single multicall.
  * Refreshes every 15s.
+ * Defaults to BDX/MUSDC pool. Pass a poolAddress to read any pool.
  */
-export function usePoolStats(): PoolStats {
-  const configured = isConfigured(CONTRACTS.pool.address);
+export function usePoolStats(poolAddress?: `0x${string}`): PoolStats {
+  const addr = poolAddress ?? CONTRACTS.pool.address;
+  const configured = isConfigured(addr);
 
   const { data, isLoading } = useReadContracts({
     contracts: [
-      { ...CONTRACTS.pool, functionName: 'reserve0' },
-      { ...CONTRACTS.pool, functionName: 'reserve1' },
-      { ...CONTRACTS.pool, functionName: 'token0' },
-      { ...CONTRACTS.pool, functionName: 'token1' },
-      { ...CONTRACTS.pool, functionName: 'getPrice0' },
-      { ...CONTRACTS.pool, functionName: 'getPrice1' },
-      { ...CONTRACTS.pool, functionName: 'totalSupply' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'reserve0' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'reserve1' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'token0' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'token1' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'getPrice0' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'getPrice1' },
+      { address: addr, abi: CONTRACTS.pool.abi, functionName: 'totalSupply' },
     ],
     query: {
       enabled: configured,

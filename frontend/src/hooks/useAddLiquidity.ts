@@ -116,7 +116,9 @@ export function useAddLiquidity(
     if (msg.includes('0xfb8f41b2') || msg.includes('ERC20InsufficientAllowance')) {
       display = 'Approval did not confirm in time. Please try again.';
     } else if (msg.includes('InsufficientOutputAmount') || msg.includes('0x42301c23')) {
-      display = 'Slippage exceeded. Try increasing slippage tolerance or adjust amounts.';
+      display = 'Token ratio does not match the current pool price. The amounts were adjusted automatically — try clicking Add Liquidity again.';
+    } else if (msg.includes('SlippageExceeded')) {
+      display = 'Price moved during transaction. Try increasing slippage tolerance.';
     } else if (msg.includes('InsufficientLiquidityMinted')) {
       display = 'Liquidity amount too small to mint LP tokens.';
     } else if (msg.includes('User rejected') || msg.includes('user rejected')) {
