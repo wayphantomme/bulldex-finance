@@ -247,6 +247,27 @@ export function useSubgraph(): SubgraphData {
           .sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
           .slice(0, 30);
 
+        // ── Address → symbol helper ────────────────────────────────────────────
+        function addrToSymbol(addr: string): string {
+          const a = addr.toLowerCase();
+          const bdx   = (process.env.NEXT_PUBLIC_TOKEN_ADDRESS  ?? '').toLowerCase();
+          const musdc = (process.env.NEXT_PUBLIC_MUSDC_ADDRESS  ?? '').toLowerCase();
+          const weth  = (process.env.NEXT_PUBLIC_WETH_ADDRESS   ?? '').toLowerCase();
+          if (a === bdx)   return 'BDX';
+          if (a === musdc) return 'MUSDC';
+          if (a === weth)  return 'WETH';
+          return addr.slice(0, 6) + '…';
+        }
+        function tokenOutSymbol(tokenInAddr: string, poolId: string | undefined): string {
+          const sym = addrToSymbol(tokenInAddr);
+          if (sym === 'BDX') {
+            // BDX going in → getting MUSDC or WETH out, depends on pool
+            const wethPool = (process.env.NEXT_PUBLIC_POOL_BDX_WETH ?? '').toLowerCase();
+            return poolId?.toLowerCase() === wethPool ? 'WETH' : 'MUSDC';
+          }
+          return 'BDX'; // MUSDC or WETH going in → BDX out
+        }
+
         // ── Unified activity feed ─────────────────────────────────────────────
         const activityEvents: ActivityEvent[] = [
           ...swaps.map((s): ActivityEvent => ({
@@ -254,7 +275,9 @@ export function useSubgraph(): SubgraphData {
             type:        'swap',
             user:        s.sender,
             amount:      s.amountIn,
-            token:       s.tokenIn,
+            amount2:     s.amountOut,
+            token:       addrToSymbol(s.tokenIn),
+            token2:      tokenOutSymbol(s.tokenIn, s.pool?.id),
             blockNumber: Number(s.blockNumber),
             timestamp:   s.timestamp,
             txHash:      s.txHash,

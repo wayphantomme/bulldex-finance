@@ -405,9 +405,12 @@ function MiniStat({ label, value, sub, small }: {
 }
 
 function ActivityRow({ event, fmtVol }: { event: ActivityEvent; fmtVol: (n: number) => string }) {
-  const badge = ACTIVITY_BADGE[event.type];
-  const amt   = parseFloat(event.amount);
+  const badge  = ACTIVITY_BADGE[event.type];
+  const amt    = parseFloat(event.amount);
+  const amt2   = event.amount2 ? parseFloat(event.amount2) : null;
   const amtStr = isNaN(amt) ? '—' : fmtVol(amt);
+  const amt2Str = amt2 !== null && !isNaN(amt2) && amt2 > 0 ? fmtVol(amt2) : null;
+  const isSwap = event.type === 'swap';
 
   return (
     <div className="grid grid-cols-12 gap-2 px-5 py-3 items-center hover:bg-base-elevated/40 transition-colors duration-150">
@@ -427,12 +430,22 @@ function ActivityRow({ event, fmtVol }: { event: ActivityEvent; fmtVol: (n: numb
       </div>
       <div className="col-span-3 text-right">
         <a href={etherscanUrl(event.txHash, 'tx')} target="_blank" rel="noopener noreferrer"
-          className="text-xs font-semibold text-ink tabular-nums hover:text-brand transition-colors">
-          {amtStr} {event.token}
+          className="hover:text-brand transition-colors">
+          {isSwap && amt2Str ? (
+            /* Swap: show "10 BDX → 500 MUSDC" */
+            <p className="text-xs font-semibold text-ink tabular-nums">
+              {amtStr} {event.token} → {amt2Str} {event.token2}
+            </p>
+          ) : (
+            <p className="text-xs font-semibold text-ink tabular-nums">
+              {amtStr} {event.token}
+            </p>
+          )}
+          {/* LP paired amount */}
+          {!isSwap && amt2Str && (
+            <p className="text-[10px] text-ink-faint">{amt2Str} {event.token2}</p>
+          )}
         </a>
-        {event.amount2 && parseFloat(event.amount2) > 0 && (
-          <p className="text-[10px] text-ink-faint">{fmtVol(parseFloat(event.amount2))} {event.token2}</p>
-        )}
       </div>
       <div className="col-span-2 text-right">
         <p className="text-[10px] text-ink-faint tabular-nums">{relTime(event.timestamp)}</p>
