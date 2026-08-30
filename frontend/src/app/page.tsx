@@ -118,7 +118,7 @@ export default function HomePage() {
           <div className="text-center mb-8">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-ink-faint mb-2">Protocol</p>
             <h2 className="text-2xl font-semibold text-ink tracking-tight">Everything in one protocol</h2>
-            <p className="mt-2 text-sm text-ink-secondary">Six core DeFi primitives, one token, zero fragmentation.</p>
+            <p className="mt-2 text-sm text-ink-secondary">Seven core DeFi primitives, one token, zero fragmentation.</p>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
@@ -193,7 +193,7 @@ export default function HomePage() {
                 <p className="text-[10px] text-ink-faint mt-0.5">Tests passing</p>
               </div>
               <div className="rounded-xl bg-base-surface p-3 text-center">
-                <p className="text-2xl font-semibold text-green">4</p>
+                <p className="text-2xl font-semibold text-green">9</p>
                 <p className="text-[10px] text-ink-faint mt-0.5">Contracts</p>
               </div>
               <div className="rounded-xl bg-base-surface p-3 text-center">
@@ -366,7 +366,7 @@ export default function HomePage() {
             <div>
               <p className="text-sm font-semibold text-ink">Open Source</p>
               <p className="text-xs text-ink-secondary mt-0.5">
-                111 tests passing · 4 verified contracts · Built in public on GitHub
+                111 tests passing · 9 deployed contracts · Built in public on GitHub
               </p>
             </div>
           </div>
@@ -384,7 +384,7 @@ export default function HomePage() {
           <div className="relative z-10">
             <p className="text-2xl font-semibold text-ink mb-2 tracking-tight">Ready to explore?</p>
             <p className="text-sm text-ink-secondary mb-7 max-w-md mx-auto">
-              Swap live on Sepolia. Liquidity, lending, staking, and farming ship next.
+              Swap, lend, stake, farm, and vest live on Sepolia. DAO governance deploying next.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link href="/dashboard/swap"
@@ -446,37 +446,49 @@ const FEATURES = [
   },
   {
     title: 'Lending',
-    desc: 'Deposit BDX as collateral, borrow MUSDC at ~5% APR. Health factor monitoring + liquidations.',
+    desc: 'Deposit BDX as collateral, borrow MUSDC at ~5% APR. LTV 75%, health factor monitoring, liquidations.',
     icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>,
     live: true, phase: 'Live', href: '/dashboard/lending',
   },
   {
     title: 'Staking',
-    desc: 'Stake BDX to earn protocol revenue. Lock for xBDX governance power and boosted yields.',
+    desc: 'Stake BDX to earn BDX rewards. Optional 30/90/180-day lock for 1.2x/1.5x/2x multipliers.',
     icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>,
-    live: false, phase: 'Phase 2', href: '/dashboard/staking',
+    live: true, phase: 'Live', href: '/dashboard/staking',
   },
   {
     title: 'Yield Farming',
-    desc: 'Stake LP tokens in MasterChef to earn BDX rewards on top of swap fees.',
+    desc: 'Stake LP tokens in MasterChef pools to earn BDX emissions on top of swap fees.',
     icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>,
-    live: false, phase: 'Phase 2', href: '/dashboard/farming',
+    live: true, phase: 'Live', href: '/dashboard/farming',
   },
   {
-    title: 'Governance',
-    desc: 'On-chain DAO voting with BDX. Propose and vote on protocol parameters, treasury, and upgrades.',
+    title: 'Vesting',
+    desc: 'Cliff + linear vesting schedules for team, ecosystem, and seed. Beneficiary-triggered release.',
+    icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    live: true, phase: 'Live', href: '/dashboard/vesting',
+  },
+  {
+    title: 'DAO Governance',
+    desc: 'On-chain voting via BDXGovernor + Timelock. Propose and vote on protocol upgrades, treasury, and parameters.',
     icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" /></svg>,
     live: false, phase: 'Phase 3', href: '/dashboard/governance',
+  },
+  {
+    title: 'Analytics',
+    desc: 'Protocol-wide stats, swap volume, pool TVL, leaderboard, and on-chain activity via The Graph.',
+    icon: <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>,
+    live: true, phase: 'Live', href: '/dashboard/analytics',
   },
 ];
 
 const TOKEN_STATS = [
-  { label: 'Max Total Supply',   value: '1B BDX',   sub: 'max cap' },
+  { label: 'Max Total Supply',   value: '1B BDX',   sub: 'hard cap' },
   { label: 'Circulating Supply', value: '100M BDX', sub: '10% of max' },
   { label: 'Seed Price',         value: '$0.05',     sub: 'per BDX' },
   { label: 'Fully Diluted Val.', value: '$50M',      sub: 'at seed price' },
   { label: 'Seed Round Target',  value: '$1M',       sub: '20M BDX / 2%' },
-  { label: 'Token Standard',     value: 'ERC-20',    sub: 'EIP-2612 permit' },
+  { label: 'Token Standard',     value: 'ERC-20',    sub: 'EIP-2612 + ERC20Votes' },
 ];
 
 const TOKEN_DIST = [
@@ -488,12 +500,12 @@ const TOKEN_DIST = [
 ];
 
 const PROTOCOL_STATS = [
-  { label: 'Contracts',     value: '4' },
-  { label: 'Tests passing', value: '111 / 111' },
-  { label: 'Swap fee',      value: '0.30%' },
-  { label: 'Fee to LPs',    value: '100%' },
-  { label: 'Pool liquidity', value: '10M BDX' },
-  { label: 'Audit status',  value: 'Pre-audit' },
+  { label: 'Contracts deployed', value: '9' },
+  { label: 'Tests passing',      value: '111 / 111' },
+  { label: 'Swap fee',           value: '0.30%' },
+  { label: 'Fee to LPs',         value: '100%' },
+  { label: 'Pool liquidity',     value: '10M BDX' },
+  { label: 'Audit status',       value: 'Pre-audit' },
 ];
 
 const VESTING = [
@@ -505,14 +517,14 @@ const VESTING = [
 ];
 
 const ROADMAP = [
-  { phase: 'Wk 1-2',   title: 'Token + AMM',        status: 'done' },
-  { phase: 'Wk 3-4',   title: 'Liquidity UI',        status: 'active' },
-  { phase: 'Wk 5-6',   title: 'Lending',             status: 'upcoming' },
-  { phase: 'Wk 7-8',   title: 'Staking + Farming',   status: 'upcoming' },
-  { phase: 'Wk 9-10',  title: 'Vesting',             status: 'upcoming' },
-  { phase: 'Wk 11-12', title: 'Flash + DAO',         status: 'upcoming' },
-  { phase: 'Wk 13-14', title: 'Gas Optimization',    status: 'upcoming' },
-  { phase: 'Wk 15-16', title: 'Security + Mainnet',  status: 'upcoming' },
+  { phase: 'Wk 1-2',   title: 'Token + AMM',        status: 'done'     },
+  { phase: 'Wk 3-4',   title: 'Liquidity UI',        status: 'done'     },
+  { phase: 'Wk 5-6',   title: 'Lending',             status: 'done'     },
+  { phase: 'Wk 7-8',   title: 'Staking + Farming',   status: 'done'     },
+  { phase: 'Wk 9-10',  title: 'Vesting',             status: 'done'     },
+  { phase: 'Wk 11-12', title: 'DAO Governance',       status: 'active'   },
+  { phase: 'Wk 13-14', title: 'Gas + Router',         status: 'upcoming' },
+  { phase: 'Wk 15-16', title: 'Security + Mainnet',   status: 'upcoming' },
 ];
 
 const WHY = [
@@ -527,7 +539,7 @@ const WHY = [
 ];
 
 const TRACTION = [
-  { value: '4',       label: 'Contracts' },
+  { value: '9',       label: 'Contracts' },
   { value: '111',     label: 'Tests passing' },
   { value: '2',       label: 'Active pools' },
   { value: '30M BDX', label: 'Pool liquidity' },
@@ -537,5 +549,5 @@ const STACK = [
   'Solidity 0.8.24', 'Foundry', 'OpenZeppelin v5',
   'Next.js 14', 'TypeScript', 'Tailwind CSS',
   'wagmi v2', 'viem', 'RainbowKit',
-  'Alchemy', 'Vercel', 'Sepolia',
+  'The Graph', 'Alchemy', 'Vercel', 'Sepolia',
 ];
