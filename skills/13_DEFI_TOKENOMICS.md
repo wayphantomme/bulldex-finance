@@ -290,7 +290,59 @@ Pool routing otomatis via `getPoolAddress(tokenA, tokenB)` di contracts.ts.
 
 ---
 
-## 12. Bagaimana Harga Bergerak di AMM
+## 13. Staking Inflation Model (Aug 2026)
+
+### Reward Source
+Staking rewards dari **protocol inflation** — owner mint BDX baru, approve ke staking contract, lalu call `notifyRewardAmount()`. Sama token untuk staking dan rewards (BDX → BDX).
+
+### Current Parameters (Testnet)
+```
+Reward per period:  10,000,000 BDX
+Period duration:    7 days
+rewardRate:         ~16.53 BDX/second
+Annual rate:        ~521,780,000 BDX/year
+```
+
+### Testnet Funding History
+| Action | Amount |
+|---|---|
+| DeployStaking (initial fund) | 10,000,000 BDX |
+| FundStaking #1 | 10,000,000 BDX |
+| FundStaking #2 | 10,000,000 BDX |
+| FundStaking #3 | 10,000,000 BDX |
+| **Total minted for staking** | **40,000,000 BDX** |
+
+### Waktu Mencapai Max Supply
+
+```
+Max supply:      1,000,000,000 BDX
+Minted to date:     40,000,000 BDX
+Remaining:         960,000,000 BDX
+
+Rate saat ini: 10M BDX × 52 minggu = 520M BDX/tahun
+960M / 520M = ~1.85 tahun ke max supply (jika rate dipertahankan)
+```
+
+### Apa yang Terjadi Setelah Max Supply Tercapai?
+
+Max supply bukan akhir dari protokol — ini transisi dari **inflasi → revenue sharing**:
+
+1. **Protocol fee sebagai reward** — fee swap 0.3% dan lending spread masuk treasury, dibagikan ke stakers. Model GMX, dYdX, Uniswap v3.
+2. **Burn mekanisme** — sebagian fee di-burn → supply berkurang → token deflasioner.
+3. **Governance vote** — komunitas vote apakah lanjut inflasi kecil (~0.1%/year) atau stop.
+
+Analoginya: perusahaan yang semua sahamnya sudah beredar. Tidak bubar — investor dapat **dividen dari profit operasional**, bukan dari dilusi saham baru.
+
+### Rekomendasi Rate untuk Mainnet
+
+| Skenario | Reward/periode | Durasi | Tahun ke max supply |
+|---|---|---|---|
+| Conservative | 1M BDX | 30 hari | ~83 tahun |
+| Moderate | 2M BDX | 14 hari | ~13 tahun |
+| Aggressive | 5M BDX | 7 hari | ~3.7 tahun |
+| **Testnet (sekarang)** | **10M BDX** | **7 hari** | **~1.85 tahun** |
+
+*Last updated: Aug 2026*
 
 ### Konsep Dasar: x * y = k
 

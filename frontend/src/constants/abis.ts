@@ -264,3 +264,214 @@ export const VESTING_ABI = [
     { name: 'unvestedReturned', type: 'uint256', indexed: false },
   ]},
 ] as const;
+
+// ─── MasterChef ───────────────────────────────────────────────────────────────
+export const MASTERCHEF_ABI = [
+  // ── Read ──────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'bdx',              inputs: [], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'bdxPerBlock',      inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'startBlock',       inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'totalAllocPoint',  inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'poolLength',       inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'rewardBalance',    inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'owner',            inputs: [], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'poolInfo', inputs: [{ name: 'pid', type: 'uint256' }], outputs: [
+    { name: 'lpToken',         type: 'address' },
+    { name: 'allocPoint',      type: 'uint256' },
+    { name: 'lastRewardBlock', type: 'uint256' },
+    { name: 'accBDXPerShare',  type: 'uint256' },
+  ], stateMutability: 'view' },
+  { type: 'function', name: 'userInfo', inputs: [{ name: 'pid', type: 'uint256' }, { name: 'user', type: 'address' }], outputs: [
+    { name: 'amount',      type: 'uint256' },
+    { name: 'rewardDebt',  type: 'uint256' },
+  ], stateMutability: 'view' },
+  { type: 'function', name: 'pendingBDX', inputs: [{ name: 'pid', type: 'uint256' }, { name: 'user', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // ── Write ─────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'deposit',          inputs: [{ name: 'pid', type: 'uint256' }, { name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'withdraw',         inputs: [{ name: 'pid', type: 'uint256' }, { name: 'amount', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'harvest',          inputs: [{ name: 'pid', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'harvestAll',       inputs: [], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'emergencyWithdraw', inputs: [{ name: 'pid', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'massUpdatePools',  inputs: [], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'updatePool',       inputs: [{ name: 'pid', type: 'uint256' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'add',  inputs: [{ name: 'allocPoint', type: 'uint256' }, { name: 'lpToken', type: 'address' }, { name: 'withUpdate', type: 'bool' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'set',  inputs: [{ name: 'pid', type: 'uint256' }, { name: 'allocPoint', type: 'uint256' }, { name: 'withUpdate', type: 'bool' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'setBdxPerBlock', inputs: [{ name: '_bdxPerBlock', type: 'uint256' }, { name: 'withUpdate', type: 'bool' }], outputs: [], stateMutability: 'nonpayable' },
+  // ── Custom Errors ─────────────────────────────────────────────────────────
+  { type: 'error', name: 'ZeroAmount',      inputs: [] },
+  { type: 'error', name: 'ZeroAddress',     inputs: [] },
+  { type: 'error', name: 'InvalidPool',     inputs: [{ name: 'pid', type: 'uint256' }] },
+  { type: 'error', name: 'DuplicatePool',   inputs: [{ name: 'lpToken', type: 'address' }] },
+  { type: 'error', name: 'FarmNotStarted',  inputs: [] },
+  // ── Events ────────────────────────────────────────────────────────────────
+  { type: 'event', name: 'Deposit',          inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'pid', type: 'uint256', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'Withdraw',         inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'pid', type: 'uint256', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'Harvest',          inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'pid', type: 'uint256', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'EmergencyWithdraw', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'pid', type: 'uint256', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'PoolAdded',        inputs: [{ name: 'pid', type: 'uint256', indexed: true }, { name: 'lpToken', type: 'address', indexed: true }, { name: 'allocPoint', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'PoolUpdated',      inputs: [{ name: 'pid', type: 'uint256', indexed: true }, { name: 'allocPoint', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'BdxPerBlockUpdated', inputs: [{ name: 'oldRate', type: 'uint256', indexed: false }, { name: 'newRate', type: 'uint256', indexed: false }] },
+] as const;
+
+// ─── BDX Token (ERC20Votes — v2, governance-enabled) ─────────────────────────
+// Extends TOKEN_ABI with ERC20Votes delegation functions.
+// Use this ABI after redeploying Token.sol with ERC20Votes support.
+export const TOKEN_VOTES_ABI = [
+  ...TOKEN_ABI,
+  // ERC20Votes — delegation
+  { type: 'function', name: 'delegate',       inputs: [{ name: 'delegatee', type: 'address' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'delegates',      inputs: [{ name: 'account',   type: 'address' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'getVotes',       inputs: [{ name: 'account',   type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getPastVotes',   inputs: [{ name: 'account', type: 'address' }, { name: 'timepoint', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getPastTotalSupply', inputs: [{ name: 'timepoint', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'delegateBySig',  inputs: [
+    { name: 'delegatee', type: 'address' },
+    { name: 'nonce',     type: 'uint256' },
+    { name: 'expiry',    type: 'uint256' },
+    { name: 'v',         type: 'uint8'   },
+    { name: 'r',         type: 'bytes32' },
+    { name: 's',         type: 'bytes32' },
+  ], outputs: [], stateMutability: 'nonpayable' },
+  // ERC20Votes — events
+  { type: 'event', name: 'DelegateChanged', inputs: [
+    { name: 'delegator',    type: 'address', indexed: true },
+    { name: 'fromDelegate', type: 'address', indexed: true },
+    { name: 'toDelegate',   type: 'address', indexed: true },
+  ]},
+  { type: 'event', name: 'DelegateVotesChanged', inputs: [
+    { name: 'delegate',    type: 'address', indexed: true },
+    { name: 'previousVotes', type: 'uint256', indexed: false },
+    { name: 'newVotes',      type: 'uint256', indexed: false },
+  ]},
+] as const;
+
+// ─── BDXGovernor ──────────────────────────────────────────────────────────────
+export const GOVERNOR_ABI = [
+  // ── Read ──────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'name',              inputs: [], outputs: [{ type: 'string'  }], stateMutability: 'view' },
+  { type: 'function', name: 'version',           inputs: [], outputs: [{ type: 'string'  }], stateMutability: 'view' },
+  { type: 'function', name: 'votingDelay',        inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'votingPeriod',       inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalThreshold',  inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'quorum',             inputs: [{ name: 'blockNumber', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  // Proposal lifecycle
+  { type: 'function', name: 'state',             inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'uint8' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalSnapshot',  inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalDeadline',  inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalProposer',  inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalEta',       inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'proposalNeedsQueuing', inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  // Votes
+  { type: 'function', name: 'proposalVotes', inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [
+    { name: 'againstVotes', type: 'uint256' },
+    { name: 'forVotes',     type: 'uint256' },
+    { name: 'abstainVotes', type: 'uint256' },
+  ], stateMutability: 'view' },
+  { type: 'function', name: 'hasVoted',     inputs: [{ name: 'proposalId', type: 'uint256' }, { name: 'account', type: 'address' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'getVotes',     inputs: [{ name: 'account', type: 'address' }, { name: 'timepoint', type: 'uint256' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'hashProposal', inputs: [
+    { name: 'targets',         type: 'address[]' },
+    { name: 'values',          type: 'uint256[]' },
+    { name: 'calldatas',       type: 'bytes[]'   },
+    { name: 'descriptionHash', type: 'bytes32'   },
+  ], outputs: [{ type: 'uint256' }], stateMutability: 'pure' },
+  // ── Write ─────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'propose', inputs: [
+    { name: 'targets',     type: 'address[]' },
+    { name: 'values',      type: 'uint256[]' },
+    { name: 'calldatas',   type: 'bytes[]'   },
+    { name: 'description', type: 'string'    },
+  ], outputs: [{ name: 'proposalId', type: 'uint256' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'castVote', inputs: [
+    { name: 'proposalId', type: 'uint256' },
+    { name: 'support',    type: 'uint8'   },
+  ], outputs: [{ name: 'weight', type: 'uint256' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'castVoteWithReason', inputs: [
+    { name: 'proposalId', type: 'uint256' },
+    { name: 'support',    type: 'uint8'   },
+    { name: 'reason',     type: 'string'  },
+  ], outputs: [{ name: 'weight', type: 'uint256' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'queue', inputs: [
+    { name: 'targets',         type: 'address[]' },
+    { name: 'values',          type: 'uint256[]' },
+    { name: 'calldatas',       type: 'bytes[]'   },
+    { name: 'descriptionHash', type: 'bytes32'   },
+  ], outputs: [{ name: 'proposalId', type: 'uint256' }], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'execute', inputs: [
+    { name: 'targets',         type: 'address[]' },
+    { name: 'values',          type: 'uint256[]' },
+    { name: 'calldatas',       type: 'bytes[]'   },
+    { name: 'descriptionHash', type: 'bytes32'   },
+  ], outputs: [{ name: 'proposalId', type: 'uint256' }], stateMutability: 'payable' },
+  { type: 'function', name: 'cancel', inputs: [
+    { name: 'targets',         type: 'address[]' },
+    { name: 'values',          type: 'uint256[]' },
+    { name: 'calldatas',       type: 'bytes[]'   },
+    { name: 'descriptionHash', type: 'bytes32'   },
+  ], outputs: [{ name: 'proposalId', type: 'uint256' }], stateMutability: 'nonpayable' },
+  // ── Events ────────────────────────────────────────────────────────────────
+  { type: 'event', name: 'ProposalCreated', inputs: [
+    { name: 'proposalId',  type: 'uint256',   indexed: false },
+    { name: 'proposer',    type: 'address',   indexed: false },
+    { name: 'targets',     type: 'address[]', indexed: false },
+    { name: 'values',      type: 'uint256[]', indexed: false },
+    { name: 'signatures',  type: 'string[]',  indexed: false },
+    { name: 'calldatas',   type: 'bytes[]',   indexed: false },
+    { name: 'voteStart',   type: 'uint256',   indexed: false },
+    { name: 'voteEnd',     type: 'uint256',   indexed: false },
+    { name: 'description', type: 'string',    indexed: false },
+  ]},
+  { type: 'event', name: 'ProposalQueued',   inputs: [{ name: 'proposalId', type: 'uint256', indexed: false }, { name: 'etaSeconds', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'ProposalExecuted', inputs: [{ name: 'proposalId', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'ProposalCanceled', inputs: [{ name: 'proposalId', type: 'uint256', indexed: false }] },
+  { type: 'event', name: 'VoteCast', inputs: [
+    { name: 'voter',      type: 'address', indexed: true  },
+    { name: 'proposalId', type: 'uint256', indexed: false },
+    { name: 'support',    type: 'uint8',   indexed: false },
+    { name: 'weight',     type: 'uint256', indexed: false },
+    { name: 'reason',     type: 'string',  indexed: false },
+  ]},
+  { type: 'event', name: 'VoteCastWithParams', inputs: [
+    { name: 'voter',      type: 'address', indexed: true  },
+    { name: 'proposalId', type: 'uint256', indexed: false },
+    { name: 'support',    type: 'uint8',   indexed: false },
+    { name: 'weight',     type: 'uint256', indexed: false },
+    { name: 'reason',     type: 'string',  indexed: false },
+    { name: 'params',     type: 'bytes',   indexed: false },
+  ]},
+] as const;
+
+// ─── TimelockController ───────────────────────────────────────────────────────
+export const TIMELOCK_ABI = [
+  // ── Read ──────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'getMinDelay',        inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'isOperation',        inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'isOperationPending', inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'isOperationReady',   inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'isOperationDone',    inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'getTimestamp',       inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getOperationState',  inputs: [{ name: 'id', type: 'bytes32' }], outputs: [{ type: 'uint8' }], stateMutability: 'view' },
+  { type: 'function', name: 'hasRole',  inputs: [{ name: 'role', type: 'bytes32' }, { name: 'account', type: 'address' }], outputs: [{ type: 'bool' }], stateMutability: 'view' },
+  { type: 'function', name: 'PROPOSER_ROLE',  inputs: [], outputs: [{ type: 'bytes32' }], stateMutability: 'view' },
+  { type: 'function', name: 'EXECUTOR_ROLE',  inputs: [], outputs: [{ type: 'bytes32' }], stateMutability: 'view' },
+  { type: 'function', name: 'CANCELLER_ROLE', inputs: [], outputs: [{ type: 'bytes32' }], stateMutability: 'view' },
+  // ── Events ────────────────────────────────────────────────────────────────
+  { type: 'event', name: 'CallScheduled', inputs: [
+    { name: 'id',           type: 'bytes32', indexed: true  },
+    { name: 'index',        type: 'uint256', indexed: true  },
+    { name: 'target',       type: 'address', indexed: false },
+    { name: 'value',        type: 'uint256', indexed: false },
+    { name: 'data',         type: 'bytes',   indexed: false },
+    { name: 'predecessor',  type: 'bytes32', indexed: false },
+    { name: 'delay',        type: 'uint256', indexed: false },
+  ]},
+  { type: 'event', name: 'CallExecuted', inputs: [
+    { name: 'id',     type: 'bytes32', indexed: true  },
+    { name: 'index',  type: 'uint256', indexed: true  },
+    { name: 'target', type: 'address', indexed: false },
+    { name: 'value',  type: 'uint256', indexed: false },
+    { name: 'data',   type: 'bytes',   indexed: false },
+  ]},
+  { type: 'event', name: 'Cancelled', inputs: [{ name: 'id', type: 'bytes32', indexed: true }] },
+  { type: 'event', name: 'MinDelayChange', inputs: [{ name: 'oldDuration', type: 'uint256', indexed: false }, { name: 'newDuration', type: 'uint256', indexed: false }] },
+] as const;

@@ -94,6 +94,17 @@ deploy-weth-pool:
 		--timeout 90 \
 		-vvv
 
+deploy-masterchef:
+	@echo "Deploying MasterChef farming contract to Sepolia..."
+	forge script script/DeployMasterChef.s.sol:DeployMasterChef \
+		--rpc-url $(SEPOLIA_RPC_URL) \
+		--private-key $(PRIVATE_KEY) \
+		--broadcast \
+		--skip-simulation \
+		--gas-price 5000000000 \
+		--timeout 90 \
+		-vvv
+
 deploy-dry:
 	@echo "Dry run (no broadcast)..."
 	forge script script/Deploy.s.sol:DeployScript \

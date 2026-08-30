@@ -55,7 +55,7 @@ function relTime(ts: string): string {
 
 export default function AnalyticsPage() {
   const subgraph  = useSubgraph();
-  const rpc       = useSwapEvents();
+  const rpc       = useSwapEvents(subgraph.isSynced && !subgraph.error);
   const { bdxPriceRaw } = usePriceTicker();
   const lendStats = useLendingStats();
 

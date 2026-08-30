@@ -45,7 +45,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/dashboard/lending',  label: 'Lend',  icon: <Landmark    className={ICON} strokeWidth={1.5} /> },
       { href: '/dashboard/staking',  label: 'Stake', icon: <ShieldCheck className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/farming',  label: 'Farm',  icon: <Sprout      className={ICON} strokeWidth={1.5} />, soon: true },
+      { href: '/dashboard/farming',  label: 'Farm',  icon: <Sprout      className={ICON} strokeWidth={1.5} /> },
     ],
   },
   {

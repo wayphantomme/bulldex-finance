@@ -66,10 +66,10 @@ export interface AnalyticsData {
 // This hook is kept for local dev / paid RPC tiers only.
 const BLOCKS_TO_READ = BigInt(10); // Alchemy free tier max per call
 
-export function useSwapEvents(): AnalyticsData {
+export function useSwapEvents(skip = false): AnalyticsData {
   const [data, setData] = useState<AnalyticsData>({
     swaps: [], liquidityEvents: [], totalSwaps: 0, uniqueWallets: 0,
-    totalVolumeIn: 0n, leaderboard: [], isLoading: true, error: null,
+    totalVolumeIn: 0n, leaderboard: [], isLoading: false, error: null,
     lastUpdated: null, fromBlock: 0n, toBlock: 0n,
   });
 
@@ -78,6 +78,10 @@ export function useSwapEvents(): AnalyticsData {
                          isConfigured(CONTRACT_ADDRESSES.poolBdxWeth);
 
   useEffect(() => {
+    if (skip) {
+      setData(d => ({ ...d, isLoading: false }));
+      return;
+    }
     if (!poolConfigured || !rpcUrl) {
       setData(d => ({ ...d, isLoading: false, error: 'Pool or RPC not configured' }));
       return;
@@ -248,7 +252,7 @@ export function useSwapEvents(): AnalyticsData {
     fetchEvents();
     return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poolConfigured]);
+  }, [poolConfigured, skip]);
 
   return data;
 }

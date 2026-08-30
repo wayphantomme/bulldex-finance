@@ -26,6 +26,12 @@
     @apply outline-none ring-2 ring-green/50 ring-offset-1 ring-offset-base-bg;
   }
 
+  /* Inputs handle their own focus styles — no browser default ring */
+  input:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-0;
+  }
+
   /* ── Scrollbar ─────────────────────────────────────────────────────────── */
   ::-webkit-scrollbar       { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }

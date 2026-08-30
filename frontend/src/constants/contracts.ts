@@ -1,18 +1,22 @@
 import { sepolia } from 'wagmi/chains';
-import { TOKEN_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI, LENDING_ABI, STAKING_ABI, VESTING_ABI } from './abis';
+import { TOKEN_ABI, TOKEN_VOTES_ABI, MOCK_TOKEN_ABI, POOL_ABI, FACTORY_ABI, WETH_ABI, LENDING_ABI, STAKING_ABI, VESTING_ABI, MASTERCHEF_ABI, GOVERNOR_ABI, TIMELOCK_ABI } from './abis';
 
 // ─── Contract Addresses ───────────────────────────────────────────────────────
 
 export const CONTRACT_ADDRESSES = {
-  token:       (process.env.NEXT_PUBLIC_TOKEN_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  musdc:       (process.env.NEXT_PUBLIC_MUSDC_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  weth:        (process.env.NEXT_PUBLIC_WETH_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  factory:     (process.env.NEXT_PUBLIC_FACTORY_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  pool:        (process.env.NEXT_PUBLIC_POOL_BDX_MUSDC   ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  poolBdxWeth: (process.env.NEXT_PUBLIC_POOL_BDX_WETH    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  lending:     (process.env.NEXT_PUBLIC_LENDING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  staking:     (process.env.NEXT_PUBLIC_STAKING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
-  vesting:     (process.env.NEXT_PUBLIC_VESTING_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  token:       (process.env.NEXT_PUBLIC_TOKEN_ADDRESS       ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  musdc:       (process.env.NEXT_PUBLIC_MUSDC_ADDRESS       ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  weth:        (process.env.NEXT_PUBLIC_WETH_ADDRESS        ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  factory:     (process.env.NEXT_PUBLIC_FACTORY_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  pool:        (process.env.NEXT_PUBLIC_POOL_BDX_MUSDC      ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  poolBdxWeth: (process.env.NEXT_PUBLIC_POOL_BDX_WETH       ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  lending:     (process.env.NEXT_PUBLIC_LENDING_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  staking:     (process.env.NEXT_PUBLIC_STAKING_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  vesting:     (process.env.NEXT_PUBLIC_VESTING_ADDRESS     ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  masterChef:  (process.env.NEXT_PUBLIC_MASTERCHEF_ADDRESS  ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  // Phase 3 — DAO Governance
+  governor:    (process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
+  timelock:    (process.env.NEXT_PUBLIC_TIMELOCK_ADDRESS    ?? '0x0000000000000000000000000000000000000000') as `0x${string}`,
 } as const;
 
 // ─── Token Metadata ───────────────────────────────────────────────────────────
@@ -79,7 +83,7 @@ export function getPoolAddress(
 export const CONTRACTS = {
   token: {
     address: CONTRACT_ADDRESSES.token,
-    abi: TOKEN_ABI,
+    abi: TOKEN_VOTES_ABI,
     chainId: sepolia.id,
   },
   musdc: {
@@ -120,6 +124,22 @@ export const CONTRACTS = {
   vesting: {
     address: CONTRACT_ADDRESSES.vesting,
     abi: VESTING_ABI,
+    chainId: sepolia.id,
+  },
+  masterChef: {
+    address: CONTRACT_ADDRESSES.masterChef,
+    abi: MASTERCHEF_ABI,
+    chainId: sepolia.id,
+  },
+  // Phase 3 — DAO Governance
+  governor: {
+    address: CONTRACT_ADDRESSES.governor,
+    abi: GOVERNOR_ABI,
+    chainId: sepolia.id,
+  },
+  timelock: {
+    address: CONTRACT_ADDRESSES.timelock,
+    abi: TIMELOCK_ABI,
     chainId: sepolia.id,
   },
 } as const;

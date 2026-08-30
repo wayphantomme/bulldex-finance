@@ -4,12 +4,15 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title  BDX Token — Bulldex Finance governance and utility token
 /// @author Phantom (@wayphantomme)
-/// @notice ERC20 token with mint/burn, EIP-2612 permit, and owner-controlled minting
-contract Token is ERC20, ERC20Burnable, ERC20Permit, Ownable {
+/// @notice ERC20 token with mint/burn, EIP-2612 permit, ERC20Votes delegation,
+///         and owner-controlled minting. ERC20Votes enables on-chain DAO governance
+///         via BDXGovernor — holders must self-delegate to activate voting power.
+contract Token is ERC20, ERC20Burnable, ERC20Permit, ERC20Votes, Ownable {
     // ─── Constants ────────────────────────────────────────────────────────────
 
     /// @notice Maximum total supply cap: 1 billion BDX
@@ -64,7 +67,26 @@ contract Token is ERC20, ERC20Burnable, ERC20Permit, Ownable {
         return MAX_SUPPLY - totalSupply();
     }
 
-    // ─── Internal ─────────────────────────────────────────────────────────────
+    // ─── Internal overrides ───────────────────────────────────────────────────
+
+    /// @dev Required override — ERC20 and ERC20Votes both define _update.
+    ///      Calling super routes through both, keeping checkpoint accounting correct.
+    function _update(address from, address to, uint256 value)
+        internal
+        override(ERC20, ERC20Votes)
+    {
+        super._update(from, to, value);
+    }
+
+    /// @dev Required override — ERC20Permit and ERC20Votes both define nonces.
+    function nonces(address owner)
+        public
+        view
+        override(ERC20Permit, Nonces)
+        returns (uint256)
+    {
+        return super.nonces(owner);
+    }
 
     /// @dev Validates supply cap before minting
     function _mintChecked(address to, uint256 amount) internal {
