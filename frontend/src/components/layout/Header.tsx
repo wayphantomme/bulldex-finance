@@ -14,6 +14,7 @@ const NAV = [
   { label: 'Lend',      href: '/dashboard/lending' },
   { label: 'Stake',     href: '/dashboard/staking' },
   { label: 'Farm',      href: '/dashboard/farming' },
+  { label: 'Vesting',   href: '/dashboard/vesting' },
   { label: 'Analytics', href: '/dashboard/analytics' },
   { label: 'Faucet',    href: '/dashboard/faucet' },
   { label: 'Docs',      href: '/docs' },

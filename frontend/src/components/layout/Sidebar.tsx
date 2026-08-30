@@ -13,6 +13,7 @@ import {
   Droplet,
   BookOpen,
   BarChart2,
+  Timer,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -43,13 +44,14 @@ const NAV_GROUPS: NavGroup[] = [
     label: 'Earn',
     items: [
       { href: '/dashboard/lending',  label: 'Lend',  icon: <Landmark    className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/staking',  label: 'Stake', icon: <ShieldCheck className={ICON} strokeWidth={1.5} />, soon: true },
+      { href: '/dashboard/staking',  label: 'Stake', icon: <ShieldCheck className={ICON} strokeWidth={1.5} /> },
       { href: '/dashboard/farming',  label: 'Farm',  icon: <Sprout      className={ICON} strokeWidth={1.5} />, soon: true },
     ],
   },
   {
     label: 'Manage',
     items: [
+      { href: '/dashboard/vesting',    label: 'Vesting',    icon: <Timer     className={ICON} strokeWidth={1.5} /> },
       { href: '/dashboard/governance', label: 'Governance', icon: <Vote      className={ICON} strokeWidth={1.5} />, soon: true },
       { href: '/dashboard/analytics',  label: 'Analytics',  icon: <BarChart2 className={ICON} strokeWidth={1.5} /> },
       { href: '/dashboard/faucet',     label: 'Faucet',     icon: <Droplet   className={ICON} strokeWidth={1.5} /> },
