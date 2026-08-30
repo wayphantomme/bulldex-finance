@@ -7,7 +7,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { CheckCircle2, XCircle, Loader2, X, Sprout, Zap, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 import { useReadContract } from 'wagmi';
 import { useFarming, fmtLp, fmtBdx, fmtApr, type FarmPool } from '@/hooks/useFarming';
-import { useFarmingActions } from '@/hooks/useFarmingActions';
+import { useFarmingActions, type UseFarmingActionsResult } from '@/hooks/useFarmingActions';
 import { etherscanUrl, isConfigured, CONTRACT_ADDRESSES } from '@/constants/contracts';
 import { shortenHash } from '@/utils/format';
 import { cn } from '@/utils/cn';
@@ -417,8 +417,7 @@ interface PoolCardProps {
   pool:        FarmPool;
   isConnected: boolean;
   notDeployed: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  actions:     any;
+  actions:     UseFarmingActionsResult;
   onDeposit:   () => void;
   onWithdraw:  () => void;
   onHarvest:   () => void;

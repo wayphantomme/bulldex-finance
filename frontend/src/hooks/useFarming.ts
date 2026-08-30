@@ -138,8 +138,7 @@ export function useFarming(
   }).filter(Boolean);
 
   const { data: lpBalData, isLoading: lpLoading } = useReadContracts({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    contracts: lpBalanceContracts as any[],
+    contracts: lpBalanceContracts.filter((c): c is NonNullable<typeof c> => c !== null),
     query: {
       enabled: configured && !!poolData,
       staleTime: 20_000,

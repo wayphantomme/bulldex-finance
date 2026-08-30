@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/governance/TimelockController.sol";
 import "../src/Token.sol";
 import "../src/BDXGovernor.sol";
 
-/// @title  DeployGovernance — Deploy BDX DAO governance contracts
+/// @title  DeployGovernance - Deploy BDX DAO governance contracts
 /// @notice Deploys:
-///           1. Token.sol (new, with ERC20Votes) — replaces old BDX token
-///           2. TimelockController               — 2-day execution delay
-///           3. BDXGovernor                      — on-chain DAO
+///           1. Token.sol (new, with ERC20Votes) - replaces old BDX token
+///           2. TimelockController               - 2-day execution delay
+///           3. BDXGovernor                      - on-chain DAO
 ///
 ///         Prerequisites:
 ///           - PRIVATE_KEY in contracts/.env
@@ -32,7 +32,7 @@ contract DeployGovernance is Script {
 
     // ─── Parameters ───────────────────────────────────────────────────────────
 
-    /// @dev Initial BDX supply: 100M — rest minted via governance/vesting
+    /// @dev Initial BDX supply: 100M - rest minted via governance/vesting
     uint256 constant INITIAL_SUPPLY = 100_000_000 ether;
 
     /// @dev Timelock minimum delay: 2 days
@@ -56,19 +56,19 @@ contract DeployGovernance is Script {
         console.log("[1/3] BDX Token (ERC20Votes) deployed:", address(token));
 
         // 2. Deploy TimelockController
-        //    - proposers: set to address(0) initially, updated after governor deploy
+        //    - proposers: placeholder address(0), updated after governor deploy
         //    - executors: address(0) = anyone can execute after delay
         //    - admin:     deployer (revoked after governor is set as proposer)
         address[] memory proposers = new address[](1);
         address[] memory executors = new address[](1);
-        proposers[0] = address(0); // placeholder — updated below
+        proposers[0] = address(0); // placeholder, updated below
         executors[0] = address(0); // anyone can execute
 
         TimelockController timelock = new TimelockController(
             TIMELOCK_DELAY,
             proposers,
             executors,
-            deployer  // admin — can grant/revoke roles
+            deployer  // admin, revoked below
         );
         console.log("[2/3] TimelockController deployed:", address(timelock));
 
@@ -91,7 +91,7 @@ contract DeployGovernance is Script {
         timelock.grantRole(CANCELLER_ROLE, address(governor));
         timelock.revokeRole(TIMELOCK_ADMIN, deployer);
 
-        console.log("[4/4] Timelock roles configured — deployer admin revoked");
+        console.log("[4/4] Timelock roles configured, deployer admin revoked");
 
         vm.stopBroadcast();
 
@@ -116,10 +116,10 @@ contract DeployGovernance is Script {
         console.log("NEXT_PUBLIC_GOVERNOR_ADDRESS=", governor);
         console.log("NEXT_PUBLIC_TIMELOCK_ADDRESS=", timelock);
         console.log("");
-        console.log("IMPORTANT — Next steps:");
+        console.log("IMPORTANT - Next steps:");
         console.log("1. Self-delegate BDX to activate voting power:");
         console.log("   bdxToken.delegate(yourAddress)");
-        console.log("2. Update NEXT_PUBLIC_TOKEN_ADDRESS — all existing pools");
+        console.log("2. Update NEXT_PUBLIC_TOKEN_ADDRESS - all existing pools");
         console.log("   use the old token; redeploy pools if needed for testnet.");
         console.log("3. Transfer protocol ownership to Timelock for full DAO control:");
         console.log("   lending.transferOwnership(timelockAddress)");
