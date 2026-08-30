@@ -195,3 +195,72 @@ export const STAKING_ABI = [
   { type: 'event', name: 'EmergencyWithdraw', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'amount', type: 'uint256', indexed: false }] },
   { type: 'event', name: 'RewardsDurationUpdated', inputs: [{ name: 'newDuration', type: 'uint256', indexed: false }] },
 ] as const;
+
+// ─── TokenVesting ─────────────────────────────────────────────────────────────
+export const VESTING_ABI = [
+  // ── Read ──────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'token',          inputs: [], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'totalLocked',    inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'beneficiaryCount', inputs: [], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'beneficiaries',  inputs: [{ name: 'index', type: 'uint256' }], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  { type: 'function', name: 'schedules', inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [
+    { name: 'beneficiary',  type: 'address' },
+    { name: 'start',        type: 'uint256' },
+    { name: 'cliff',        type: 'uint256' },
+    { name: 'duration',     type: 'uint256' },
+    { name: 'totalAmount',  type: 'uint256' },
+    { name: 'released',     type: 'uint256' },
+    { name: 'revoked',      type: 'bool' },
+    { name: 'exists',       type: 'bool' },
+  ], stateMutability: 'view' },
+  { type: 'function', name: 'computeReleasableAmount', inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getVestedAmount',         inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [{ type: 'uint256' }], stateMutability: 'view' },
+  { type: 'function', name: 'getScheduleInfo', inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [
+    { name: 'totalAmount',  type: 'uint256' },
+    { name: 'released',     type: 'uint256' },
+    { name: 'releasable',   type: 'uint256' },
+    { name: 'vested',       type: 'uint256' },
+    { name: 'unvested',     type: 'uint256' },
+    { name: 'cliffEnd',     type: 'uint256' },
+    { name: 'vestEnd',      type: 'uint256' },
+    { name: 'isRevoked',    type: 'bool' },
+    { name: 'cliffPassed',  type: 'bool' },
+    { name: 'progressBps',  type: 'uint256' },
+  ], stateMutability: 'view' },
+  { type: 'function', name: 'owner', inputs: [], outputs: [{ type: 'address' }], stateMutability: 'view' },
+  // ── Write ─────────────────────────────────────────────────────────────────
+  { type: 'function', name: 'createVestingSchedule', inputs: [
+    { name: 'beneficiary', type: 'address' },
+    { name: 'start',       type: 'uint256' },
+    { name: 'cliff',       type: 'uint256' },
+    { name: 'duration',    type: 'uint256' },
+    { name: 'totalAmount', type: 'uint256' },
+  ], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'release', inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [], stateMutability: 'nonpayable' },
+  { type: 'function', name: 'revoke',  inputs: [{ name: 'beneficiary', type: 'address' }], outputs: [], stateMutability: 'nonpayable' },
+  // ── Custom Errors ─────────────────────────────────────────────────────────
+  { type: 'error', name: 'ScheduleAlreadyExists', inputs: [{ name: 'beneficiary', type: 'address' }] },
+  { type: 'error', name: 'ScheduleNotFound',       inputs: [{ name: 'beneficiary', type: 'address' }] },
+  { type: 'error', name: 'ScheduleAlreadyRevoked', inputs: [{ name: 'beneficiary', type: 'address' }] },
+  { type: 'error', name: 'NothingToRelease',       inputs: [] },
+  { type: 'error', name: 'ZeroAmount',             inputs: [] },
+  { type: 'error', name: 'ZeroAddress',            inputs: [] },
+  { type: 'error', name: 'InvalidDuration',        inputs: [] },
+  { type: 'error', name: 'InsufficientContractBalance', inputs: [{ name: 'required', type: 'uint256' }, { name: 'available', type: 'uint256' }] },
+  // ── Events ────────────────────────────────────────────────────────────────
+  { type: 'event', name: 'ScheduleCreated', inputs: [
+    { name: 'beneficiary', type: 'address', indexed: true },
+    { name: 'totalAmount', type: 'uint256', indexed: false },
+    { name: 'start',       type: 'uint256', indexed: false },
+    { name: 'cliff',       type: 'uint256', indexed: false },
+    { name: 'duration',    type: 'uint256', indexed: false },
+  ]},
+  { type: 'event', name: 'TokensReleased', inputs: [
+    { name: 'beneficiary', type: 'address', indexed: true },
+    { name: 'amount',      type: 'uint256', indexed: false },
+  ]},
+  { type: 'event', name: 'ScheduleRevoked', inputs: [
+    { name: 'beneficiary',      type: 'address', indexed: true },
+    { name: 'unvestedReturned', type: 'uint256', indexed: false },
+  ]},
+] as const;
