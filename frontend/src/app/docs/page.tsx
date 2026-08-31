@@ -222,41 +222,43 @@ export default function DocsPage() {
   const currentLabel = allItems.find((i) => i.id === activeSection)?.label ?? '';
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#0A0A0B] text-[#F2F2F3]">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#0d0d0d] text-[#f5f5f5]">
 
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-[#26272C] px-4">
+      <header className="flex h-14 md:h-12 shrink-0 items-center justify-between border-b border-[#262626] px-4 md:px-6">
         <div className="flex items-center gap-3">
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
-            className="lg:hidden text-[#55565D] hover:text-[#F2F2F3] transition-colors"
+            className="lg:hidden text-[#525252] hover:text-[#f5f5f5] transition-colors"
+            aria-label="Toggle navigation"
           >
-            {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
           {/* Back to app */}
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 text-sm font-semibold text-[#F2F2F3] hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 text-[13px] sm:text-sm font-semibold text-[#f5f5f5] hover:opacity-80 transition-opacity"
           >
-            <LayoutDashboard className="h-4 w-4 text-[#C6F135]" />
-            Bulldex Finance
+            <LayoutDashboard className="h-4 w-4 text-[#10b981]" />
+            <span className="hidden sm:inline">Bulldex Finance</span>
+            <span className="sm:hidden">Bulldex</span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Search */}
           <div className="relative hidden sm:block">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#55565D]" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#525252]" />
             <input
               type="text"
-              placeholder="Search documentation..."
+              placeholder="Search docs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 w-56 rounded-lg border border-[#26272C] bg-[#17181C] pl-8 pr-10 text-xs text-[#F2F2F3] placeholder:text-[#55565D] focus:outline-none focus:border-[#333339]"
+              className="h-8 w-44 md:w-56 rounded-md border border-[#262626] bg-[#111111] pl-8 pr-10 text-xs text-[#f5f5f5] placeholder:text-[#525252] focus:outline-none focus:border-[#2e2e2e]"
             />
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-[#26272C] bg-[#1E1F24] px-1 py-0.5 font-mono text-[10px] text-[#55565D]">
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-[#262626] bg-[#161616] px-1 py-0.5 font-mono text-[10px] text-[#525252]">
               ⌘K
             </kbd>
           </div>
@@ -266,7 +268,7 @@ export default function DocsPage() {
             href="https://github.com/wayphantomme/bulldex-finance"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center h-8 w-8 rounded-lg border border-[#26272C] bg-[#17181C] text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+            className="flex items-center justify-center h-8 w-8 rounded-md border border-[#262626] bg-[#111111] text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
             aria-label="GitHub"
           >
             <GithubIcon className="h-4 w-4" />
@@ -278,40 +280,40 @@ export default function DocsPage() {
 
         {/* ── Left sidebar ──────────────────────────────────────────────── */}
         <aside className={cn(
-          'shrink-0 border-r border-[#26272C] bg-[#0A0A0B] overflow-y-auto',
-          'fixed inset-y-12 left-0 z-20 w-56 transition-transform duration-200 lg:static lg:translate-x-0',
+          'shrink-0 border-r border-[#262626] bg-[#0d0d0d] overflow-y-auto',
+          'fixed inset-y-14 md:inset-y-12 left-0 z-20 w-64 sm:w-56 transition-transform duration-200 lg:static lg:translate-x-0',
           mobileNavOpen ? 'translate-x-0' : '-translate-x-full',
         )}>
-          <nav className="py-5 px-3 space-y-5">
+          <nav className="py-4 sm:py-5 px-3 space-y-4 sm:space-y-5">
             {filteredNav.map((group) => (
               <div key={group.label}>
                 <button
                   onClick={() => setExpandedGroups((p) => ({ ...p, [group.label]: !p[group.label] }))}
                   className="flex w-full items-center justify-between px-2.5 mb-1"
                 >
-                  <span className="text-[11px] font-medium uppercase tracking-widest text-[#55565D] flex items-center gap-1.5">
-                    {group.label.includes('Live') && <span className="h-1.5 w-1.5 rounded-full bg-green-400 shrink-0" />}
-                    {group.label.includes('Building') && <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 shrink-0" />}
-                    {group.label.includes('Planned') && <span className="h-1.5 w-1.5 rounded-full bg-[#55565D] shrink-0" />}
+                  <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-widest text-[#525252] flex items-center gap-1.5">
+                    {group.label.includes('Live') && <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] shrink-0" />}
+                    {group.label.includes('Building') && <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b] shrink-0" />}
+                    {group.label.includes('Planned') && <span className="h-1.5 w-1.5 rounded-full bg-[#525252] shrink-0" />}
                     {group.label}
                   </span>
                   <ChevronDown className={cn(
-                    'h-3 w-3 text-[#55565D] transition-transform duration-150',
+                    'h-3 w-3 text-[#525252] transition-transform duration-150',
                     !expandedGroups[group.label] && '-rotate-90',
                   )} />
                 </button>
 
                 {expandedGroups[group.label] && (
-                    <ul className="space-y-0.5">
+                  <ul className="space-y-0.5">
                     {group.items.map((item) => (
                       <li key={item.id}>
                         <button
                           onClick={() => navigate(item.id)}
                           className={cn(
-                            'w-full py-1 text-left text-[13px] transition-colors pl-3 border-l-2',
+                            'w-full py-1.5 sm:py-1 text-left text-[13px] transition-colors pl-3 border-l-2',
                             activeSection === item.id
-                              ? 'border-[#C6F135] text-[#F2F2F3] font-medium'
-                              : 'border-transparent text-[#9A9DA6] hover:text-[#F2F2F3] hover:border-[#333339]',
+                              ? 'border-[#10b981] text-[#f5f5f5] font-medium'
+                              : 'border-transparent text-[#a3a3a3] hover:text-[#f5f5f5] hover:border-[#2e2e2e]',
                           )}
                         >
                           {item.label}
@@ -335,18 +337,18 @@ export default function DocsPage() {
 
         {/* ── Main content ────────────────────────────────────────────── */}
         <main ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-2xl px-8 py-10 xl:max-w-3xl">
+          <div className="mx-auto max-w-2xl px-4 sm:px-6 md:px-8 py-8 sm:py-10 xl:max-w-3xl">
 
             {/* Breadcrumb */}
-            <p className="mb-2 text-xs text-[#55565D]">{NAV.find((g) => g.items.some((i) => i.id === activeSection))?.label}</p>
-            <h1 className="text-3xl font-bold text-[#F2F2F3] mb-6">{currentLabel || 'Introduction'}</h1>
+            <p className="mb-2 text-xs text-[#525252]">{NAV.find((g) => g.items.some((i) => i.id === activeSection))?.label}</p>
+            <h1 className="text-[28px] sm:text-3xl font-bold text-[#f5f5f5] mb-5 sm:mb-6">{currentLabel || 'Introduction'}</h1>
 
             <ContentArea section={activeSection} />
 
             {/* Prev / Next nav */}
             <PrevNext current={activeSection} items={allItems} onNavigate={navigate} />
 
-            <p className="mt-8 text-[11px] text-[#55565D]">
+            <p className="mt-8 text-[11px] text-[#525252]">
               Last updated: Aug 2026
             </p>
           </div>
@@ -354,9 +356,9 @@ export default function DocsPage() {
 
         {/* ── Right TOC ────────────────────────────────────────────────── */}
         {currentToc.length > 0 && (
-          <aside className="hidden xl:block w-48 shrink-0 border-l border-[#26272C] overflow-y-auto">
+          <aside className="hidden xl:block w-48 shrink-0 border-l border-[#262626] overflow-y-auto">
             <div className="sticky top-0 px-4 py-6">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-[#55565D]">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-[#525252]">
                 On This Page
               </p>
               <ul className="space-y-1.5">
@@ -364,19 +366,19 @@ export default function DocsPage() {
                   <li key={t.id}>
                     <a
                       href={`#${t.id}`}
-                      className="block text-xs text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+                      className="block text-xs text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
                     >
                       {t.label}
                     </a>
                   </li>
                 ))}
               </ul>
-              <div className="mt-6 space-y-2 border-t border-[#26272C] pt-4">
+              <div className="mt-6 space-y-2 border-t border-[#262626] pt-4">
                 <a
                   href="https://github.com/wayphantomme/bulldex-finance/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
                 >
                   <ExternalLink className="h-3 w-3" />
                   Report an issue
@@ -385,7 +387,7 @@ export default function DocsPage() {
                   href="https://github.com/wayphantomme/bulldex-finance"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
                 >
                   <GithubIcon className="h-3 w-3" />
                   View on GitHub
@@ -414,22 +416,22 @@ function PrevNext({
   if (!prev && !next) return null;
 
   return (
-    <div className="mt-12 flex items-center justify-between border-t border-[#26272C] pt-6">
+    <div className="mt-12 flex items-center justify-between border-t border-[#262626] pt-6">
       {prev ? (
         <button
           onClick={() => onNavigate(prev.id)}
-          className="flex flex-col items-start text-xs text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+          className="flex flex-col items-start text-xs text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
         >
-          <span className="text-[10px] text-[#55565D]">Previous</span>
+          <span className="text-[10px] text-[#525252]">Previous</span>
           <span className="mt-0.5 font-medium">{prev.label}</span>
         </button>
       ) : <div />}
       {next && (
         <button
           onClick={() => onNavigate(next.id)}
-          className="flex flex-col items-end text-xs text-[#9A9DA6] hover:text-[#F2F2F3] transition-colors"
+          className="flex flex-col items-end text-xs text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors"
         >
-          <span className="text-[10px] text-[#55565D]">Next</span>
+          <span className="text-[10px] text-[#525252]">Next</span>
           <span className="mt-0.5 font-medium">{next.label}</span>
         </button>
       )}
@@ -474,37 +476,37 @@ function ContentArea({ section }: { section: string }) {
 // ─── Sub-components ────────────────────────────────────────────────────────
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-[#9A9DA6] leading-relaxed mb-4">{children}</p>;
+  return <p className="text-sm text-[#a3a3a3] leading-relaxed mb-4">{children}</p>;
 }
 function H2({ id, children }: { id?: string; children: React.ReactNode }) {
-  return <h2 id={id} className="text-xl font-semibold text-[#F2F2F3] mt-8 mb-3 scroll-mt-6">{children}</h2>;
+  return <h2 id={id} className="text-xl font-semibold text-[#f5f5f5] mt-8 mb-3 scroll-mt-6">{children}</h2>;
 }
 function H3({ id, children }: { id?: string; children: React.ReactNode }) {
-  return <h3 id={id} className="text-base font-semibold text-[#F2F2F3] mt-6 mb-2 scroll-mt-6">{children}</h3>;
+  return <h3 id={id} className="text-base font-semibold text-[#f5f5f5] mt-6 mb-2 scroll-mt-6">{children}</h3>;
 }
 function Code({ children }: { children: string }) {
   return (
-    <pre className="overflow-x-auto rounded-xl border border-[#26272C] bg-[#111114] p-4 font-mono text-xs leading-relaxed text-[#9A9DA6] mb-4">
+    <pre className="overflow-x-auto rounded-lg border border-[#262626] bg-[#111111] p-4 font-mono text-xs leading-relaxed text-[#a3a3a3] mb-4">
       <code>{children}</code>
     </pre>
   );
 }
 function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-[#26272C] mb-4">
+    <div className="overflow-hidden rounded-lg border border-[#262626] mb-4">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-[#26272C] bg-[#111114]">
+          <tr className="border-b border-[#262626] bg-[#111111]">
             {headers.map((h) => (
-              <th key={h} className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-[#55565D]">{h}</th>
+              <th key={h} className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider text-[#525252]">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-[#26272C] last:border-0 hover:bg-[#111114] transition-colors">
+            <tr key={i} className="border-b border-[#262626] last:border-0 hover:bg-[#111111] transition-colors">
               {row.map((cell, j) => (
-                <td key={j} className={cn('px-4 py-2.5 text-xs', j === 0 ? 'font-medium text-[#F2F2F3]' : 'text-[#9A9DA6]')}>{cell}</td>
+                <td key={j} className={cn('px-4 py-2.5 text-xs', j === 0 ? 'font-medium text-[#f5f5f5]' : 'text-[#a3a3a3]')}>{cell}</td>
               ))}
             </tr>
           ))}
@@ -517,11 +519,11 @@ function FnList({ items }: { items: { sig: string; mod: string; desc: string }[]
   return (
     <div className="space-y-2 mb-4">
       {items.map((item, i) => (
-        <div key={i} className="rounded-xl border border-[#26272C] bg-[#17181C] px-4 py-3">
-          <code className="text-xs text-[#C6F135]">{item.sig}</code>
+        <div key={i} className="rounded-lg border border-[#262626] bg-[#111111] px-4 py-3">
+          <code className="text-xs text-[#10b981]">{item.sig}</code>
           <div className="mt-1 flex items-center gap-2">
-            <span className="rounded bg-[#1E1F24] px-1.5 py-0.5 text-[10px] font-mono text-[#55565D]">{item.mod}</span>
-            <span className="text-xs text-[#9A9DA6]">{item.desc}</span>
+            <span className="rounded bg-[#161616] px-1.5 py-0.5 text-[10px] font-mono text-[#525252]">{item.mod}</span>
+            <span className="text-xs text-[#a3a3a3]">{item.desc}</span>
           </div>
         </div>
       ))}
@@ -530,14 +532,14 @@ function FnList({ items }: { items: { sig: string; mod: string; desc: string }[]
 }
 function Problem({ problem, solution }: { problem: string; solution: string }) {
   return (
-    <div className="rounded-xl border border-[#26272C] bg-[#17181C] p-4 mb-3 space-y-2">
+    <div className="rounded-lg border border-[#262626] bg-[#111111] p-4 mb-3 space-y-2">
       <div className="flex gap-2">
-        <span className="shrink-0 text-xs font-semibold text-[#F87171]">Problem</span>
-        <p className="text-xs text-[#F2F2F3]">{problem}</p>
+        <span className="shrink-0 text-xs font-semibold text-[#ef4444]">Problem</span>
+        <p className="text-xs text-[#f5f5f5]">{problem}</p>
       </div>
       <div className="flex gap-2">
-        <span className="shrink-0 text-xs font-semibold text-[#4ADE80]">Solution</span>
-        <p className="text-xs text-[#9A9DA6]">{solution}</p>
+        <span className="shrink-0 text-xs font-semibold text-[#22c55e]">Solution</span>
+        <p className="text-xs text-[#a3a3a3]">{solution}</p>
       </div>
     </div>
   );
@@ -545,8 +547,8 @@ function Problem({ problem, solution }: { problem: string; solution: string }) {
 function Callout({ type, children }: { type: 'warning' | 'info'; children: React.ReactNode }) {
   return (
     <div className={cn(
-      'flex gap-2 rounded-xl border px-4 py-3 text-sm mb-4',
-      type === 'warning' ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-400' : 'border-[#C6F135]/20 bg-[#C6F135]/5 text-[#C6F135]',
+      'flex gap-2 rounded-lg border px-4 py-3 text-sm mb-4',
+      type === 'warning' ? 'border-[#f59e0b]/20 bg-[#f59e0b]/5 text-[#f59e0b]' : 'border-[#10b981]/20 bg-[#10b981]/5 text-[#10b981]',
     )}>
       <span>{type === 'warning' ? '⚠' : 'ℹ'}</span>
       <span>{children}</span>
@@ -556,7 +558,7 @@ function Callout({ type, children }: { type: 'warning' | 'info'; children: React
 function Pill({ href, label }: { href: string; label: string }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-lg border border-[#26272C] bg-[#17181C] px-3 py-1.5 text-xs text-[#9A9DA6] transition-colors hover:border-[#333339] hover:text-[#F2F2F3] mr-2 mb-2">
+      className="inline-flex items-center gap-1.5 rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-xs text-[#a3a3a3] transition-colors hover:border-[#2e2e2e] hover:text-[#f5f5f5] mr-2 mb-2">
       <ExternalLink className="h-3 w-3" />
       {label}
     </a>
@@ -566,8 +568,8 @@ function Built({ items }: { items: string[] }) {
   return (
     <ul className="space-y-1.5 mb-4">
       {items.map((item, i) => (
-        <li key={i} className="flex gap-2 text-xs text-[#9A9DA6]">
-          <span className="text-[#4ADE80] shrink-0">+</span>{item}
+        <li key={i} className="flex gap-2 text-xs text-[#a3a3a3]">
+          <span className="text-[#22c55e] shrink-0">+</span>{item}
         </li>
       ))}
     </ul>

@@ -45,11 +45,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             theme="dark"
             toastOptions={{
               style: {
-                background: '#1C1A28',
-                border: '1px solid #2A2640',
-                color: '#E8E6F0',
-                borderRadius: '12px',
+                background: '#1a1a1a',
+                border: '1px solid #262626',
+                color: '#f5f5f5',
+                borderRadius: '8px',
                 fontSize: '13px',
+                fontFamily: 'Inter, sans-serif',
               },
             }}
           />

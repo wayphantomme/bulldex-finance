@@ -1,171 +1,474 @@
 'use client';
 
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import { Wallet } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import {
+  Search, Settings, Wallet, ChevronDown, ArrowRight,
+  BarChart2, Layers, TrendingUp, Repeat2, Droplets,
+  Landmark, ShieldCheck, Sprout, Timer, X,
+} from 'lucide-react';
+import { CommandPalette } from '@/components/ui/CommandPalette';
 
-const NAV = [
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface NavItem {
+  label: string;
+  href: string;
+  liveDot?: 'green' | 'yellow' | 'blue' | 'orange';
+}
+
+interface MegaItem {
+  label: string;
+  desc: string;
+  href: string;
+  icon: React.ReactNode;
+  arrow?: boolean;
+}
+
+// ─── Nav config ───────────────────────────────────────────────────────────────
+
+const PRIMARY_NAV: NavItem[] = [
+  { label: 'Overview',  href: '/dashboard' },
   { label: 'Swap',      href: '/dashboard/swap' },
   { label: 'Liquidity', href: '/dashboard/liquidity' },
   { label: 'Lend',      href: '/dashboard/lending' },
   { label: 'Stake',     href: '/dashboard/staking' },
   { label: 'Farm',      href: '/dashboard/farming' },
-  { label: 'Vesting',   href: '/dashboard/vesting' },
-  { label: 'Analytics', href: '/dashboard/analytics' },
-  { label: 'Faucet',    href: '/dashboard/faucet' },
-  { label: 'Docs',      href: '/docs' },
 ];
 
-// ─── Wallet connector icons ───────────────────────────────────────────────────
+const SECONDARY_NAV: NavItem[] = [
+  { label: 'Analytics',  href: '/dashboard/analytics', liveDot: 'green' },
+  { label: 'Vesting',    href: '/dashboard/vesting',   liveDot: 'yellow' },
+  { label: 'Governance', href: '/dashboard/governance' },
+];
+
+const PRODUCTS_MEGA: MegaItem[] = [
+  { label: 'Explorer',  desc: 'Browse and compare',      href: '/dashboard',           icon: <BarChart2 className="h-4 w-4" />, arrow: true },
+  { label: 'Analytics', desc: 'Protocol metrics & charts', href: '/dashboard/analytics', icon: <TrendingUp className="h-4 w-4" /> },
+  { label: 'Swap',      desc: 'Trade tokens on-chain',   href: '/dashboard/swap',       icon: <Repeat2   className="h-4 w-4" /> },
+  { label: 'Liquidity', desc: 'Provide & earn fees',     href: '/dashboard/liquidity',  icon: <Droplets  className="h-4 w-4" /> },
+  { label: 'Lending',   desc: 'Borrow against collateral', href: '/dashboard/lending',  icon: <Landmark  className="h-4 w-4" /> },
+  { label: 'Staking',   desc: 'Stake BDX, earn rewards', href: '/dashboard/staking',   icon: <ShieldCheck className="h-4 w-4" /> },
+  { label: 'Farming',   desc: 'Yield on LP tokens',      href: '/dashboard/farming',    icon: <Sprout    className="h-4 w-4" /> },
+  { label: 'Vesting',   desc: 'Token release schedules', href: '/dashboard/vesting',    icon: <Timer     className="h-4 w-4" /> },
+];
+
+// ─── Live dot ─────────────────────────────────────────────────────────────────
+
+const DOT_COLORS: Record<string, string> = {
+  green:  'bg-[#10b981]',
+  yellow: 'bg-[#f59e0b]',
+  blue:   'bg-[#3b82f6]',
+  orange: 'bg-[#f97316]',
+};
+
+function LiveDot({ color }: { color: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-block w-1.5 h-1.5 rounded-full ml-1 mb-0.5 shrink-0',
+        DOT_COLORS[color] ?? 'bg-[#10b981]',
+        'animate-live-pulse',
+      )}
+      aria-hidden="true"
+    />
+  );
+}
+
+// ─── Search bar ───────────────────────────────────────────────────────────────
+
+function SearchBar({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button
+      onClick={onOpen}
+      className="flex items-center gap-2 h-8 w-[200px] rounded-md border border-[#262626] bg-[#111111] px-3 text-[12px] text-[#525252] transition-colors hover:border-[#2e2e2e] hover:text-[#a3a3a3]"
+      aria-label="Search — press ⌘K"
+    >
+      <Search className="h-3.5 w-3.5 shrink-0" />
+      <span className="flex-1 text-left">Search...</span>
+      <span className="hidden sm:flex items-center gap-0.5 rounded bg-[#1e1e1e] px-1.5 py-0.5 text-[10px] text-[#525252] font-mono">
+        ⌘K
+      </span>
+    </button>
+  );
+}
+
+// ─── Products mega dropdown ───────────────────────────────────────────────────
+
+function ProductsDropdown({ open }: { open: boolean }) {
+  if (!open) return null;
+  return (
+    <div className="absolute top-full left-0 mt-1 w-[560px] rounded-lg border border-[#262626] bg-[#111111] shadow-xl z-50 p-2">
+      <div className="grid grid-cols-2 gap-1">
+        {PRODUCTS_MEGA.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className="group flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-[#161616]"
+          >
+            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[#262626] bg-[#161616] text-[#a3a3a3] group-hover:border-[#2e2e2e] group-hover:text-[#f5f5f5] transition-colors">
+              {item.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1">
+                <span className="text-[13px] font-medium text-[#f5f5f5]">{item.label}</span>
+                {item.arrow && <ArrowRight className="h-3 w-3 text-[#525252] group-hover:text-[#a3a3a3] transition-colors" />}
+              </div>
+              <span className="text-[11px] text-[#525252]">{item.desc}</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Wallet connector icon ────────────────────────────────────────────────────
 
 function WalletIcon({ connectorName }: { connectorName?: string }) {
   const name = connectorName?.toLowerCase() ?? '';
-
   if (name.includes('metamask')) {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 40 40" fill="none">
-        <path d="M36.3 3L22.1 13.6l2.6-6.1L36.3 3z" fill="#E2761B" stroke="#E2761B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M3.7 3l14.1 10.7-2.5-6.1L3.7 3z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M31.1 27.6l-3.8 5.8 8.1 2.2 2.3-7.9-6.6-.1zM2.4 27.7l2.3 7.9 8.1-2.2-3.8-5.8-6.6.1z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12.3 18.6L10 22.3l7.9.4-.3-8.5-5.3 4.4zM27.7 18.6l-5.4-4.5-.2 8.6 7.9-.4-2.3-3.7z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12.8 33.4l4.8-2.3-4.1-3.2-.7 5.5zM22.4 31.1l4.8 2.3-.7-5.5-4.1 3.2z" fill="#E4761B" stroke="#E4761B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M27.2 33.4l-4.8-2.3.4 3.3-.1 2.9 4.5-5.9zM12.8 33.4l4.5 5.9-.1-2.9.4-3.3-4.8 2.3z" fill="#D7C1B3" stroke="#D7C1B3" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17.3 24.9l-4-1.2 2.8-1.3 1.2 2.5zM22.7 24.9l1.2-2.5 2.8 1.3-4 1.2z" fill="#233447" stroke="#233447" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12.8 33.4l.7-5.8-4.5.1 3.8 5.7zM26.5 27.6l.7 5.8 3.8-5.7-4.5-.1zM30.0 22.3l-7.9.4.7 4.2 1.2-2.5 2.8 1.3 3.2-3.4zM17.3 24.9l2.8-1.3 1.2 2.5.7-4.2-7.9-.4 3.2 3.4z" fill="#CD6116" stroke="#CD6116" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M10 22.3l3.3 6.5-.1-3.2L10 22.3zM26.8 25.6l-.1 3.2 3.3-6.5-3.2 3.3zM17.9 22.7l-.7 4.2.9 4.6.2-6.1-.4-2.7zM22.1 22.7l-.4 2.7.2 6.1.9-4.6-.7-4.2z" fill="#E4751F" stroke="#E4751F" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M22.7 24.9l-.9 4.6.6.4 4.1-3.2.1-3.2-4 1.4zM17.3 24.9l-4 1.2.1 3.2 4.1 3.2.6-.4-.8-4.6-.0-.6z" fill="#F6851B" stroke="#F6851B" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M22.7 39.3l.1-2.9-.3-.3h-5l-.3.3.1 2.9-4.5-5.9 1.6 1.3 3.2 2.2h3.9l3.2-2.2 1.6-1.3-3.6 5.9z" fill="#C0AD9E" stroke="#C0AD9E" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M22.4 31.1l-.6-.4h-3.6l-.6.4-.4 3.3.3-.3h5l.3.3-.4-3.3z" fill="#161616" stroke="#161616" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M37 14.1l1.2-5.8-1.9-5.3-14.9 11 5.4 4.5 7.7 2.2 1.7-2-0.7-.5 1.1-1-0.9-.7 1.1-.8-.8-1.3zM1.8 8.3L3 14.1l-.9 1.3 1.1.8-.8.7 1.1 1-.7.5 1.7 2 7.7-2.2 5.4-4.5L3.7 3 1.8 8.3z" fill="#763D16" stroke="#763D16" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M35.5 20.5l-7.7-2.2 2.3 3.7-3.3 6.5 4.4-.1h6.6l-2.3-7.9zM12.3 18.3L4.6 20.5l-2.2 7.9h6.6l4.4.1-3.3-6.5 1.9-3.7zM22.0 22.7l.5-8.6-2.5-6.8h-4l-2.5 6.8.5 8.6.2 2.7v6.1h3.6l.1-6.1.1-2.7z" fill="#F6851B" stroke="#F6851B" strokeLinecap="round" strokeLinejoin="round"/>
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 35 33" fill="none">
+        <path d="M32.96 1L19.38 10.9l2.44-5.73L32.96 1z" fill="#E2761B" stroke="#E2761B" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2.04 1l13.46 9.99-2.32-5.82L2.04 1zM27.32 23.94l-3.53 5.4 7.55 2.08 2.18-7.36-6.2-.12zM1.06 24.06l2.16 7.36 7.55-2.08-3.52-5.4-6.19.12z" fill="#E4761B" stroke="#E4761B" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10.24 14.39l-2.1 3.17 7.5.34-.25-8.07-5.15 4.56zM24.76 14.39l-5.2-4.63-.17 8.14 7.5-.34-2.13-3.17zM10.77 29.34l4.5-2.19-3.88-3.03-.62 5.22zM19.73 27.15l4.51 2.19-.63-5.22-3.88 3.03z" fill="#E4761B" stroke="#E4761B" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M24.24 29.34l-4.51-2.19.36 2.95-.04 1.23 4.19-2zM10.77 29.34l4.18 1.99-.03-1.23.34-2.95-4.49 2.19z" fill="#D7C1B3" stroke="#D7C1B3" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M15 22.03l-3.72-1.1 2.63-1.2L15 22.03zM20 22.03l1.09-2.33 2.65 1.2L20 22.03z" fill="#233447" stroke="#233447" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10.77 29.34l.65-5.4-4.17.12 3.52 5.28zM23.59 23.94l.65 5.4 3.53-5.28-4.18-.12zM26.89 17.56l-7.5.34.7 3.87 1.09-2.33 2.65 1.2 3.06-3.08zM11.28 20.93l2.63-1.2 1.08 2.33.7-3.87-7.5-.34 3.09 3.08z" fill="#CD6116" stroke="#CD6116" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.14 17.56l3.18 6.2-.11-3.12-3.07-3.08zM23.77 20.93l-.13 3.08 3.18-6.2-3.05 3.12zM15.69 17.9l-.7 3.87.87 4.5.2-5.93-.37-2.44zM19.39 17.9l-.36 2.43.16 5.94.89-4.5-.69-3.87z" fill="#E4751F" stroke="#E4751F" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M20.09 22.03l-.89 4.5.64.45 3.88-3.03.13-3.08-3.76 1.16zM11.28 20.93l.11 3.08 3.88 3.03.64-.45-.87-4.5-3.76-1.16z" fill="#F6851B" stroke="#F6851B" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M20.15 31.33l.04-1.23-.33-.29h-4.72l-.3.29.03 1.23-4.18-1.99 1.46 1.2 2.96 2.05h4.8l2.97-2.05 1.46-1.2-4.19 1.99z" fill="#C0AD9E" stroke="#C0AD9E" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M19.73 27.15l-.64-.45h-3.18l-.64.45-.34 2.95.3-.29h4.72l.33.29-.55-2.95z" fill="#161616" stroke="#161616" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M33.52 11.51l1.14-5.47L32.96 1 19.73 10.4l4.96 4.2 7.01 2.04 1.55-1.8-.67-.49 1.07-1-.82-.63 1.07-.82-.7-.54zM1 6.04l1.15 5.47-.72.54 1.08.82-.82.63 1.07 1-.67.49 1.54 1.8 7.01-2.04 4.96-4.2L2.04 1 1 6.04z" fill="#763D16" stroke="#763D16" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M32.03 16.64l-7.01-2.04 2.13 3.17-3.18 6.2 4.18-.05h6.24l-2.36-7.28zM10.24 14.39l-7.01 2.04-2.32 7.28h6.19l4.18.05-3.18-6.2 2.14-3.17zM19.39 17.9l.45-7.76 2.03-5.48h-8.74l2 5.48.47 7.76.16 2.45.01 5.92h3.18l.02-5.92.42-2.45z" fill="#F6851B" stroke="#F6851B" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     );
   }
-
-  if (name.includes('rainbow')) {
-    return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="url(#rbow)"/>
-        <defs>
-          <radialGradient id="rbow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FF6B6B"/>
-            <stop offset="33%" stopColor="#FFD93D"/>
-            <stop offset="66%" stopColor="#6BCB77"/>
-            <stop offset="100%" stopColor="#4D96FF"/>
-          </radialGradient>
-        </defs>
-      </svg>
-    );
-  }
-
   if (name.includes('coinbase')) {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="#0052FF"/>
-        <path d="M20 8C13.4 8 8 13.4 8 20s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8zm0 18.5c-3.6 0-6.5-2.9-6.5-6.5s2.9-6.5 6.5-6.5 6.5 2.9 6.5 6.5-2.9 6.5-6.5 6.5z" fill="white"/>
-        <path d="M17.5 17.5h5v5h-5z" fill="white"/>
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="16" fill="#0052FF"/>
+        <path d="M16 6C10.477 6 6 10.477 6 16s4.477 10 10 10 10-4.477 10-10S21.523 6 16 6zm0 15.5c-3.038 0-5.5-2.462-5.5-5.5s2.462-5.5 5.5-5.5 5.5 2.462 5.5 5.5-2.462 5.5-5.5 5.5z" fill="white"/>
+        <path d="M14 13.5h4v5h-4z" fill="white"/>
       </svg>
     );
   }
-
-  if (name.includes('walletconnect') || name.includes('wallet connect')) {
+  if (name.includes('wallet')) {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="20" fill="#3B99FC"/>
-        <path d="M12.5 16.2c4.1-4.1 10.9-4.1 15 0l.5.5c.2.2.2.5 0 .7l-1.8 1.8c-.1.1-.3.1-.4 0l-.7-.7c-2.9-2.9-7.5-2.9-10.4 0l-.7.7c-.1.1-.3.1-.4 0l-1.8-1.8c-.2-.2-.2-.5 0-.7l.7-.5zM30 19.6l1.6 1.6c.2.2.2.5 0 .7l-7.2 7.2c-.2.2-.5.2-.7 0l-5.1-5.1c-.1-.1-.2-.1-.2 0l-5.1 5.1c-.2.2-.5.2-.7 0L5.4 21.9c-.2-.2-.2-.5 0-.7l1.6-1.6c.2-.2.5-.2.7 0l5.1 5.1c.1.1.2.1.2 0l5.1-5.1c.2-.2.5-.2.7 0l5.1 5.1c.1.1.2.1.2 0l5.1-5.1c.2-.2.6-.2.8 0z" fill="white"/>
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
       </svg>
     );
   }
+  return <Wallet className="h-4 w-4 shrink-0" strokeWidth={2} />;
+}
 
-  // Fallback
-  return <Wallet className="h-4 w-4 shrink-0" strokeWidth={1.5} />;
+// ─── Mobile menu ─────────────────────────────────────────────────────────────
+
+function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
+  if (!open) return null;
+
+  const allNav = [...PRIMARY_NAV, ...SECONDARY_NAV];
+
+  return (
+    <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      {/* Panel */}
+      <div className="absolute top-0 right-0 h-full w-80 sm:w-72 bg-[#111111] border-l border-[#262626] flex flex-col shadow-2xl">
+        <div className="flex items-center justify-between px-4 h-12 border-b border-[#262626]">
+          <span className="text-[13px] font-medium text-[#f5f5f5]">Menu</span>
+          <button onClick={onClose} aria-label="Close menu" className="p-1.5 text-[#525252] hover:text-[#f5f5f5] rounded-md hover:bg-[#1e1e1e] transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <nav className="flex-1 overflow-y-auto py-3 px-3" aria-label="Mobile navigation">
+          {allNav.map((item) => {
+            const isActive = item.href === '/dashboard'
+              ? pathname === '/dashboard'
+              : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={onClose}
+                className={cn(
+                  'flex items-center gap-2 h-11 rounded-md px-4 text-[14px] font-medium transition-colors mb-1',
+                  isActive
+                    ? 'bg-[#1a1a1a] text-[#f5f5f5]'
+                    : 'text-[#a3a3a3] hover:bg-[#161616] hover:text-[#f5f5f5]',
+                )}
+              >
+                {item.label}
+                {item.liveDot && <LiveDot color={item.liveDot} />}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="p-3 border-t border-[#262626]">
+          <Link href="/docs" onClick={onClose}
+            className="flex items-center gap-2 h-11 rounded-md px-4 text-[14px] font-medium text-[#a3a3a3] hover:bg-[#161616] hover:text-[#f5f5f5] transition-colors">
+            Docs
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── Header ───────────────────────────────────────────────────────────────────
 
 export function Header() {
   const pathname = usePathname();
-  const { connector } = useAccount(); // get current connector name
+  const { connector } = useAccount();
+
+  const [productsOpen, setProductsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen]     = useState(false);
+  const [searchOpen, setSearchOpen]     = useState(false);
+
+  const productsRef = useRef<HTMLDivElement>(null);
+
+  // Close products dropdown on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (productsRef.current && !productsRef.current.contains(e.target as Node)) {
+        setProductsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // ⌘K / Ctrl+K shortcut
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setProductsOpen(false);
+        setMobileOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
+  // Close dropdown on route change
+  useEffect(() => {
+    setProductsOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const isNavActive = useCallback((href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(href);
+  }, [pathname]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-14 border-b border-base-border bg-base-bg/90 backdrop-blur-md">
-      <div className="flex h-full items-center justify-between px-5">
+    <>
+      {/* ── Navbar ──────────────────────────────────────────────────────── */}
+      <header
+        role="banner"
+        className="fixed top-0 left-0 right-0 z-50 h-12 border-b border-[#262626] bg-[#0d0d0d]"
+      >
+        <div className="flex h-full items-center justify-between px-4 gap-2">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
-          <div className="relative h-7 w-7 overflow-hidden rounded-lg">
-            <Image src="/bulldex-logo.png" alt="Bulldex Finance" fill className="object-cover" sizes="28px" priority />
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-ink">
-            Bulldex <span className="text-ink-secondary font-normal">Finance</span>
-          </span>
-        </Link>
+          {/* Left: Logo */}
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 shrink-0 transition-opacity hover:opacity-80"
+            aria-label="Bulldex Finance — home"
+          >
+            <div className="relative h-7 w-7 overflow-hidden rounded-md">
+              <Image
+                src="/bulldex-logo.png"
+                alt=""
+                fill
+                className="object-cover"
+                sizes="28px"
+                priority
+              />
+            </div>
+            <span className="hidden sm:flex items-center text-[15px] font-semibold tracking-tight text-[#f5f5f5]">
+              bulldex
+              <span className="animate-cursor-blink text-[#10b981]">_</span>
+            </span>
+          </Link>
 
-        {/* Center nav */}
-        <nav className="hidden items-center gap-0.5 md:flex" aria-label="Main navigation">
-          {NAV.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
-              <Link key={item.label} href={item.href}
+          {/* Center: Primary nav + separator + secondary nav */}
+          <nav
+            className="hidden md:flex items-center gap-0.5 flex-1 px-4"
+            aria-label="Main navigation"
+          >
+            {/* Products mega */}
+            <div ref={productsRef} className="relative">
+              <button
+                onClick={() => setProductsOpen((v) => !v)}
                 className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors duration-150',
-                  isActive ? 'bg-base-elevated text-ink' : 'text-ink-secondary hover:text-ink',
-                )}>
+                  'flex items-center gap-1 h-8 rounded-md px-3 text-[14px] font-medium transition-colors',
+                  productsOpen
+                    ? 'bg-[#161616] text-[#f5f5f5]'
+                    : 'text-[#a3a3a3] hover:text-[#f5f5f5]',
+                )}
+                aria-haspopup="true"
+                aria-expanded={productsOpen}
+              >
+                Products
+                <ChevronDown
+                  className={cn(
+                    'h-3.5 w-3.5 text-[#525252] transition-transform duration-150',
+                    productsOpen && 'rotate-180',
+                  )}
+                />
+              </button>
+              <ProductsDropdown open={productsOpen} />
+            </div>
+
+            {/* Primary nav items */}
+            {PRIMARY_NAV.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={cn(
+                  'h-8 flex items-center rounded-md px-3 text-[14px] font-medium transition-colors',
+                  isNavActive(item.href)
+                    ? 'text-[#f5f5f5]'
+                    : 'text-[#a3a3a3] hover:text-[#f5f5f5]',
+                )}
+                aria-current={isNavActive(item.href) ? 'page' : undefined}
+              >
                 {item.label}
               </Link>
-            );
-          })}
-        </nav>
+            ))}
 
-        {/* Right — ConnectButton with wallet icon */}
-        <div className="flex items-center gap-2">
-          <ConnectButton.Custom>
-            {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
-              const ready = mounted;
-              const connected = ready && account && chain;
+            {/* Separator */}
+            <div className="mx-2 h-4 w-px bg-[#262626] shrink-0" aria-hidden="true" />
 
-              return (
-                <div
-                  {...(!ready && { 'aria-hidden': true, style: { opacity: 0, pointerEvents: 'none', userSelect: 'none' } })}
-                  className="flex items-center gap-2"
-                >
-                  {!connected ? (
-                    <button onClick={openConnectModal}
-                      className="h-8 rounded-lg bg-brand px-3 text-xs font-semibold text-base-bg transition-all hover:bg-brand-dark hover:shadow-glow-sm">
-                      Connect Wallet
-                    </button>
-                  ) : (
-                    <>
-                      {/* Network pill */}
-                      <button onClick={openChainModal}
-                        className="hidden items-center gap-1.5 rounded-lg border border-base-border bg-base-card px-2.5 py-1.5 text-xs text-ink-secondary transition-colors hover:border-base-border-light hover:text-ink sm:flex">
-                        <span className="h-1.5 w-1.5 rounded-full bg-green animate-pulse" />
-                        {chain.name ?? 'Unknown'}
+            {/* Secondary nav items with live dots */}
+            {SECONDARY_NAV.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={cn(
+                  'h-8 flex items-center gap-1 rounded-md px-3 text-[14px] font-medium transition-colors',
+                  isNavActive(item.href)
+                    ? 'text-[#f5f5f5]'
+                    : 'text-[#a3a3a3] hover:text-[#f5f5f5]',
+                )}
+                aria-current={isNavActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+                {item.liveDot && <LiveDot color={item.liveDot} />}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right: Search + wallet */}
+          <div className="flex items-center gap-3 shrink-0">
+
+            {/* Search */}
+            <div className="hidden sm:block">
+              <SearchBar onOpen={() => setSearchOpen(true)} />
+            </div>
+
+            {/* Wallet connect */}
+            <ConnectButton.Custom>
+              {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                const connected = mounted && account && chain;
+
+                return (
+                  <div className="flex items-center gap-2">
+                    {connected ? (
+                      <>
+                        {/* Network pill */}
+                        <button
+                          onClick={openChainModal}
+                          className="hidden sm:flex items-center gap-2 h-9 rounded-md border border-[#262626] bg-[#111111] px-3 text-[13px] text-[#a3a3a3] transition-colors hover:border-[#2e2e2e] hover:text-[#f5f5f5]"
+                          aria-label={`Connected to ${chain.name ?? 'Unknown network'}`}
+                        >
+                          <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" aria-hidden="true" />
+                          <span className="max-w-[100px] truncate font-medium">{chain.name ?? 'Unknown'}</span>
+                        </button>
+
+                        {/* Account button */}
+                        <button
+                          onClick={openAccountModal}
+                          className="flex items-center gap-2.5 h-9 rounded-md border border-[#262626] bg-[#111111] px-3.5 text-[13px] font-medium text-[#f5f5f5] transition-colors hover:border-[#2e2e2e] hover:bg-[#161616]"
+                          aria-label={`Account: ${account.displayName}`}
+                        >
+                          {account.ensAvatar ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={account.ensAvatar}
+                              alt=""
+                              className="h-5 w-5 rounded-full"
+                            />
+                          ) : (
+                            <WalletIcon connectorName={connector?.name} />
+                          )}
+                          <span className="hidden sm:inline max-w-[110px] truncate">
+                            {account.displayName}
+                          </span>
+                          <span className="sm:hidden font-mono text-[12px]">
+                            {account.displayName.slice(0, 6)}
+                          </span>
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={openConnectModal}
+                        className="flex items-center gap-2 h-9 rounded-md bg-[#10b981] px-5 text-[13px] font-semibold text-[#0d0d0d] transition-all hover:bg-[#059669] active:scale-[0.98]"
+                      >
+                        <Wallet className="h-4 w-4" strokeWidth={2.5} />
+                        <span>Connect Wallet</span>
                       </button>
+                    )}
+                  </div>
+                );
+              }}
+            </ConnectButton.Custom>
 
-                      {/* Account button — shows wallet connector icon */}
-                      <button onClick={openAccountModal}
-                        className="flex items-center gap-2 rounded-lg border border-base-border bg-base-card px-2.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-base-border-light hover:bg-base-elevated">
-                        {account.ensAvatar ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={account.ensAvatar} alt={account.displayName} className="h-4 w-4 rounded-full" />
-                        ) : (
-                          <WalletIcon connectorName={connector?.name} />
-                        )}
-                        <span className="hidden sm:inline">{account.displayName}</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              );
-            }}
-          </ConnectButton.Custom>
+            {/* Settings */}
+            {/* Token Terminal doesn't have settings in navbar — removed */}
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="flex md:hidden h-9 w-9 items-center justify-center rounded-md border border-[#262626] text-[#525252] transition-colors hover:border-[#2e2e2e] hover:text-[#a3a3a3]"
+              aria-label="Open navigation menu"
+              aria-expanded={mobileOpen}
+            >
+              <Layers className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* ── Mobile menu ─────────────────────────────────────────────────── */}
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+
+      {/* ── Command Palette (⌘K) ─────────────────────────────────────── */}
+      <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }

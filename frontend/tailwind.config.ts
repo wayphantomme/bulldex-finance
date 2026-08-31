@@ -9,92 +9,141 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Brand accent — lime-green CTA (Jupiter "Connect" button style) ──
-        brand: {
-          DEFAULT: '#C6F135',   // primary lime-green accent
-          dark:    '#A8D629',   // hover/pressed
-          faint:   'rgba(198,241,53,0.10)',
-          border:  'rgba(198,241,53,0.25)',
-        },
+        // ── Background layers — Token Terminal dark hierarchy ──────────────
+        'bg-base':     '#0d0d0d',   // body / page background
+        'bg-surface':  '#111111',   // card, panel, sidebar
+        'bg-elevated': '#161616',   // hover state, dropdown
+        'bg-overlay':  '#1a1a1a',   // modal, popover, tooltip
+        'bg-subtle':   '#1e1e1e',   // input, table row hover
 
-        // ── Neutral dark surfaces — NO green tint ──────────────────────────
-        base: {
-          bg:       '#0A0A0B',  // page background — neutral near-black
-          surface:  '#111114',  // sidebar / header background
-          card:     '#17181C',  // cards, panels
-          elevated: '#1E1F24',  // hover / raised state
-          border:   '#26272C',  // hairline borders
-          'border-light': '#333339',
-        },
+        // ── Borders ────────────────────────────────────────────────────────
+        'border-base':  '#262626',  // default border
+        'border-light': '#2e2e2e',  // hover border
+        'border-focus': '#404040',  // focus ring
 
-        // ── Text — neutral gray, NOT green-gray ───────────────────────────
+        // ── Text / Ink ────────────────────────────────────────────────────
         ink: {
-          DEFAULT:   '#F2F2F3', // primary text
-          secondary: '#9A9DA6', // muted/secondary — neutral gray
-          faint:     '#55565D',
+          DEFAULT:   '#f5f5f5',  // primary text, headings
+          secondary: '#a3a3a3',  // label, nav item, subtitle
+          muted:     '#525252',  // placeholder, disabled, timestamp
+          inverted:  '#0d0d0d',  // text on top of brand accent
         },
 
-        // ── Semantic colors ───────────────────────────────────────────────
-        green:  '#4ADE80',   // semantic "positive" (price up, gains)
-        red:    '#F87171',   // semantic "negative"
-        yellow: '#FCD34D',
-        cream:  '#E8DFC0',   // from logo horns
+        // ── Brand / Accent — Token Terminal emerald ───────────────────────
+        brand: {
+          DEFAULT: '#10b981',   // primary CTA, active states (emerald-500)
+          dark:    '#059669',   // hover/pressed (emerald-600)
+          subtle:  '#064e3b',   // badge bg, subtle highlight (emerald-950)
+          dim:     'rgba(16,185,129,0.12)',  // glow ring, faint bg
+        },
+
+        // ── Semantic — price/data colors ──────────────────────────────────
+        positive: '#22c55e',   // profit, gain, price up
+        negative: '#ef4444',   // loss, price down
+        warning:  '#f59e0b',   // caution, pending
+        info:     '#3b82f6',   // informational
+
+        // ── Legacy aliases — keep for backward compat during migration ─────
+        // Components still using old tokens will still compile.
+        // Gradually remove these as components are migrated.
+        'base-bg':           '#0d0d0d',
+        'base-surface':      '#111111',
+        'base-card':         '#111111',
+        'base-elevated':     '#161616',
+        'base-border':       '#262626',
+        'base-border-light': '#2e2e2e',
+        green:               '#22c55e',
+        red:                 '#ef4444',
+        yellow:              '#f59e0b',
+        cream:               '#e8dfc0',  // keep for now, remove after migration
       },
 
       fontFamily: {
         sans: ['var(--font-inter)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+        mono: ['"JetBrains Mono"', '"Fira Code"', '"Roboto Mono"', 'monospace'],
+      },
+
+      fontSize: {
+        // Token Terminal scale — larger, more readable
+        '2xs': ['10px', { lineHeight: '1.4', letterSpacing: '0.01em' }],
+        'xs':  ['11px', { lineHeight: '1.45', letterSpacing: '0.005em' }],
+        'sm':  ['13px', { lineHeight: '1.5' }],   // table cells, labels
+        'base':['14px', { lineHeight: '1.55' }],  // ← TT default body (was 13px)
+        'md':  ['15px', { lineHeight: '1.6' }],
+        'lg':  ['17px', { lineHeight: '1.6' }],
+        'xl':  ['20px', { lineHeight: '1.5' }],
+        '2xl': ['24px', { lineHeight: '1.3' }],
+        '3xl': ['32px', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+        '4xl': ['40px', { lineHeight: '1.15', letterSpacing: '-0.015em' }],
+        '5xl': ['56px', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        '6xl': ['72px', { lineHeight: '1.05', letterSpacing: '-0.025em' }],
+        'display': ['96px', { lineHeight: '1.02', letterSpacing: '-0.03em', fontWeight: '800' }],
+        // Mono scales for values (tabular numbers via global CSS)
+        'mono-sm': ['13px', { lineHeight: '1.4' }],
+        'mono-md': ['16px', { lineHeight: '1.4' }],
+        'mono-lg': ['22px', { lineHeight: '1.2' }],
+        'mono-xl': ['32px', { lineHeight: '1.1' }],
       },
 
       borderRadius: {
-        DEFAULT: '10px',
-        lg:      '16px',
-        xl:      '20px',
-        '2xl':   '24px',
+        DEFAULT: '6px',   // button, input — Token Terminal default
+        sm:      '4px',   // badge, tag, chip
+        md:      '6px',   // button, input
+        lg:      '8px',   // card, dropdown  ← TT card radius
+        xl:      '12px',  // modal, large panel
+        '2xl':   '16px',  // hero cards only
+        full:    '9999px', // pill, avatar
         pill:    '9999px',
       },
 
       boxShadow: {
-        card:       '0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3)',
-        elevated:   '0 4px 20px rgba(0,0,0,0.6)',
-        glow:       '0 0 28px rgba(198,241,53,0.20)',
-        'glow-sm':  '0 0 14px rgba(198,241,53,0.14)',
-        'glow-lg':  '0 0 48px rgba(198,241,53,0.28)',
-        inner:      'inset 0 1px 0 rgba(255,255,255,0.03)',
-      },
-
-      backgroundImage: {
-        // Neutral dot-grid — used in globals.css body, replaces green radial
-        'gradient-page':   'none',
-        'gradient-card':   'linear-gradient(135deg, #17181C 0%, #141517 100%)',
-        'gradient-brand':  'linear-gradient(135deg, #A8D629 0%, #C6F135 100%)',
-        'gradient-forest': 'linear-gradient(135deg, #2D4A2D 0%, #4A6741 100%)',
-        'glass':           'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-        'shimmer':         'linear-gradient(90deg, #17181C 0%, #1E1F24 40%, #17181C 80%)',
-      },
-
-      backdropBlur: {
-        xs: '4px',
-        sm: '8px',
-        md: '12px',
-      },
-
-      animation: {
-        'fade-in':    'fadeIn 0.2s ease',
-        'slide-up':   'slideUp 0.25s ease',
-        'shimmer':    'shimmer 1.6s infinite linear',
-        'pulse-slow': 'pulse 3s ease-in-out infinite',
-        'float':      'float 4s ease-in-out infinite',
+        // Token Terminal has minimal/no shadows — dark surfaces only
+        sm:        '0 1px 2px rgba(0,0,0,0.4)',
+        DEFAULT:   '0 2px 8px rgba(0,0,0,0.5)',
+        lg:        '0 8px 24px rgba(0,0,0,0.6)',
+        xl:        '0 16px 40px rgba(0,0,0,0.7)',
+        // Keep glow-sm for wallet connect button only
+        'glow-sm': '0 0 12px rgba(16,185,129,0.20)',
+        'glow':    '0 0 24px rgba(16,185,129,0.18)',
+        inner:     'inset 0 1px 0 rgba(255,255,255,0.03)',
+        // Legacy — will be removed after migration
+        card:      '0 1px 3px rgba(0,0,0,0.5)',
+        elevated:  '0 4px 20px rgba(0,0,0,0.6)',
       },
 
       keyframes: {
-        fadeIn:  { from: { opacity: '0' },                                   to: { opacity: '1' } },
-        slideUp: { from: { opacity: '0', transform: 'translateY(10px)' },    to: { opacity: '1', transform: 'translateY(0)' } },
-        shimmer: { '0%': { backgroundPosition: '-200% 0' },                  '100%': { backgroundPosition: '200% 0' } },
-        float:   { '0%,100%': { transform: 'translateY(0)' },                '50%': { transform: 'translateY(-8px)' } },
+        fadeIn:      { from: { opacity: '0' },                                to: { opacity: '1' } },
+        slideUp:     { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        slideDown:   { from: { opacity: '0', transform: 'translateY(-4px)' },to: { opacity: '1', transform: 'translateY(0)' } },
+        shimmer:     { '0%': { backgroundPosition: '-200% 0' },              '100%': { backgroundPosition: '200% 0' } },
+        // Cursor blink — for logo "bulldex_" terminal aesthetic
+        cursorBlink: { '0%,100%': { opacity: '1' },                          '50%': { opacity: '0' } },
+        // Live dot pulse — for navbar badges
+        livePulse:   { '0%,100%': { opacity: '1', transform: 'scale(1)' },   '50%': { opacity: '0.5', transform: 'scale(0.85)' } },
       },
 
-      maxWidth: { layout: '1440px' },
+      animation: {
+        'fade-in':      'fadeIn 0.15s ease',
+        'slide-up':     'slideUp 0.2s ease',
+        'slide-down':   'slideDown 0.2s ease',
+        'shimmer':      'shimmer 1.6s infinite linear',
+        'cursor-blink': 'cursorBlink 1s step-end infinite',
+        'live-pulse':   'livePulse 2s ease-in-out infinite',
+        'pulse-slow':   'pulse 3s ease-in-out infinite',
+        'spin':         'spin 0.8s linear infinite',
+      },
+
+      maxWidth: {
+        layout: '1440px',
+        content: '1200px',
+      },
+
+      spacing: {
+        // Named sidebar/navbar dimensions for layout
+        sidebar: '220px',
+        'sidebar-collapsed': '0px',
+        navbar: '48px',
+      },
     },
   },
   plugins: [],

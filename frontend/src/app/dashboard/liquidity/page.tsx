@@ -208,8 +208,8 @@ export default function LiquidityPage() {
       {/* ── Page header ─────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-ink tracking-tight">Liquidity Pools</h1>
-          <p className="mt-1 text-sm text-ink-secondary">
+          <h1 className="text-[28px] font-semibold text-[#f5f5f5] tracking-tight">Liquidity Pools</h1>
+          <p className="mt-1 text-sm text-[#a3a3a3]">
             Provide liquidity to earn trading fees on every swap.
           </p>
         </div>
@@ -218,33 +218,33 @@ export default function LiquidityPage() {
       {/* ── Stat cards ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {/* TVL */}
-        <div className="rounded-2xl border border-base-border bg-base-card p-5">
-          <p className="text-xs text-ink-faint mb-1">Total Value Locked</p>
-          <p className="text-2xl font-semibold text-ink tabular-nums">
+        <div className="rounded-lg border border-[#262626] bg-[#111111] p-5">
+          <p className="text-xs text-[#525252] mb-1">Total Value Locked</p>
+          <p className="text-[28px] font-semibold text-[#f5f5f5] tabular-nums">
             {tvlUSD ?? '--'}
           </p>
-          <p className="text-xs text-ink-faint mt-1">across both pools</p>
+          <p className="text-xs text-[#525252] mt-1">across both pools</p>
         </div>
 
         {/* Active pools */}
-        <div className="rounded-2xl border border-base-border bg-base-card p-5">
-          <p className="text-xs text-ink-faint mb-1">Active Pools</p>
-          <p className="text-2xl font-semibold text-ink">2</p>
-          <p className="text-xs text-ink-faint mt-1">0.30% fee per swap</p>
+        <div className="rounded-lg border border-[#262626] bg-[#111111] p-5">
+          <p className="text-xs text-[#525252] mb-1">Active Pools</p>
+          <p className="text-[28px] font-semibold text-[#f5f5f5]">2</p>
+          <p className="text-xs text-[#525252] mt-1">0.30% fee per swap</p>
         </div>
 
         {/* My liquidity */}
-        <div className="rounded-2xl border border-base-border bg-base-card p-5">
-          <p className="text-xs text-ink-faint mb-1">My Positions</p>
+        <div className="rounded-lg border border-[#262626] bg-[#111111] p-5">
+          <p className="text-xs text-[#525252] mb-1">My Positions</p>
           {!isConnected ? (
             <>
-              <p className="text-2xl font-semibold text-ink">--</p>
-              <p className="text-xs text-ink-faint mt-1">Connect wallet to view</p>
+              <p className="text-[28px] font-semibold text-[#f5f5f5]">--</p>
+              <p className="text-xs text-[#525252] mt-1">Connect wallet to view</p>
             </>
           ) : (
             <>
-              <p className="text-2xl font-semibold text-ink tabular-nums">{myPositionCount}</p>
-              <p className="text-xs text-ink-faint mt-1">
+              <p className="text-[28px] font-semibold text-[#f5f5f5] tabular-nums">{myPositionCount}</p>
+              <p className="text-xs text-[#525252] mt-1">
                 {myPositionCount === 0 ? 'No active positions' : `Active LP position${myPositionCount > 1 ? 's' : ''}`}
               </p>
             </>
@@ -253,15 +253,15 @@ export default function LiquidityPage() {
       </div>
 
       {/* ── Pool table ──────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-base-border bg-base-card overflow-hidden">
+      <div className="rounded-lg border border-[#262626] bg-[#111111] overflow-hidden">
 
         {/* Table header label */}
-        <div className="px-5 py-4 border-b border-base-border">
-          <h2 className="text-sm font-semibold text-ink">Active Pools</h2>
+        <div className="px-5 py-4 border-b border-[#262626]">
+          <h2 className="text-sm font-semibold text-[#f5f5f5]">Active Pools</h2>
         </div>
 
         {/* Column headers */}
-        <div className="grid grid-cols-12 gap-3 px-5 py-2.5 border-b border-base-border bg-base-surface text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+        <div className="grid grid-cols-12 gap-3 px-5 py-2.5 border-b border-[#262626] bg-[#161616] text-[11px] font-semibold uppercase tracking-wider text-[#525252]">
           <div className="col-span-4">Pool</div>
           <div className="col-span-2 text-right">TVL</div>
           <div className="col-span-2 text-right">Fee</div>
@@ -294,21 +294,21 @@ export default function LiquidityPage() {
 
           return (
             <div key={key}
-              className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-base-border last:border-0 hover:bg-base-elevated/40 transition-colors items-center">
+              className="grid grid-cols-12 gap-3 px-5 py-4 border-b border-[#262626] last:border-0 hover:bg-[#1e1e1e]/40 transition-colors items-center">
 
               {/* Pool name — 4 cols */}
               <div className="col-span-4 flex items-center gap-3">
                 <div className="relative w-9 h-6 shrink-0">
-                  <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                  <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-[#0d0d0d]">
                     <Image src={cfg.token0Logo} alt={cfg.token0Symbol} fill className="object-cover" sizes="24px" />
                   </div>
-                  <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                  <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-[#0d0d0d]">
                     <Image src={cfg.token1Logo} alt={cfg.token1Symbol} fill className="object-cover" sizes="24px" />
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-ink">{cfg.label}</p>
-                  <span className="inline-block mt-0.5 rounded-md bg-base-elevated px-1.5 py-0.5 text-[10px] font-semibold text-ink-faint">
+                  <p className="text-sm font-semibold text-[#f5f5f5]">{cfg.label}</p>
+                  <span className="inline-block mt-0.5 rounded-md bg-[#1e1e1e] px-1.5 py-0.5 text-[10px] font-semibold text-[#525252]">
                     {cfg.fee} fee
                   </span>
                 </div>
@@ -316,28 +316,28 @@ export default function LiquidityPage() {
 
               {/* TVL — 2 cols */}
               <div className="col-span-2 text-right">
-                <p className="text-sm font-semibold text-ink tabular-nums">{tvlLine1}</p>
-                {tvlLine2 && <p className="text-[11px] text-ink-faint">{tvlLine2}</p>}
+                <p className="text-sm font-semibold text-[#f5f5f5] tabular-nums">{tvlLine1}</p>
+                {tvlLine2 && <p className="text-[11px] text-[#525252]">{tvlLine2}</p>}
               </div>
 
               {/* Fee — 2 cols */}
               <div className="col-span-2 text-right">
-                <span className="text-sm font-semibold text-ink">{cfg.fee}</span>
+                <span className="text-sm font-semibold text-[#f5f5f5]">{cfg.fee}</span>
               </div>
 
               {/* My liquidity — 2 cols */}
               <div className="col-span-2 text-right">
                 {!isConnected ? (
-                  <p className="text-xs text-ink-faint">--</p>
+                  <p className="text-xs text-[#525252]">--</p>
                 ) : hasPosition ? (
                   <>
-                    <p className="text-sm font-semibold text-green tabular-nums">{formatToken(myLPBal!, 18, 4)} LP</p>
+                    <p className="text-sm font-semibold text-[#22c55e] tabular-nums">{formatToken(myLPBal!, 18, 4)} LP</p>
                     {isMUSCD && (
-                      <p className="text-[11px] text-ink-faint">{poolShare.sharePctFormatted}% share</p>
+                      <p className="text-[11px] text-[#525252]">{poolShare.sharePctFormatted}% share</p>
                     )}
                   </>
                 ) : (
-                  <p className="text-sm text-ink-faint">--</p>
+                  <p className="text-sm text-[#525252]">--</p>
                 )}
               </div>
 
@@ -345,17 +345,17 @@ export default function LiquidityPage() {
               <div className="col-span-2 flex items-center justify-end gap-1.5">
                 <button
                   onClick={() => openPool(key, 'add')}
-                  className="rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-base-bg hover:bg-brand-dark transition-all whitespace-nowrap">
+                  className="rounded-md bg-[#10b981] px-3 py-1.5 text-xs font-semibold text-base-bg hover:bg-[#059669] transition-all whitespace-nowrap">
                   Add
                 </button>
                 <button
                   onClick={() => hasPosition && openPool(key, 'remove')}
                   disabled={!hasPosition}
                   className={cn(
-                    'rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap',
+                    'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap',
                     hasPosition
-                      ? 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink hover:border-base-border-light cursor-pointer'
-                      : 'border-base-border/40 bg-base-elevated/40 text-ink-faint cursor-not-allowed',
+                      ? 'border-[#262626] bg-[#1e1e1e] text-[#a3a3a3] hover:text-[#f5f5f5] hover:border-[#2e2e2e] cursor-pointer'
+                      : 'border-[#262626]/40 bg-[#1e1e1e]/40 text-[#525252] cursor-not-allowed',
                   )}>
                   Remove
                 </button>
@@ -370,39 +370,39 @@ export default function LiquidityPage() {
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
           <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4">
-            <div className="rounded-2xl border border-base-border bg-base-card shadow-elevated overflow-hidden">
+            <div className="rounded-lg border border-[#262626] bg-[#111111]  overflow-hidden">
 
               {/* Modal header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-base-border">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[#262626]">
                 <div className="flex items-center gap-3">
                   <div className="relative w-9 h-6 shrink-0">
-                    <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                    <div className="absolute left-0 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-[#0d0d0d]">
                       <Image src={pool.token0Logo} alt={pool.token0Symbol} fill className="object-cover" sizes="24px" />
                     </div>
-                    <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-base-card">
+                    <div className="absolute left-3.5 top-0 h-6 w-6 rounded-full overflow-hidden ring-2 ring-[#0d0d0d]">
                       <Image src={pool.token1Logo} alt={pool.token1Symbol} fill className="object-cover" sizes="24px" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-ink">{pool.label}</p>
-                    <p className="text-[11px] text-ink-faint">{pool.fee} fee</p>
+                    <p className="text-sm font-semibold text-[#f5f5f5]">{pool.label}</p>
+                    <p className="text-[11px] text-[#525252]">{pool.fee} fee</p>
                   </div>
                 </div>
-                <button onClick={closeModal} className="text-ink-faint hover:text-ink transition-colors p-1">
+                <button onClick={closeModal} className="text-[#525252] hover:text-[#f5f5f5] transition-colors p-1">
                   <X className="h-4 w-4" strokeWidth={1.5} />
                 </button>
               </div>
 
               {/* Tabs */}
-              <div className="flex border-b border-base-border">
+              <div className="flex border-b border-[#262626]">
                 {(['add', 'remove'] as ActionType[]).map(t => (
                   <button key={t}
                     onClick={() => { setActionType(t); addLiq.reset(); removeLiq.reset(); }}
                     className={cn(
                       'flex-1 py-2.5 text-xs font-semibold transition-colors',
                       actionType === t
-                        ? 'border-b-2 border-brand text-brand'
-                        : 'text-ink-secondary hover:text-ink',
+                        ? 'border-b-2 border-brand text-[#10b981]'
+                        : 'text-[#a3a3a3] hover:text-[#f5f5f5]',
                     )}>
                     {t === 'add' ? 'Add Liquidity' : 'Remove Liquidity'}
                   </button>
@@ -416,15 +416,15 @@ export default function LiquidityPage() {
                   <>
                     {/* Slippage */}
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-ink-faint">Max slippage</span>
+                      <span className="text-xs text-[#525252]">Max slippage</span>
                       <div className="flex gap-1">
                         {[{ l: '0.5%', v: 50 }, { l: '1%', v: 100 }, { l: '2%', v: 200 }].map(o => (
                           <button key={o.v} onClick={() => setSlippageBps(o.v)}
                             className={cn(
                               'rounded-lg px-2 py-0.5 text-[10px] font-semibold border transition-colors',
                               slippageBps === o.v
-                                ? 'border-brand/30 bg-brand/10 text-brand'
-                                : 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink',
+                                ? 'border-[#064e3b] bg-[rgba(16,185,129,0.08)] text-[#10b981]'
+                                : 'border-[#262626] bg-[#1e1e1e] text-[#a3a3a3] hover:text-[#f5f5f5]',
                             )}>
                             {o.l}
                           </button>
@@ -434,10 +434,10 @@ export default function LiquidityPage() {
 
                     {/* WETH note */}
                     {selectedPool === 'bdx-weth' && (
-                      <div className="rounded-xl border border-base-border bg-base-surface px-3 py-2">
-                        <p className="text-[11px] text-ink-faint">
+                      <div className="rounded-md border border-[#262626] bg-[#161616] px-3 py-2">
+                        <p className="text-[11px] text-[#525252]">
                           Requires WETH (ERC-20).{' '}
-                          <a href="/dashboard/faucet" className="text-brand hover:opacity-80 transition-opacity">Wrap ETH on the Faucet page.</a>
+                          <a href="/dashboard/faucet" className="text-[#10b981] hover:opacity-80 transition-opacity">Wrap ETH on the Faucet page.</a>
                         </p>
                       </div>
                     )}
@@ -454,7 +454,7 @@ export default function LiquidityPage() {
                     />
 
                     <div className="flex justify-center">
-                      <div className="h-6 w-6 rounded-full border border-base-border bg-base-elevated flex items-center justify-center text-ink-faint text-[10px]">+</div>
+                      <div className="h-6 w-6 rounded-full border border-[#262626] bg-[#1e1e1e] flex items-center justify-center text-[#525252] text-[10px]">+</div>
                     </div>
 
                     <PoolInput
@@ -483,10 +483,10 @@ export default function LiquidityPage() {
                         onClick={handleAddLiquidity}
                         disabled={t0Amount === 0n || t1Amount === 0n}
                         className={cn(
-                          'w-full rounded-xl py-3.5 text-sm font-semibold transition-all',
+                          'w-full rounded-md py-3.5 text-sm font-semibold transition-all',
                           t0Amount === 0n || t1Amount === 0n
-                            ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
-                            : 'bg-brand text-base-bg hover:bg-brand-dark active:scale-[0.98] active:brightness-95',
+                            ? 'bg-[#1e1e1e] text-[#525252] cursor-not-allowed'
+                            : 'bg-[#10b981] text-base-bg hover:bg-[#059669] active:scale-[0.98] active:brightness-95',
                         )}>
                         Add Liquidity
                       </button>
@@ -497,10 +497,10 @@ export default function LiquidityPage() {
                 {/* ── REMOVE ──────────────────────────────────────────── */}
                 {actionType === 'remove' && (
                   <>
-                    <div className="rounded-xl bg-base-surface p-4">
+                    <div className="rounded-md bg-[#161616] p-4">
                       <div className="flex justify-between mb-2">
-                        <span className="text-xs text-ink-faint">Amount to remove</span>
-                        <span className="text-xl font-semibold text-ink">{lpPct}%</span>
+                        <span className="text-xs text-[#525252]">Amount to remove</span>
+                        <span className="text-xl font-semibold text-[#f5f5f5]">{lpPct}%</span>
                       </div>
                       <input
                         type="range" min={1} max={100} value={lpPct}
@@ -513,8 +513,8 @@ export default function LiquidityPage() {
                             className={cn(
                               'flex-1 rounded-lg py-1 text-[10px] font-semibold border transition-colors',
                               lpPct === p
-                                ? 'border-brand/30 bg-brand/10 text-brand'
-                                : 'border-base-border bg-base-elevated text-ink-secondary hover:text-ink',
+                                ? 'border-[#064e3b] bg-[rgba(16,185,129,0.08)] text-[#10b981]'
+                                : 'border-[#262626] bg-[#1e1e1e] text-[#a3a3a3] hover:text-[#f5f5f5]',
                             )}>
                             {p === 100 ? 'MAX' : `${p}%`}
                           </button>
@@ -523,14 +523,14 @@ export default function LiquidityPage() {
                     </div>
 
                     {selectedPool === 'bdx-musdc' && (
-                      <div className="rounded-xl bg-base-surface px-4 py-3 space-y-1.5">
+                      <div className="rounded-md bg-[#161616] px-4 py-3 space-y-1.5">
                         <InfoRow label="LP to burn" value={formatToken(lpToRemove, 18, 6)} />
                         <InfoRow label="BDX back"   value={`${formatToken(estimatedBack.t0, 18, 4)} BDX`} />
                         <InfoRow label="MUSDC back" value={`${formatToken(estimatedBack.t1, 18, 4)} MUSDC`} />
                       </div>
                     )}
                     {selectedPool === 'bdx-weth' && (
-                      <div className="rounded-xl bg-base-surface px-4 py-3">
+                      <div className="rounded-md bg-[#161616] px-4 py-3">
                         <InfoRow label="LP to burn" value={formatToken(lpToRemove, 18, 6)} />
                       </div>
                     )}
@@ -551,10 +551,10 @@ export default function LiquidityPage() {
                         onClick={handleRemoveLiquidity}
                         disabled={lpToRemove === 0n}
                         className={cn(
-                          'w-full rounded-xl py-3.5 text-sm font-semibold transition-all',
+                          'w-full rounded-md py-3.5 text-sm font-semibold transition-all',
                           lpToRemove === 0n
-                            ? 'bg-base-elevated text-ink-faint cursor-not-allowed'
-                            : 'bg-brand text-base-bg hover:bg-brand-dark active:scale-[0.98] active:brightness-95',
+                            ? 'bg-[#1e1e1e] text-[#525252] cursor-not-allowed'
+                            : 'bg-[#10b981] text-base-bg hover:bg-[#059669] active:scale-[0.98] active:brightness-95',
                         )}>
                         Remove Liquidity
                       </button>
@@ -580,18 +580,18 @@ function PoolInput({
   balance?: string; onHalf?: () => void; onMax?: () => void;
 }) {
   return (
-    <div className="rounded-xl bg-base-surface p-4">
+    <div className="rounded-md bg-[#161616] p-4">
       {(balance || onHalf || onMax) && (
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] text-ink-faint">{balance ?? ''}</span>
+          <span className="text-[11px] text-[#525252]">{balance ?? ''}</span>
           <div className="flex gap-1">
             {onHalf && (
-              <button onClick={onHalf} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+              <button onClick={onHalf} className="rounded-md bg-[#1e1e1e] px-2 py-0.5 text-[10px] font-semibold text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors">
                 HALF
               </button>
             )}
             {onMax && (
-              <button onClick={onMax} className="rounded-md bg-base-elevated px-2 py-0.5 text-[10px] font-semibold text-ink-secondary hover:text-ink transition-colors">
+              <button onClick={onMax} className="rounded-md bg-[#1e1e1e] px-2 py-0.5 text-[10px] font-semibold text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors">
                 MAX
               </button>
             )}
@@ -601,13 +601,13 @@ function PoolInput({
       <div className="flex items-center gap-3">
         <input
           type="number" placeholder="0.0" value={value} onChange={e => onChange(e.target.value)}
-          className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-ink placeholder:text-ink-faint focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+          className="tabular-nums min-w-0 flex-1 bg-transparent text-2xl font-normal text-[#f5f5f5] placeholder:text-[#525252] focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
         />
-        <div className="flex shrink-0 items-center gap-2 rounded-xl border border-base-border bg-base-elevated px-2.5 py-1.5">
+        <div className="flex shrink-0 items-center gap-2 rounded-md border border-[#262626] bg-[#1e1e1e] px-2.5 py-1.5">
           <div className="relative h-5 w-5 overflow-hidden rounded-full">
             <Image src={logo} alt={symbol} fill className="object-cover" sizes="20px" />
           </div>
-          <span className="text-sm font-semibold text-ink">{symbol}</span>
+          <span className="text-sm font-semibold text-[#f5f5f5]">{symbol}</span>
         </div>
       </div>
     </div>
@@ -617,8 +617,8 @@ function PoolInput({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between text-xs">
-      <span className="text-ink-faint">{label}</span>
-      <span className="font-medium text-ink tabular-nums">{value}</span>
+      <span className="text-[#525252]">{label}</span>
+      <span className="font-medium text-[#f5f5f5] tabular-nums">{value}</span>
     </div>
   );
 }
@@ -626,17 +626,17 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function SuccessMsg({ txHash, msg, onClose }: { txHash?: `0x${string}`; msg: string; onClose: () => void }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 rounded-xl border border-green/20 bg-green/5 px-4 py-2.5">
-        <CheckCircle2 className="h-4 w-4 text-green shrink-0" strokeWidth={1.5} />
+      <div className="flex items-center gap-2 rounded-md border border-[rgba(34,197,94,0.15)] bg-[rgba(34,197,94,0.05)] px-4 py-2.5">
+        <CheckCircle2 className="h-4 w-4 text-[#22c55e] shrink-0" strokeWidth={1.5} />
         <div>
-          <p className="text-xs font-semibold text-green">{msg}</p>
+          <p className="text-xs font-semibold text-[#22c55e]">{msg}</p>
           {txHash && (
             <a href={etherscanUrl(txHash, 'tx')} target="_blank" rel="noopener noreferrer"
-              className="text-[11px] text-ink-faint hover:text-ink-secondary">{shortenHash(txHash)}</a>
+              className="text-[11px] text-[#525252] hover:text-[#a3a3a3]">{shortenHash(txHash)}</a>
           )}
         </div>
       </div>
-      <button onClick={onClose} className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onClose} className="w-full rounded-md border border-[#262626] bg-[#1e1e1e] py-2.5 text-sm font-medium text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors">
         Done
       </button>
     </div>
@@ -646,11 +646,11 @@ function SuccessMsg({ txHash, msg, onClose }: { txHash?: `0x${string}`; msg: str
 function ErrorMsg({ error, onReset }: { error: string | null; onReset: () => void }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-start gap-2 rounded-xl border border-red/20 bg-red/5 px-4 py-2.5">
-        <XCircle className="h-4 w-4 text-red shrink-0 mt-0.5" strokeWidth={1.5} />
-        <p className="text-xs text-red">{error ?? 'Something went wrong'}</p>
+      <div className="flex items-start gap-2 rounded-md border border-[rgba(239,68,68,0.15)] bg-[rgba(239,68,68,0.05)] px-4 py-2.5">
+        <XCircle className="h-4 w-4 text-[#ef4444] shrink-0 mt-0.5" strokeWidth={1.5} />
+        <p className="text-xs text-[#ef4444]">{error ?? 'Something went wrong'}</p>
       </div>
-      <button onClick={onReset} className="w-full rounded-xl border border-base-border bg-base-elevated py-2.5 text-sm font-medium text-ink-secondary hover:text-ink transition-colors">
+      <button onClick={onReset} className="w-full rounded-md border border-[#262626] bg-[#1e1e1e] py-2.5 text-sm font-medium text-[#a3a3a3] hover:text-[#f5f5f5] transition-colors">
         Try again
       </button>
     </div>
@@ -659,7 +659,7 @@ function ErrorMsg({ error, onReset }: { error: string | null; onReset: () => voi
 
 function BusyBtn({ label }: { label: string }) {
   return (
-    <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-base-elevated py-3 text-sm font-medium text-ink-secondary">
+    <button disabled className="flex w-full items-center justify-center gap-2 rounded-md bg-[#1e1e1e] py-3 text-sm font-medium text-[#a3a3a3]">
       <Loader2 className="h-4 w-4 animate-spin" />{label}
     </button>
   );
@@ -669,7 +669,7 @@ function ConnectWalletBtn() {
   return (
     <ConnectButton.Custom>
       {({ openConnectModal }) => (
-        <button onClick={openConnectModal} className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-base-bg hover:bg-brand-dark transition-all">
+        <button onClick={openConnectModal} className="w-full rounded-md bg-[#10b981] py-3 text-sm font-semibold text-base-bg hover:bg-[#059669] transition-all">
           Connect Wallet
         </button>
       )}

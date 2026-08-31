@@ -22,7 +22,7 @@ export function BalanceDisplay() {
     <Card variant="default" className="w-full max-w-md">
       <CardHeader>
         <CardTitle>BDX Balance</CardTitle>
-        <Badge variant="yellow" dot>
+        <Badge variant="warning" dot>
           Sepolia
         </Badge>
       </CardHeader>

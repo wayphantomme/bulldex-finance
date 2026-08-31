@@ -13,7 +13,7 @@ export default function GovernancePage() {
         <Card className="w-full max-w-sm">
           <CardHeader>
             <CardTitle>BDX DAO</CardTitle>
-            <Badge variant="cream">Phase 3</Badge>
+            <Badge variant="soon">Phase 3</Badge>
           </CardHeader>
           <div className="flex flex-col items-center gap-4 py-8">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-faint">

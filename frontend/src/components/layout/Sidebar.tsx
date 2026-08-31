@@ -14,14 +14,19 @@ import {
   BookOpen,
   BarChart2,
   Timer,
+  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface NavItem {
-  href:  string;
-  label: string;
-  icon:  React.ReactNode;
-  soon?: boolean;
+  href:    string;
+  label:   string;
+  icon:    React.ReactNode;
+  soon?:   boolean;
+  liveDot?: 'green' | 'yellow' | 'blue';
+  external?: boolean;
 }
 
 interface NavGroup {
@@ -29,116 +34,190 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const ICON = 'h-[18px] w-[18px]';
+// ─── Config ───────────────────────────────────────────────────────────────────
+
+const ICON_CLS = 'h-4 w-4 shrink-0';
 
 const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Trade',
     items: [
-      { href: '/dashboard',           label: 'Overview',    icon: <LayoutDashboard className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/swap',      label: 'Swap',        icon: <ArrowLeftRight  className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/liquidity', label: 'Liquidity',   icon: <Droplets        className={ICON} strokeWidth={1.5} /> },
+      { href: '/dashboard',           label: 'Overview',  icon: <LayoutDashboard className={ICON_CLS} strokeWidth={1.5} /> },
+      { href: '/dashboard/swap',      label: 'Swap',      icon: <ArrowLeftRight  className={ICON_CLS} strokeWidth={1.5} /> },
+      { href: '/dashboard/liquidity', label: 'Liquidity', icon: <Droplets        className={ICON_CLS} strokeWidth={1.5} /> },
     ],
   },
   {
     label: 'Earn',
     items: [
-      { href: '/dashboard/lending',  label: 'Lend',  icon: <Landmark    className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/staking',  label: 'Stake', icon: <ShieldCheck className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/farming',  label: 'Farm',  icon: <Sprout      className={ICON} strokeWidth={1.5} /> },
+      { href: '/dashboard/lending',  label: 'Lend',    icon: <Landmark    className={ICON_CLS} strokeWidth={1.5} /> },
+      { href: '/dashboard/staking',  label: 'Stake',   icon: <ShieldCheck className={ICON_CLS} strokeWidth={1.5} /> },
+      { href: '/dashboard/farming',  label: 'Farm',    icon: <Sprout      className={ICON_CLS} strokeWidth={1.5} /> },
     ],
   },
   {
     label: 'Manage',
     items: [
-      { href: '/dashboard/vesting',    label: 'Vesting',    icon: <Timer     className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/governance', label: 'Governance', icon: <Vote      className={ICON} strokeWidth={1.5} />, soon: true },
-      { href: '/dashboard/analytics',  label: 'Analytics',  icon: <BarChart2 className={ICON} strokeWidth={1.5} /> },
-      { href: '/dashboard/faucet',     label: 'Faucet',     icon: <Droplet   className={ICON} strokeWidth={1.5} /> },
+      { href: '/dashboard/vesting',    label: 'Vesting',    icon: <Timer     className={ICON_CLS} strokeWidth={1.5} />, liveDot: 'yellow' },
+      { href: '/dashboard/analytics',  label: 'Analytics',  icon: <BarChart2 className={ICON_CLS} strokeWidth={1.5} />, liveDot: 'green' },
+      { href: '/dashboard/governance', label: 'Governance', icon: <Vote      className={ICON_CLS} strokeWidth={1.5} />, soon: true },
+      { href: '/dashboard/faucet',     label: 'Faucet',     icon: <Droplet   className={ICON_CLS} strokeWidth={1.5} /> },
     ],
   },
 ];
 
-// Docs pinned standalone at bottom — like Jupiter's "Get Help"
-const DOCS_ITEM: NavItem = {
-  href: '/docs',
-  label: 'Docs',
-  icon: <BookOpen className={ICON} strokeWidth={1.5} />,
+const BOTTOM_ITEMS: NavItem[] = [
+  { href: '/docs', label: 'Docs', icon: <BookOpen className={ICON_CLS} strokeWidth={1.5} /> },
+];
+
+// ─── Live dot ─────────────────────────────────────────────────────────────────
+
+const LIVE_DOT_COLORS: Record<string, string> = {
+  green:  'bg-[#10b981]',
+  yellow: 'bg-[#f59e0b]',
+  blue:   'bg-[#3b82f6]',
 };
 
-export function Sidebar() {
-  const pathname = usePathname();
+// ─── Nav link ─────────────────────────────────────────────────────────────────
 
-  function NavLink({ item }: { item: NavItem }) {
-    const isActive =
-      item.href === '/dashboard'
-        ? pathname === '/dashboard'
-        : pathname.startsWith(item.href);
+function NavLink({
+  item,
+  isActive,
+}: {
+  item: NavItem;
+  isActive: boolean;
+}) {
+  const content = (
+    <>
+      {/* Icon */}
+      <span
+        className={cn(
+          'shrink-0 transition-colors',
+          isActive ? 'text-[#f5f5f5]' : 'text-[#525252] group-hover:text-[#a3a3a3]',
+        )}
+      >
+        {item.icon}
+      </span>
 
-    const tourId = item.href === '/dashboard/faucet'    ? 'sidebar-faucet'
-                 : item.href === '/dashboard/swap'      ? 'sidebar-swap'
-                 : item.href === '/dashboard/liquidity' ? 'sidebar-liquidity'
-                 : undefined;
+      {/* Label */}
+      <span
+        className={cn(
+          'flex-1 truncate text-[13px] transition-colors',
+          isActive ? 'text-[#f5f5f5]' : 'text-[#a3a3a3] group-hover:text-[#f5f5f5]',
+        )}
+      >
+        {item.label}
+      </span>
 
+      {/* Right-side badges */}
+      <span className="flex items-center gap-1 shrink-0">
+        {item.soon && (
+          <span className="rounded bg-[#1e1e1e] px-1.5 py-0.5 text-[10px] font-medium text-[#525252]">
+            soon
+          </span>
+        )}
+        {item.liveDot && !item.soon && (
+          <span
+            className={cn(
+              'w-1.5 h-1.5 rounded-full',
+              LIVE_DOT_COLORS[item.liveDot],
+              'animate-live-pulse',
+            )}
+            aria-hidden="true"
+          />
+        )}
+        {item.external && (
+          <ExternalLink className="h-3 w-3 text-[#525252]" />
+        )}
+      </span>
+    </>
+  );
+
+  const cls = cn(
+    'group relative flex h-8 w-full items-center gap-2.5 rounded-md px-3 transition-colors duration-100',
+    isActive
+      ? 'bg-[#1a1a1a] text-[#f5f5f5]'
+      : 'hover:bg-[#161616]',
+  );
+
+  if (item.external) {
     return (
-      <div className="tooltip-trigger relative flex w-full justify-center">
-        <Link
-          href={item.href}
-          aria-label={item.label}
-          aria-current={isActive ? 'page' : undefined}
-          data-tour={tourId}
-          className={cn(
-            'relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150',
-            isActive
-              ? 'bg-base-elevated text-ink'
-              : 'text-ink-faint hover:bg-base-card hover:text-ink-secondary',
-          )}
-        >
-          {item.icon}
-          {isActive && (
-            <span className="absolute -right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-brand" />
-          )}
-          {item.soon && !isActive && (
-            <span className="absolute -right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-yellow/70" />
-          )}
-        </Link>
-        <span className="tooltip">
-          {item.label}
-          {item.soon && (
-            <span className="ml-1.5 rounded-full bg-yellow/15 px-1.5 py-0.5 text-[10px] font-medium text-yellow">
-              soon
-            </span>
-          )}
-        </span>
-      </div>
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cls}
+        aria-label={`${item.label} (opens in new tab)`}
+      >
+        {content}
+      </a>
     );
   }
 
   return (
-    <aside className="fixed left-0 top-14 bottom-0 z-40 flex w-16 flex-col items-center border-r border-base-border bg-base-surface pt-4 pb-4">
+    <Link
+      href={item.href}
+      className={cls}
+      aria-current={isActive ? 'page' : undefined}
+    >
+      {content}
+    </Link>
+  );
+}
 
-      {/* Nav groups */}
-      {NAV_GROUPS.map((group, gi) => (
-        <div key={group.label} className={cn('flex w-full flex-col items-center gap-0.5', gi > 0 && 'mt-3')}>
-          <div className="mb-1 flex w-full justify-center">
-            <span className="text-[9px] font-semibold uppercase tracking-widest text-ink-faint select-none">
-              {group.label}
-            </span>
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
+export function Sidebar() {
+  const pathname = usePathname();
+
+  function isActive(item: NavItem): boolean {
+    if (item.href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(item.href);
+  }
+
+  return (
+    <aside
+      className={cn(
+        // Hidden on mobile, visible on desktop
+        'hidden lg:flex',
+        // Token Terminal: fixed left sidebar, full-width with labels
+        'fixed left-0 top-12 bottom-0 z-40',
+        'w-[220px] flex-col',
+        'border-r border-[#262626] bg-[#111111]',
+      )}
+      role="navigation"
+      aria-label="Sidebar navigation"
+    >
+      {/* Scrollable nav area */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 no-scrollbar">
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={group.label} className={cn(gi > 0 && 'mt-4')}>
+            {/* Group header */}
+            <div className="mb-1 px-3">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-[#525252] select-none">
+                {group.label}
+              </span>
+            </div>
+            {/* Group items */}
+            <div className="px-2 space-y-0.5">
+              {group.items.map((item) => (
+                <NavLink key={item.href} item={item} isActive={isActive(item)} />
+              ))}
+            </div>
           </div>
-          {group.items.map((item) => (
-            <NavLink key={item.href} item={item} />
-          ))}
+        ))}
+      </div>
+
+      {/* Bottom section — docs + version */}
+      <div className="shrink-0 border-t border-[#262626] py-2 px-2">
+        {BOTTOM_ITEMS.map((item) => (
+          <NavLink key={item.href} item={item} isActive={isActive(item)} />
+        ))}
+        <div className="mt-2 px-3">
+          <span className="text-[10px] text-[#525252] select-none font-mono">
+            v0.1 · Sepolia
+          </span>
         </div>
-      ))}
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Docs — pinned at bottom, separated by divider */}
-      <div className="flex w-full flex-col items-center gap-1 pt-2">
-        <div className="h-px w-8 bg-base-border mb-2" />
-        <NavLink item={DOCS_ITEM} />
-        <span className="text-[9px] text-ink-faint mt-1">v0.1</span>
       </div>
     </aside>
   );

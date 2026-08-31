@@ -42,3 +42,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 yarn-debug.log*
+
+# ─── Assets / Reference images ────────────────────────────────────────────────
+token-terminal-ui/
+.vercel
+.env*

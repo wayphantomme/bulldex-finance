@@ -6,127 +6,194 @@
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
 
+  :root {
+    color-scheme: dark;
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    /* Better letter spacing for readability */
+    letter-spacing: -0.011em;
   }
 
   body {
-    @apply bg-base-bg text-ink font-sans;
-    /* Dot-grid pattern — same as Jupiter, visible in open space */
-    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
-    background-size: 22px 22px;
-    background-attachment: fixed;
+    @apply bg-bg-base text-ink font-sans;
+    font-size: 14px; /* Token Terminal default — was 13px */
+    /* Token Terminal: solid dark background, NO dot-grid, NO gradient */
     min-height: 100vh;
+    /* Improve text contrast */
+    font-weight: 400;
   }
 
-  :focus-visible {
-    @apply outline-none ring-2 ring-green/50 ring-offset-1 ring-offset-base-bg;
+  /* Tabular numbers for monospace font (better alignment in tables) */
+  .font-mono {
+    font-feature-settings: "tnum";
   }
 
-  /* Inputs handle their own focus styles — no browser default ring */
+  /* ── Focus ─────────────────────────────────────────────────────────────── */
+  *:focus-visible {
+    outline: 2px solid #404040;
+    outline-offset: 2px;
+  }
+
+  /* Inputs handle their own focus — no browser default ring */
   input:focus-visible,
-  textarea:focus-visible {
-    @apply outline-none ring-0;
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
   }
 
-  /* ── Scrollbar ─────────────────────────────────────────────────────────── */
-  ::-webkit-scrollbar       { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { @apply rounded-pill bg-base-border; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-base-border-light; }
+  /* ── Scrollbar — Token Terminal style (6px, minimal) ───────────────────── */
+  ::-webkit-scrollbar       { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0d0d0d; }
+  ::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2e2e2e; }
 
-  /* ── Selection ─────────────────────────────────────────────────────────── */
-  ::selection { background: rgba(74,222,128,0.2); color: #E8F0E8; }
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #262626 #0d0d0d;
+  }
+
+  /* ── Selection — Token Terminal emerald ────────────────────────────────── */
+  ::selection {
+    background: #064e3b;
+    color: #10b981;
+  }
+
+  /* ── Remove number input arrows ─────────────────────────────────────────── */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] { -moz-appearance: textfield; }
+
+  /* ── Heading resets ─────────────────────────────────────────────────────── */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-ink font-semibold leading-tight;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
 }
 
 /* ── Components ───────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* Glass card */
-  .glass {
-    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-
-  /* Shimmer skeleton — neutral */
+  /* ── Shimmer skeleton loader ────────────────────────────────────────────── */
   .shimmer {
-    background: linear-gradient(90deg, #17181C 0%, #1E1F24 40%, #17181C 80%);
+    background: linear-gradient(90deg, #1e1e1e 0%, #262626 40%, #1e1e1e 80%);
     background-size: 200% 100%;
     animation: shimmer 1.6s infinite linear;
   }
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position:  200% 0; }
-  }
 
-  /* Tooltip - appears on sidebar icon hover */
-  .tooltip {
+  /* ── Tooltip — appears on hover ────────────────────────────────────────── */
+  .tt-tooltip {
     @apply pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2
-           whitespace-nowrap rounded-lg border border-base-border bg-base-elevated
-           px-3 py-1.5 text-xs font-medium text-ink shadow-elevated
+           whitespace-nowrap rounded-lg border border-border-base bg-bg-overlay
+           px-3 py-1.5 text-xs font-medium text-ink shadow-lg
            opacity-0 transition-opacity duration-150 z-50;
   }
-  .tooltip-trigger:hover .tooltip { @apply opacity-100; }
+  .tt-tooltip-trigger:hover .tt-tooltip { @apply opacity-100; }
 
-  /* Divider */
-  .divider { @apply h-px w-full bg-base-border; }
+  /* ── Divider ────────────────────────────────────────────────────────────── */
+  .divider { @apply h-px w-full bg-border-base; }
+  .divider-v { @apply w-px h-full bg-border-base; }
 
-  /* ── RainbowKit overrides — lime-green brand, no purple ────────────────── */
+  /* ── Chart watermark — bulldex_ ─────────────────────────────────────────── */
+  .chart-watermark {
+    @apply absolute inset-0 flex items-center justify-center
+           pointer-events-none select-none;
+    font-family: var(--font-inter), sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.06);
+    letter-spacing: -0.01em;
+    z-index: 1;
+  }
+
+  /* ── No scrollbar utility ───────────────────────────────────────────────── */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ── RainbowKit overrides — TT emerald brand ────────────────────────────── */
   [data-rk] {
-    --rk-colors-accentColor: #C6F135;
-    --rk-colors-accentColorForeground: #0A0A0B;
-    --rk-colors-modalBackground: #17181C;
-    --rk-colors-modalBorder: #26272C;
-    --rk-colors-modalText: #F2F2F3;
-    --rk-colors-modalTextSecondary: #9A9DA6;
-    --rk-colors-connectButtonBackground: #17181C;
-    --rk-colors-connectButtonBorder: #26272C;
-    --rk-colors-connectButtonText: #F2F2F3;
-    --rk-colors-connectButtonInnerBackground: #1E1F24;
-    --rk-radii-connectButton: 10px;
-    --rk-radii-modal: 20px;
-    --rk-fonts-body: 'Inter', sans-serif;
+    --rk-colors-accentColor:                #10b981;
+    --rk-colors-accentColorForeground:      #0d0d0d;
+    --rk-colors-modalBackground:            #111111;
+    --rk-colors-modalBorder:                #262626;
+    --rk-colors-modalText:                  #f5f5f5;
+    --rk-colors-modalTextSecondary:         #a3a3a3;
+    --rk-colors-modalTextDim:               #525252;
+    --rk-colors-connectButtonBackground:    #111111;
+    --rk-colors-connectButtonBorder:        #262626;
+    --rk-colors-connectButtonText:          #f5f5f5;
+    --rk-colors-connectButtonInnerBackground: #161616;
+    --rk-colors-menuItemBackground:         #161616;
+    --rk-radii-connectButton:               6px;
+    --rk-radii-actionButton:                6px;
+    --rk-radii-menuButton:                  6px;
+    --rk-radii-modal:                       12px;
+    --rk-radii-modalMobile:                 12px;
+    --rk-fonts-body:                        'Inter', sans-serif;
+  }
+
+  /* ── Sonner toast overrides — TT style ──────────────────────────────────── */
+  [data-sonner-toaster] [data-sonner-toast] {
+    background: #1a1a1a !important;
+    border: 1px solid #262626 !important;
+    color: #f5f5f5 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-family: 'Inter', sans-serif !important;
+  }
+  [data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+    border-left: 3px solid #22c55e !important;
+  }
+  [data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+    border-left: 3px solid #ef4444 !important;
+  }
+  [data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
+    border-left: 3px solid #f59e0b !important;
+  }
+  [data-sonner-toaster] [data-sonner-toast][data-type="info"] {
+    border-left: 3px solid #3b82f6 !important;
   }
 }
 
 /* ── Utilities ────────────────────────────────────────────────────────────── */
 @layer utilities {
-  /* Text gradients */
-  .text-gradient-green {
-    background: linear-gradient(135deg, #4ADE80, #22C55E);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .text-gradient-forest {
-    background: linear-gradient(135deg, #4ADE80, #86EFAC);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .text-gradient-cream {
-    background: linear-gradient(135deg, #E8DFC0, #F5F0E0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Tabular numbers for prices/amounts */
+  /* Tabular numbers for prices/amounts — prevents layout shift */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 
-  /* Glow border */
-  .border-glow {
-    border-color: rgba(74,222,128,0.35);
-    box-shadow: 0 0 0 1px rgba(74,222,128,0.1);
+  /* Positive / negative price deltas */
+  .text-positive { color: #22c55e; }
+  .text-negative { color: #ef4444; }
+  .bg-positive-subtle { background: rgba(34, 197, 94, 0.08); }
+  .bg-negative-subtle { background: rgba(239, 68, 68, 0.08); }
+
+  /* Delta badge — inline pill for % change */
+  .delta-badge {
+    @apply inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-xs font-mono font-medium;
+  }
+  .delta-badge-positive {
+    @apply delta-badge bg-positive-subtle text-positive;
+  }
+  .delta-badge-negative {
+    @apply delta-badge bg-negative-subtle text-negative;
+  }
+
+  /* Token Terminal: truncate address */
+  .address-truncate {
+    @apply font-mono text-xs text-ink-secondary cursor-pointer;
+    font-feature-settings: "tnum";
   }
 }
