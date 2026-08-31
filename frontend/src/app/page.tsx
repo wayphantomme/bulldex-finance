@@ -10,9 +10,8 @@ import {
 import { AnnouncementPill } from '@/components/ui/AnnouncementPill';
 import { MiniAreaChart }    from '@/components/charts/MiniAreaChart';
 import {
-  SwapRouteDiagram, ProtocolFlowDiagram, VolumeFlowDiagram,
-  LiquidityPoolDiagram, LendingHealthDiagram, StakingLockDiagram,
-  FarmingYieldDiagram, VestingTimelineDiagram,
+  SwapRouteDiagram, ProtocolFlowDiagram, VolumeFlowDiagram, LiquidityPoolDiagram,
+  LendingHealthDiagram, StakingLockDiagram, FarmingYieldDiagram, VestingTimelineDiagram,
 } from '@/components/diagrams';
 
 type DiagramComponent = ComponentType<SVGProps<SVGSVGElement> & { width?: number; height?: number }>;
@@ -133,13 +132,13 @@ const VALUE_PROPS: { title: string; desc: string; DiagramComponent: DiagramCompo
   },
 ];
 
-const PRODUCTS: { label: string; desc: string; href: string; tag: string; DiagramComponent: DiagramComponent }[] = [
-  { label: 'Swap',      desc: 'Trade tokens instantly with automated market maker. 0.3% fee, zero slippage on small trades.',  href: '/dashboard/swap',      tag: 'AMM',     DiagramComponent: SwapRouteDiagram      },
-  { label: 'Liquidity', desc: 'Provide liquidity to BDX pairs and earn trading fees. LP tokens are yield-bearing assets.',      href: '/dashboard/liquidity', tag: 'Pools',   DiagramComponent: LiquidityPoolDiagram  },
-  { label: 'Lending',   desc: 'Over-collateralized loans with dynamic interest rates. Deposit, borrow, and earn yield.',        href: '/dashboard/lending',   tag: 'Credit',  DiagramComponent: LendingHealthDiagram  },
-  { label: 'Staking',   desc: 'Lock BDX tokens for fixed periods to earn rewards. Higher lock duration means higher APR.',      href: '/dashboard/staking',   tag: 'Rewards', DiagramComponent: StakingLockDiagram    },
-  { label: 'Farming',   desc: 'Stake LP tokens to earn BDX emissions. Dual rewards from fees and token incentives.',            href: '/dashboard/farming',   tag: 'Yield',   DiagramComponent: FarmingYieldDiagram   },
-  { label: 'Vesting',   desc: 'Time-locked token distribution with cliff and linear release schedules. Fully transparent.',     href: '/dashboard/vesting',   tag: 'Unlock',  DiagramComponent: VestingTimelineDiagram },
+const PRODUCTS: { label: string; desc: string; href: string; tag: string }[] = [
+  { label: 'Swap',      desc: 'Trade tokens instantly with automated market maker. 0.3% fee, zero slippage on small trades.',  href: '/dashboard/swap',      tag: 'AMM'     },
+  { label: 'Liquidity', desc: 'Provide liquidity to BDX pairs and earn trading fees. LP tokens are yield-bearing assets.',      href: '/dashboard/liquidity', tag: 'Pools'   },
+  { label: 'Lending',   desc: 'Over-collateralized loans with dynamic interest rates. Deposit, borrow, and earn yield.',        href: '/dashboard/lending',   tag: 'Credit'  },
+  { label: 'Staking',   desc: 'Lock BDX tokens for fixed periods to earn rewards. Higher lock duration means higher APR.',      href: '/dashboard/staking',   tag: 'Rewards' },
+  { label: 'Farming',   desc: 'Stake LP tokens to earn BDX emissions. Dual rewards from fees and token incentives.',            href: '/dashboard/farming',   tag: 'Yield'   },
+  { label: 'Vesting',   desc: 'Time-locked token distribution with cliff and linear release schedules. Fully transparent.',     href: '/dashboard/vesting',   tag: 'Unlock'  },
 ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -153,7 +152,7 @@ export default function HomePage() {
         <div className="mx-auto flex h-full max-w-[1100px] items-center justify-between px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
             <div className="relative h-7 w-7 overflow-hidden rounded">
-              <Image src="/bulldex-logo.png" alt="Bulldex" fill className="object-cover" sizes="28px" priority />
+              <Image src="/bdx-token.png" alt="Bulldex" fill className="object-cover" sizes="28px" priority />
             </div>
             <span className="text-[15px] font-semibold tracking-tight">
               bulldex<span className="animate-cursor-blink text-brand">_</span>

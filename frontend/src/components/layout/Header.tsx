@@ -27,7 +27,6 @@ interface MegaItem {
   desc: string;
   href: string;
   icon: React.ReactNode;
-  arrow?: boolean;
 }
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
@@ -48,14 +47,14 @@ const SECONDARY_NAV: NavItem[] = [
 ];
 
 const PRODUCTS_MEGA: MegaItem[] = [
-  { label: 'Explorer',  desc: 'Browse and compare',      href: '/dashboard',           icon: <BarChart2 className="h-4 w-4" />, arrow: true },
-  { label: 'Analytics', desc: 'Protocol metrics & charts', href: '/dashboard/analytics', icon: <TrendingUp className="h-4 w-4" /> },
-  { label: 'Swap',      desc: 'Trade tokens on-chain',   href: '/dashboard/swap',       icon: <Repeat2   className="h-4 w-4" /> },
-  { label: 'Liquidity', desc: 'Provide & earn fees',     href: '/dashboard/liquidity',  icon: <Droplets  className="h-4 w-4" /> },
-  { label: 'Lending',   desc: 'Borrow against collateral', href: '/dashboard/lending',  icon: <Landmark  className="h-4 w-4" /> },
-  { label: 'Staking',   desc: 'Stake BDX, earn rewards', href: '/dashboard/staking',   icon: <ShieldCheck className="h-4 w-4" /> },
-  { label: 'Farming',   desc: 'Yield on LP tokens',      href: '/dashboard/farming',    icon: <Sprout    className="h-4 w-4" /> },
-  { label: 'Vesting',   desc: 'Token release schedules', href: '/dashboard/vesting',    icon: <Timer     className="h-4 w-4" /> },
+  { label: 'Explorer',  desc: 'Browse and compare',        href: '/dashboard',           icon: <BarChart2   className="h-4 w-4" /> },
+  { label: 'Analytics', desc: 'Protocol metrics & charts', href: '/dashboard/analytics', icon: <TrendingUp  className="h-4 w-4" /> },
+  { label: 'Swap',      desc: 'Trade tokens on-chain',     href: '/dashboard/swap',      icon: <Repeat2     className="h-4 w-4" /> },
+  { label: 'Liquidity', desc: 'Provide & earn fees',       href: '/dashboard/liquidity', icon: <Droplets    className="h-4 w-4" /> },
+  { label: 'Lending',   desc: 'Borrow against collateral', href: '/dashboard/lending',   icon: <Landmark    className="h-4 w-4" /> },
+  { label: 'Staking',   desc: 'Stake BDX, earn rewards',   href: '/dashboard/staking',   icon: <ShieldCheck className="h-4 w-4" /> },
+  { label: 'Farming',   desc: 'Yield on LP tokens',        href: '/dashboard/farming',   icon: <Sprout      className="h-4 w-4" /> },
+  { label: 'Vesting',   desc: 'Token release schedules',   href: '/dashboard/vesting',   icon: <Timer       className="h-4 w-4" /> },
 ];
 
 // ─── Live dot ─────────────────────────────────────────────────────────────────
@@ -115,9 +114,9 @@ function ProductsDropdown({ open }: { open: boolean }) {
               {item.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between">
                 <span className="text-[13px] font-medium text-[#f5f5f5]">{item.label}</span>
-                {item.arrow && <ArrowRight className="h-3 w-3 text-[#525252] group-hover:text-[#a3a3a3] transition-colors" />}
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[#a3a3a3] opacity-0 transition-opacity group-hover:opacity-100" />
               </div>
               <span className="text-[11px] text-[#525252]">{item.desc}</span>
             </div>
@@ -243,6 +242,9 @@ export function Header() {
   const [mobileOpen, setMobileOpen]     = useState(false);
   const [searchOpen, setSearchOpen]     = useState(false);
 
+  // Inside the dashboard the sidebar handles all navigation — hide center nav
+  const isDashboard = pathname.startsWith('/dashboard');
+
   const productsRef = useRef<HTMLDivElement>(null);
 
   // Close products dropdown on outside click
@@ -301,7 +303,7 @@ export function Header() {
           >
             <div className="relative h-7 w-7 overflow-hidden rounded-md">
               <Image
-                src="/bulldex-logo.png"
+                src="/bdx-token.png"
                 alt=""
                 fill
                 className="object-cover"
@@ -315,8 +317,9 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Center: Primary nav + separator + secondary nav */}
-          <nav
+          {/* Center: Primary nav + separator + secondary nav
+              Hidden inside /dashboard — sidebar handles all app navigation */}
+          {!isDashboard && <nav
             className="hidden md:flex items-center gap-0.5 flex-1 px-4"
             aria-label="Main navigation"
           >
@@ -381,7 +384,7 @@ export function Header() {
                 {item.liveDot && <LiveDot color={item.liveDot} />}
               </Link>
             ))}
-          </nav>
+          </nav>}
 
           {/* Right: Search + wallet */}
           <div className="flex items-center gap-3 shrink-0">

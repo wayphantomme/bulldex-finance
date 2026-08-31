@@ -15,22 +15,22 @@ export const metadata: Metadata = {
   description: 'Decentralized trading protocol combining token swaps, liquidity provision, lending, staking, yield farming, and governance.',
   keywords: ['DeFi', 'DEX', 'swap', 'liquidity', 'staking', 'yield farming', 'Bulldex'],
   icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
-    shortcut: '/favicon.png',
+    icon: '/bdx-token.png',
+    apple: '/bdx-token.png',
+    shortcut: '/bdx-token.png',
   },
   openGraph: {
     title: 'Bulldex Finance',
     description: 'Trade Like a Bull. Earn Like a Beast.',
     type: 'website',
-    images: ['/favicon.png'],
+    images: ['/bdx-token.png'],
   },
   twitter: {
     card: 'summary_large_image',
     creator: '@wayphantomme',
     title: 'Bulldex Finance',
     description: 'Trade Like a Bull. Earn Like a Beast.',
-    images: ['/favicon.png'],
+    images: ['/bdx-token.png'],
   },
 };
 
