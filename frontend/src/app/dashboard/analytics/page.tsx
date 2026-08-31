@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ── KPI strip ─────────────────────────────────────────────────── */}
-      <div className="flex items-start gap-0 border-b border-[#262626] pb-4 overflow-x-auto no-scrollbar">
+      <div className="flex items-start gap-0 border-b border-[#262626] pb-5 overflow-x-auto no-scrollbar">
         {[
           { label: 'Total Swaps',    value: isLoading ? null : totalSwaps.toString()    },
           { label: 'Unique Wallets', value: isLoading ? null : uniqueWallets.toString() },
@@ -156,8 +156,8 @@ export default function AnalyticsPage() {
           { label: 'Active Pools',   value: isLoading ? null : (useSubgraphData ? subgraph.pools.length.toString() : '2') },
         ].map((m, i, arr) => (
           <div key={m.label} className={cn(
-            'flex flex-col gap-1 px-4 first:pl-0 shrink-0',
-            i < arr.length - 1 && 'border-r border-[#262626] pr-4',
+            'flex flex-col gap-1 px-6 first:pl-0 shrink-0',
+            i < arr.length - 1 && 'border-r border-[#262626]',
           )}>
             <span className="text-[11px] text-[#525252] whitespace-nowrap">{m.label}</span>
             {m.value === null

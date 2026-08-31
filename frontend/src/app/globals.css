@@ -197,3 +197,227 @@
     font-feature-settings: "tnum";
   }
 }
+
+/* ── SVG Diagram Animations ───────────────────────────────────────────────── */
+
+/* Keyframes */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+@keyframes dashFlow {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1);    opacity: 0.9; }
+  50%       { transform: scale(1.12); opacity: 1;   }
+}
+
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--bar-target, 100%); }
+}
+
+@keyframes ripple {
+  0%   { r: 4;  opacity: 0.6; }
+  100% { r: 24; opacity: 0;   }
+}
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes particleRise {
+  0%   { transform: translateY(0);    opacity: 1; }
+  100% { transform: translateY(-32px); opacity: 0; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(16, 185, 129, 0)); }
+  50%       { filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4)); }
+}
+
+@keyframes slowSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes stemGrowUp {
+  from { height: 0; transform-origin: bottom; }
+  to   { height: 40px; transform-origin: bottom; }
+}
+
+@keyframes bloomIn {
+  0%   { transform: scale(0) translateY(4px); opacity: 0; }
+  70%  { transform: scale(1.15) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0);    opacity: 1; }
+}
+
+@keyframes progressFill {
+  from { width: 0; }
+  to   { width: var(--progress-target, 65%); }
+}
+
+@keyframes milestoneReveal {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cliffFlash {
+  0%, 100% { stroke: #404040; }
+  50%       { stroke: #f59e0b; }
+}
+
+@keyframes needleSweep {
+  from { transform: rotate(-80deg); }
+  to   { transform: rotate(20deg);  }
+}
+
+@keyframes tokenTravel {
+  0%   { offset-distance: 0%;   opacity: 1; }
+  80%  { offset-distance: 100%; opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* Utility classes */
+.animate-dash-flow {
+  animation: dashFlow 1.8s linear infinite;
+}
+
+.animate-node-pulse {
+  animation: nodePulse 2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-bar-grow {
+  animation: barGrow 0.8s ease-out forwards;
+}
+
+.animate-ripple {
+  animation: ripple 2s ease-out infinite;
+}
+
+.animate-float {
+  animation: floatUpDown 3s ease-in-out infinite alternate;
+}
+
+.animate-particle-rise {
+  animation: particleRise 1.5s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.animate-slow-spin {
+  animation: slowSpin 8s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* Reduced motion override */
+@media (prefers-reduced-motion: reduce) {
+  .animate-dash-flow,
+  .animate-node-pulse,
+  .animate-bar-grow,
+  .animate-ripple,
+  .animate-float,
+  .animate-particle-rise,
+  .animate-glow-pulse,
+  .animate-slow-spin {
+    animation: none !important;
+  }
+}
+
+/* ── SVG Diagram Animations ───────────────────────────── */
+
+/* Dashed line flow (token travel) */
+@keyframes dashFlow {
+  to { stroke-dashoffset: -24; }
+}
+.animate-dash-flow {
+  animation: dashFlow 1.8s linear infinite;
+}
+
+/* Node pulse (scale) */
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1);    opacity: 0.9; }
+  50%       { transform: scale(1.12); opacity: 1;   }
+}
+.animate-node-pulse {
+  animation: nodePulse 2s ease-in-out infinite;
+}
+
+/* Bar grow (width from 0) — use with CSS custom properties */
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--bar-target, 100%); }
+}
+.animate-bar-grow {
+  animation: barGrow 0.8s ease-out forwards;
+}
+
+/* Ripple (pool surface) */
+@keyframes ripple {
+  0%   { r: 4;  opacity: 0.6; }
+  100% { r: 24; opacity: 0;   }
+}
+.animate-ripple {
+  animation: ripple 2s ease-out infinite;
+}
+
+/* Float (subtle up/down) */
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(-6px); }
+}
+.animate-float {
+  animation: floatUpDown 3s ease-in-out infinite alternate;
+}
+
+/* Particle travel (reward token rising) */
+@keyframes particleRise {
+  0%   { transform: translateY(0);    opacity: 1; }
+  100% { transform: translateY(-32px); opacity: 0; }
+}
+.animate-particle-rise {
+  animation: particleRise 1.5s linear infinite;
+}
+
+/* Glow pulse (padlock, CTA) */
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 0px #10b98100); }
+  50%       { filter: drop-shadow(0 0 6px #10b98160); }
+}
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Slow spin (hexagon pool) */
+@keyframes slowSpin {
+  to { transform: rotate(360deg); }
+}
+.animate-slow-spin {
+  animation: slowSpin 8s linear infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* Reduced motion override */
+@media (prefers-reduced-motion: reduce) {
+  .animate-dash-flow,
+  .animate-node-pulse,
+  .animate-bar-grow,
+  .animate-ripple,
+  .animate-float,
+  .animate-particle-rise,
+  .animate-glow-pulse,
+  .animate-slow-spin {
+    animation: none;
+  }
+}
