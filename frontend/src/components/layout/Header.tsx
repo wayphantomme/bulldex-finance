@@ -440,10 +440,9 @@ export function Header() {
                     ) : (
                       <button
                         onClick={openConnectModal}
-                        className="flex items-center gap-2 h-9 rounded-md bg-[#10b981] px-5 text-[13px] font-semibold text-[#0d0d0d] transition-all hover:bg-[#059669] active:scale-[0.98]"
+                        className="flex items-center h-9 rounded-md bg-[#10b981] px-5 text-[13px] font-semibold text-[#0d0d0d] transition-all hover:bg-[#059669] active:scale-[0.98]"
                       >
-                        <Wallet className="h-4 w-4" strokeWidth={2.5} />
-                        <span>Connect Wallet</span>
+                        Connect Wallet
                       </button>
                     )}
                   </div>

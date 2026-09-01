@@ -119,18 +119,7 @@ export default function DashboardPage() {
             Your live positions on Sepolia testnet.
           </p>
         </div>
-        {!isConnected && (
-          <ConnectButton.Custom>
-            {({ openConnectModal }) => (
-              <button
-                onClick={openConnectModal}
-                className="h-9 rounded-md bg-[#10b981] px-5 text-[13px] font-semibold text-[#0d0d0d] hover:bg-[#059669] transition-colors"
-              >
-                Connect Wallet
-              </button>
-            )}
-          </ConnectButton.Custom>
-        )}
+
       </div>
 
       {/* ── Main Content Grid ──────────────────────────────────────────── */}
